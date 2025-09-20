@@ -1,0 +1,284 @@
+{
+  "version": "1.0",
+  "description": "Security whitelist configuration for AI PowerShell Assistant",
+  "rules": [
+    {
+      "pattern": "Get-*",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow all Get cmdlets for information retrieval"
+    },
+    {
+      "pattern": "Select-Object",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow object selection and filtering"
+    },
+    {
+      "pattern": "Where-Object",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow object filtering"
+    },
+    {
+      "pattern": "Sort-Object",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow object sorting"
+    },
+    {
+      "pattern": "Format-*",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow formatting cmdlets"
+    },
+    {
+      "pattern": "Out-*",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow output cmdlets"
+    },
+    {
+      "pattern": "Measure-Object",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow object measurement"
+    },
+    {
+      "pattern": "Group-Object",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow object grouping"
+    },
+    {
+      "pattern": "Test-Path",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow path testing"
+    },
+    {
+      "pattern": "Test-Connection",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Network connectivity testing requires confirmation"
+    },
+    {
+      "pattern": "Set-Location",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow directory navigation"
+    },
+    {
+      "pattern": "Push-Location",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow location stack management"
+    },
+    {
+      "pattern": "Pop-Location",
+      "action": "allow",
+      "risk_level": "low",
+      "description": "Allow location stack management"
+    },
+    {
+      "pattern": "New-Item.*-ItemType.*Directory",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Directory creation requires confirmation"
+    },
+    {
+      "pattern": "Copy-Item",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "File copying requires confirmation"
+    },
+    {
+      "pattern": "Move-Item",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "File moving requires confirmation"
+    },
+    {
+      "pattern": "Rename-Item",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "File renaming requires confirmation"
+    },
+    {
+      "pattern": "Remove-Item.*-Recurse",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Recursive deletion is blocked for safety"
+    },
+    {
+      "pattern": "Remove-Item.*-Force",
+      "action": "block",
+      "risk_level": "high",
+      "description": "Forced deletion is blocked for safety"
+    },
+    {
+      "pattern": "Remove-Item",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "File deletion requires explicit confirmation"
+    },
+    {
+      "pattern": "Clear-Content",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Content clearing requires confirmation"
+    },
+    {
+      "pattern": "Set-Content",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Content modification requires confirmation"
+    },
+    {
+      "pattern": "Add-Content",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Content addition requires confirmation"
+    },
+    {
+      "pattern": "Start-Process",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Process execution requires confirmation"
+    },
+    {
+      "pattern": "Stop-Process",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Process termination requires confirmation"
+    },
+    {
+      "pattern": "Restart-Computer",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "System restart is blocked"
+    },
+    {
+      "pattern": "Stop-Computer",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "System shutdown is blocked"
+    },
+    {
+      "pattern": "Set-ExecutionPolicy",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Execution policy changes are blocked"
+    },
+    {
+      "pattern": "Invoke-Expression",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Dynamic code execution is blocked"
+    },
+    {
+      "pattern": "Invoke-Command",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Remote command execution requires confirmation"
+    },
+    {
+      "pattern": "Enter-PSSession",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Remote session entry requires confirmation"
+    },
+    {
+      "pattern": "New-PSSession",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Remote session creation requires confirmation"
+    },
+    {
+      "pattern": "Import-Module",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Module import requires confirmation"
+    },
+    {
+      "pattern": "Install-Module",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Module installation requires confirmation"
+    },
+    {
+      "pattern": "Uninstall-Module",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Module uninstallation requires confirmation"
+    },
+    {
+      "pattern": "Set-Service",
+      "action": "require_confirmation",
+      "risk_level": "high",
+      "description": "Service configuration changes require confirmation"
+    },
+    {
+      "pattern": "Start-Service",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Service startup requires confirmation"
+    },
+    {
+      "pattern": "Stop-Service",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Service shutdown requires confirmation"
+    },
+    {
+      "pattern": "Restart-Service",
+      "action": "require_confirmation",
+      "risk_level": "medium",
+      "description": "Service restart requires confirmation"
+    },
+    {
+      "pattern": "New-NetFirewallRule",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Firewall rule creation is blocked"
+    },
+    {
+      "pattern": "Set-NetFirewallRule",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Firewall rule modification is blocked"
+    },
+    {
+      "pattern": "Remove-NetFirewallRule",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Firewall rule removal is blocked"
+    },
+    {
+      "pattern": "Set-ItemProperty.*Registry",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Registry modifications are blocked"
+    },
+    {
+      "pattern": "New-ItemProperty.*Registry",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Registry modifications are blocked"
+    },
+    {
+      "pattern": "Remove-ItemProperty.*Registry",
+      "action": "block",
+      "risk_level": "critical",
+      "description": "Registry modifications are blocked"
+    }
+  ],
+  "default_action": "require_confirmation",
+  "default_risk_level": "medium",
+  "settings": {
+    "case_sensitive": false,
+    "enable_regex": true,
+    "log_all_matches": true,
+    "block_unknown_commands": false
+  }
+}

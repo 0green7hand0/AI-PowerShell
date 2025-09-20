@@ -1,0 +1,89 @@
+# Production Configuration Template
+# AI PowerShell Assistant - Production Environment
+
+version: "1.0.0"
+platform: "auto"
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8000
+  max_concurrent_sessions: 50
+  session_timeout: 3600
+  enable_cors: false
+  cors_origins: []
+
+# MCP Server Settings
+mcp_server:
+  name: "AI PowerShell Assistant"
+  version: "1.0.0"
+  enable_natural_language_tool: true
+  enable_execute_command_tool: true
+  enable_system_info_tool: true
+  max_request_size: 10485760
+  request_timeout: 300
+
+# PowerShell Configuration
+powershell:
+  executable: "pwsh"
+  version_preference: "core"
+  default_timeout: 60
+  max_output_size: 1048576
+  encoding: "utf-8"
+
+# AI Model Configuration
+ai_model:
+  type: "llama-cpp"
+  model_path: "/app/models/llama-7b-chat.bin"
+  context_length: 4096
+  temperature: 0.5
+  max_tokens: 256
+  batch_size: 8
+  threads: 8
+  gpu_layers: 32  # Enable GPU acceleration in production
+
+# Security Configuration
+security:
+  sandbox_enabled: true
+  docker_image: "mcr.microsoft.com/powershell:ubuntu-20.04"
+  sandbox_timeout: 300
+  sandbox_memory_limit: "512m"
+  sandbox_cpu_limit: "1.0"
+  whitelist_enabled: true
+  whitelist_path: "/app/config/security-rules.yaml"
+  require_confirmation_for_admin: true
+  audit_enabled: true
+
+# Storage Configuration
+storage:
+  data_directory: "/app/data"
+  log_directory: "/app/logs"
+  backup_enabled: true
+  backup_interval: 86400
+  retention_days: 30
+
+# Logging Configuration
+logging:
+  level: "WARNING"
+  format: "json"
+  outputs: ["file", "syslog"]
+  correlation_tracking: true
+  performance_monitoring: true
+  audit_trail: true
+  sensitive_data_masking: true
+
+# Performance Configuration
+performance:
+  cache_enabled: true
+  cache_size: 10000
+  cache_ttl: 3600
+  connection_pool_size: 20
+  garbage_collection_interval: 300
+  memory_cleanup_interval: 600
+
+# Monitoring Configuration
+monitoring:
+  prometheus_enabled: true
+  prometheus_port: 9090
+  health_check_interval: 30
+  metrics_collection_interval: 60

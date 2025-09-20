@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-powershell-assistant
+  namespace: ai-powershell-assistant
+  labels:
+    app.kubernetes.io/name: ai-powershell-assistant
+    app.kubernetes.io/component: serviceaccount
+automountServiceAccountToken: true
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ai-powershell-assistant
+  namespace: ai-powershell-assistant
+  labels:
+    app.kubernetes.io/name: ai-powershell-assistant
+    app.kubernetes.io/component: role
+rules:
+# Allow reading ConfigMaps and Secrets for configuration
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+# Allow reading PersistentVolumeClaims for storage info
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list"]
+# Allow reading own pod information
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+  resourceNames: []
+# Allow creating events for logging
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ai-powershell-assistant
+  namespace: ai-powershell-assistant
+  labels:
+    app.kubernetes.io/name: ai-powershell-assistant
+    app.kubernetes.io/component: rolebinding
+subjects:
+- kind: ServiceAccount
+  name: ai-powershell-assistant
+  namespace: ai-powershell-assistant
+roleRef:
+  kind: Role
+  name: ai-powershell-assistant
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRole for monitoring and metrics (optional)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ai-powershell-assistant-monitoring
+  labels:
+    app.kubernetes.io/name: ai-powershell-assistant
+    app.kubernetes.io/component: monitoring-role
+rules:
+# Allow reading node information for system metrics
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+# Allow reading metrics
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["nodes", "pods"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ai-powershell-assistant-monitoring
+  labels:
+    app.kubernetes.io/name: ai-powershell-assistant
+    app.kubernetes.io/component: monitoring-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: ai-powershell-assistant
+  namespace: ai-powershell-assistant
+roleRef:
+  kind: ClusterRole
+  name: ai-powershell-assistant-monitoring
+  apiGroup: rbac.authorization.k8s.io

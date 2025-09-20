@@ -1,0 +1,147 @@
+# Test Dependencies for AI PowerShell Assistant
+
+# Core testing framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+pytest-cov>=4.1.0
+
+# Coverage reporting
+coverage>=7.2.0
+
+# Performance testing
+pytest-benchmark>=4.0.0
+psutil>=5.9.0
+
+# Mocking and fixtures
+responses>=0.23.0
+freezegun>=1.2.0
+
+# Async testing support
+aiofiles>=23.1.0
+aiohttp>=3.8.0
+
+# Data validation and serialization for tests
+pydantic>=2.0.0
+marshmallow>=3.19.0
+
+# Test utilities
+factory-boy>=3.2.0
+faker>=19.0.0
+
+# Security testing
+bandit>=1.7.0
+safety>=2.3.0
+
+# Code quality
+flake8>=6.0.0
+black>=23.0.0
+isort>=5.12.0
+mypy>=1.4.0
+
+# Documentation testing
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.2.0
+
+# Platform-specific testing utilities
+paramiko>=3.2.0  # For SSH testing
+docker>=6.1.0    # For container testing
+
+# JSON/YAML handling for test data
+pyyaml>=6.0
+jsonschema>=4.17.0
+
+# Time and date utilities for testing
+python-dateutil>=2.8.0
+pytz>=2023.3
+
+# Logging and debugging
+colorlog>=6.7.0
+rich>=13.4.0
+
+# Memory profiling for performance tests
+memory-profiler>=0.60.0
+pympler>=0.9
+
+# Network testing
+httpx>=0.24.0
+requests-mock>=1.11.0
+
+# File system testing
+pyfakefs>=5.2.0
+tempfile-utils>=1.0.0
+
+# Concurrency testing
+threading-utils>=0.3
+asyncio-throttle>=1.0.0
+
+# Cross-platform testing
+platform-utils>=1.0.0
+pathlib2>=2.3.0
+
+# Test reporting
+pytest-html>=3.2.0
+pytest-json-report>=1.5.0
+pytest-xdist>=3.3.0  # For parallel test execution
+
+# Security and vulnerability testing
+semgrep>=1.31.0
+pip-audit>=2.6.0
+
+# Performance monitoring
+py-spy>=0.3.0
+line-profiler>=4.0.0
+
+# Database testing (for storage tests)
+sqlalchemy>=2.0.0
+sqlite3-utils>=3.34.0
+
+# Configuration testing
+configparser>=5.3.0
+toml>=0.10.0
+
+# Subprocess and system testing
+subprocess32>=3.5.0; python_version < '3.0'
+shlex-quote>=0.1.0
+
+# Regular expression testing
+regex>=2023.6.0
+
+# Cryptography for security tests
+cryptography>=41.0.0
+bcrypt>=4.0.0
+
+# XML/HTML parsing for output testing
+lxml>=4.9.0
+beautifulsoup4>=4.12.0
+
+# Image processing for test assets
+pillow>=10.0.0
+
+# Compression for test data
+gzip-utils>=1.0.0
+zipfile-utils>=1.0.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+environs>=9.5.0
+
+# Mock server for integration tests
+responses>=0.23.0
+httpretty>=1.1.0
+
+# Test data generation
+hypothesis>=6.82.0
+mimesis>=10.1.0
+
+# Parallel execution
+pytest-parallel>=0.1.0
+concurrent-futures>=3.1.0
+
+# Test isolation
+pytest-forked>=1.6.0
+pytest-timeout>=2.1.0
+
+# Reporting and metrics
+pytest-metadata>=3.0.0
+pytest-instafail>=0.5.0

@@ -1,0 +1,97 @@
+{
+  "version": "1.0",
+  "description": "User preferences for AI PowerShell Assistant",
+  "user_preferences": {
+    "interface": {
+      "preferred_output_format": "table",
+      "max_output_lines": 50,
+      "enable_syntax_highlighting": true,
+      "show_command_explanations": true,
+      "confirm_dangerous_commands": true
+    },
+    "ai_behavior": {
+      "preferred_command_style": "verbose",
+      "include_comments": true,
+      "suggest_alternatives": true,
+      "learning_enabled": true,
+      "context_awareness_level": "high"
+    },
+    "security": {
+      "always_use_sandbox": true,
+      "require_confirmation_threshold": "medium",
+      "audit_all_commands": true,
+      "mask_sensitive_output": true
+    },
+    "execution": {
+      "default_timeout": 60,
+      "auto_format_output": true,
+      "preserve_working_directory": true,
+      "environment_isolation": true
+    },
+    "history": {
+      "max_entries": 1000,
+      "exclude_patterns": [
+        "Get-Credential",
+        "ConvertTo-SecureString",
+        "*password*",
+        "*secret*"
+      ],
+      "auto_cleanup_days": 30
+    },
+    "notifications": {
+      "show_performance_warnings": true,
+      "show_security_alerts": true,
+      "show_update_notifications": true,
+      "log_level_notifications": "warning"
+    }
+  },
+  "command_aliases": {
+    "ls": "Get-ChildItem",
+    "dir": "Get-ChildItem",
+    "ps": "Get-Process",
+    "kill": "Stop-Process",
+    "cat": "Get-Content",
+    "grep": "Select-String",
+    "find": "Where-Object"
+  },
+  "favorite_commands": [
+    {
+      "name": "List running processes by CPU",
+      "command": "Get-Process | Sort-Object CPU -Descending | Select-Object -First 10",
+      "description": "Shows top 10 processes by CPU usage",
+      "category": "system"
+    },
+    {
+      "name": "Check disk space",
+      "command": "Get-WmiObject -Class Win32_LogicalDisk | Select-Object DeviceID, @{Name='Size(GB)';Expression={[math]::Round($_.Size/1GB,2)}}, @{Name='FreeSpace(GB)';Expression={[math]::Round($_.FreeSpace/1GB,2)}}",
+      "description": "Shows disk space usage for all drives",
+      "category": "system"
+    },
+    {
+      "name": "List installed software",
+      "command": "Get-WmiObject -Class Win32_Product | Select-Object Name, Version, Vendor | Sort-Object Name",
+      "description": "Lists all installed software",
+      "category": "system"
+    }
+  ],
+  "custom_functions": [
+    {
+      "name": "Get-SystemInfo",
+      "description": "Get comprehensive system information",
+      "script": "Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, TotalPhysicalMemory, CsProcessors"
+    }
+  ],
+  "learning_data": {
+    "command_patterns": {},
+    "user_corrections": {},
+    "preferred_parameters": {},
+    "context_associations": {}
+  },
+  "metadata": {
+    "created_date": "",
+    "last_modified": "",
+    "version": "1.0",
+    "user_id": "",
+    "installation_id": ""
+  }
+}
