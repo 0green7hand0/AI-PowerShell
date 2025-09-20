@@ -1,6 +1,23 @@
 ﻿# AI PowerShell 智能助手
 
+![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
+![PowerShell](https://img.shields.io/badge/powershell-core%207.0+-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-lightgrey.svg)
+![AI Model](https://img.shields.io/badge/ai-local%20processing-orange.svg)
+![Language](https://img.shields.io/badge/language-中文%20%7C%20english-red.svg)
+![Version](https://img.shields.io/badge/version-v1.0.0-brightgreen.svg)
+
 一个智能的命令行交互系统，在自然语言和 PowerShell 命令之间架起桥梁。该系统利用本地 AI 模型提供直观的命令生成，通过三层保护系统实施全面的安全措施，并确保无缝的跨平台兼容性。
+
+## 📚 快速导航
+
+- [🚀 快速开始](#快速开始)
+- [📖 中文文档](中文项目说明.md)
+- [🔧 安装指南](docs/user/installation.md)
+- [💡 使用示例](examples/中文使用示例.py)
+- [🔒 安全说明](docs/troubleshooting/README.md)
+- [🐳 Docker部署](docker-compose.yml)
 
 ## 核心特性
 
