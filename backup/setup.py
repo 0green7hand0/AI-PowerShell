@@ -5,7 +5,7 @@ from pathlib import Path
 
 # Read the README file
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text() if (this_directory / "README.md").exists() else ""
+long_description = (this_directory / "README.md").read_text(encoding='utf-8') if (this_directory / "README.md").exists() else ""
 
 # Read requirements
 requirements = []
@@ -15,7 +15,7 @@ if (this_directory / "requirements.txt").exists():
 
 setup(
     name="ai-powershell-assistant",
-    version="0.1.0",
+    version="1.1.0",
     description="An intelligent MCP server for PowerShell command assistance using local AI models",
     long_description=long_description,
     long_description_content_type="text/markdown",

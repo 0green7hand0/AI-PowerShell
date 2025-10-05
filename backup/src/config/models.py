@@ -80,6 +80,7 @@ class LoggingConfig:
 @dataclass
 class StorageConfig:
     """Storage configuration"""
+    base_path: str = ""
     data_directory: str = ""
     history_max_entries: int = 10000
     preferences_file: str = ""
@@ -88,14 +89,17 @@ class StorageConfig:
     backup_interval_hours: int = 24
     
     def __post_init__(self):
+        if not self.base_path:
+            self.base_path = str(Path.home() / ".ai-powershell-assistant")
+        
         if not self.data_directory:
-            self.data_directory = str(Path.home() / ".ai-powershell-assistant" / "data")
+            self.data_directory = str(Path(self.base_path) / "data")
         
         if not self.preferences_file:
             self.preferences_file = str(Path(self.data_directory) / "user_preferences.json")
         
         if not self.cache_directory:
-            self.cache_directory = str(Path.home() / ".ai-powershell-assistant" / "cache")
+            self.cache_directory = str(Path(self.base_path) / "cache")
 
 
 @dataclass

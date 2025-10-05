@@ -48,11 +48,6 @@ Thumbs.db
 logs/
 *.log
 
-# Data and Config (keep templates)
-data/
-!config/*.yaml
-!config/*.md
-
 # AI Models
 models/
 *.bin
@@ -66,9 +61,6 @@ backup_*/
 .coverage
 htmlcov/
 .pytest_cache/
-
-# Docker
-.dockerignore
 
 # Temporary files
 tmp/
