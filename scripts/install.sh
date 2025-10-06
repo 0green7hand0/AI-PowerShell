@@ -257,7 +257,8 @@ else
     exit 1
 fi
 
-# Run the application
+# Run the application (new modular structure)
+cd "$INSTALL_DIR/src" || exit 1
 exec python -m src.main "$@"
 EOF
     

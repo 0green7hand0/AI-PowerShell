@@ -6,9 +6,9 @@
 ![Platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-lightgrey.svg)
 ![AI Model](https://img.shields.io/badge/ai-local%20processing-orange.svg)
 ![Language](https://img.shields.io/badge/language-中文%20%7C%20english-red.svg)
-![Version](https://img.shields.io/badge/version-v1.1.0-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-v2.0.0-brightgreen.svg)
 
-一个智能的命令行交互系统，在自然语言和 PowerShell 命令之间架起桥梁。该系统利用本地 AI 模型提供直观的命令生成，通过三层保护系统实施全面的安全措施，并确保无缝的跨平台兼容性。
+一个基于本地 AI 模型的智能 PowerShell 命令行助手，采用模块化架构设计，支持中文自然语言交互，提供三层安全保护机制。该系统通过高内聚低耦合的设计原则，确保代码的可维护性和可扩展性。
 
 ## 📚 快速导航
 
@@ -21,32 +21,55 @@
 
 ## 核心特性
 
+- **模块化架构**: 采用高内聚低耦合的设计，6 个核心模块清晰分离
 - **自然语言处理**: 使用本地 AI 模型将中文/英文转换为 PowerShell 命令
-- **安全验证**: 三层安全保护，包括命令白名单、权限检查和沙箱执行
+- **三层安全保护**: 命令白名单、权限检查和沙箱执行的完整安全体系
 - **跨平台支持**: 在 Windows、Linux 和 macOS 上与 PowerShell Core 协同工作
 - **本地 AI 处理**: 注重隐私的本地模型执行 - 不向外部服务发送数据
-- **全面日志记录**: 完整的审计跟踪和性能监控，支持关联追踪
-- **MCP 协议**: 基于模型上下文协议构建，实现无缝集成
+- **完整日志系统**: 结构化日志记录、审计跟踪和性能监控
+- **灵活配置管理**: 基于 YAML 的配置系统，支持多层级配置
 
 ## 项目结构
 
 ```
 AI-PowerShell/
-├── 实用版本.py              # 核心：简化版本，适合个人用户
-├── 最终修复版本.py          # 核心：企业版本，功能完整
-├── README.md               # 项目主文档
-├── 中文项目说明.md         # 中文详细说明
-├── 快速开始.md             # 快速上手指南
-├── requirements.txt        # Python 依赖
-├── CHANGELOG.md           # 更新日志
-├── LICENSE                # 许可证
+├── src/                   # 源代码目录（模块化架构）
+│   ├── interfaces/        # 接口定义层
+│   ├── ai_engine/         # AI 引擎模块
+│   ├── security/          # 安全引擎模块
+│   ├── execution/         # 执行引擎模块
+│   ├── config/            # 配置管理模块
+│   ├── log_engine/        # 日志引擎模块
+│   ├── storage/           # 存储引擎模块
+│   ├── context/           # 上下文管理模块
+│   └── main.py            # 主入口文件
+├── tests/                 # 测试目录
+│   ├── ai_engine/         # AI 引擎测试
+│   ├── security/          # 安全引擎测试
+│   ├── execution/         # 执行引擎测试
+│   ├── config/            # 配置管理测试
+│   ├── log_engine/        # 日志引擎测试
+│   ├── storage/           # 存储引擎测试
+│   ├── context/           # 上下文管理测试
+│   └── integration/       # 集成测试
+├── config/                # 配置文件目录
+│   └── default.yaml       # 默认配置文件
 ├── docs/                  # 文档目录
+│   ├── architecture.md    # 架构文档
+│   ├── developer-guide.md # 开发者指南
 │   ├── 安装指南.md
 │   ├── 使用示例.md
 │   └── 常见问题.md
-└── scripts/              # 安装脚本目录
-    ├── install.ps1       # Windows 安装脚本
-    └── install.sh        # Linux/macOS 安装脚本
+├── scripts/               # 脚本目录
+│   ├── install.ps1        # Windows 安装脚本
+│   └── install.sh         # Linux/macOS 安装脚本
+├── logs/                  # 日志目录
+├── README.md              # 项目主文档
+├── 中文项目说明.md        # 中文详细说明
+├── 快速开始.md            # 快速上手指南
+├── requirements.txt       # Python 依赖
+├── CHANGELOG.md           # 更新日志
+└── LICENSE                # MIT 许可证
 ```
 
 ## 快速开始
@@ -76,37 +99,58 @@ pip install -r requirements.txt
 
 ### 基本使用
 
-**简化版本（推荐新用户）**
+**启动助手**
 ```bash
-python 实用版本.py
+# 运行主程序
+python src/main.py
+
+# 或使用交互模式
+python src/main.py --interactive
 ```
 
-**企业版本（完整功能）**
-```bash
-python 最终修复版本.py
+**使用示例**
+```python
+# 导入主控制器
+from src.main import PowerShellAssistant
+
+# 创建助手实例
+assistant = PowerShellAssistant()
+
+# 处理自然语言请求
+result = assistant.process_request("显示CPU使用率最高的5个进程")
+
+# 查看结果
+print(result.output)
 ```
 
 详细使用说明请参考 [快速开始指南](快速开始.md)
 
 ## 文档
 
+- **[架构文档](docs/architecture.md)** - 系统架构和设计原则
+- **[开发者指南](docs/developer-guide.md)** - 开发和扩展指南
 - **[快速开始指南](快速开始.md)** - 快速上手使用
 - **[中文项目说明](中文项目说明.md)** - 详细的中文文档
 - **[安装指南](docs/安装指南.md)** - 详细安装说明
 - **[使用示例](docs/使用示例.md)** - 实际使用案例
 - **[常见问题](docs/常见问题.md)** - 常见问题解答
 
-## 版本说明
+## 架构概览
 
-### 实用版本.py
-- **适用对象**: 个人用户、快速体验
-- **特点**: 单文件运行，简单易用
-- **功能**: 基础 AI PowerShell 交互功能
+### 模块化设计
 
-### 最终修复版本.py  
-- **适用对象**: 企业用户、高级用户
-- **特点**: 完整架构，功能全面
-- **功能**: 包含所有高级特性和安全机制
+项目采用高内聚低耦合的模块化架构，包含以下核心模块：
+
+- **接口定义层** (`interfaces/`): 定义所有模块间的接口和数据模型
+- **AI 引擎** (`ai_engine/`): 自然语言到 PowerShell 命令的转换
+- **安全引擎** (`security/`): 三层安全验证和沙箱执行
+- **执行引擎** (`execution/`): 跨平台 PowerShell 命令执行
+- **配置管理** (`config/`): 灵活的配置系统和验证
+- **日志引擎** (`log_engine/`): 结构化日志和审计跟踪
+- **存储引擎** (`storage/`): 数据持久化和历史记录
+- **上下文管理** (`context/`): 会话管理和上下文维护
+
+详细架构说明请参考 [架构文档](docs/architecture.md)
 
 ## 系统要求
 
@@ -139,7 +183,25 @@ source venv/bin/activate  # Linux/macOS
 
 # 安装依赖
 pip install -r requirements.txt
+
+# 运行测试
+pytest tests/
+
+# 代码格式化
+black src/ tests/
+
+# 类型检查
+mypy src/
 ```
+
+### 添加新功能
+
+详细的开发指南请参考 [开发者指南](docs/developer-guide.md)，包括：
+
+- 如何添加新的 AI 提供商
+- 如何扩展安全规则
+- 如何添加自定义命令模板
+- 代码规范和最佳实践
 
 ## Security
 

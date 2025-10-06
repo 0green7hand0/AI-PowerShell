@@ -1,0 +1,156 @@
+version: '3.8'
+
+services:
+  # Main AI PowerShell Assistant service
+  ai-powershell:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-powershell:2.0.0
+    container_name: ai-powershell-assistant
+    hostname: ai-powershell
+    restart: unless-stopped
+    
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - AI_POWERSHELL_CONFIG=/app/config/user.yaml
+      - AI_POWERSHELL_LOG_LEVEL=INFO
+      - AI_POWERSHELL_LOG_DIR=/app/logs
+      - AI_POWERSHELL_DATA_DIR=/app/data
+      
+      # AI Engine configuration
+      - AI_ENGINE_PROVIDER=local
+      - AI_ENGINE_MODEL=llama
+      - AI_ENGINE_TEMPERATURE=0.7
+      
+      # Security configuration
+      - SECURITY_SANDBOX_ENABLED=false
+      - SECURITY_REQUIRE_CONFIRMATION=true
+      - SECURITY_WHITELIST_MODE=strict
+      
+      # Execution configuration
+      - EXECUTION_TIMEOUT=30
+      - EXECUTION_ENCODING=utf-8
+      - EXECUTION_PLATFORM=auto
+    
+    # Volume mounts
+    volumes:
+      # Configuration
+      - ./config:/app/config:ro
+      
+      # Logs (persistent)
+      - ai-powershell-logs:/app/logs
+      
+      # Data and history (persistent)
+      - ai-powershell-data:/app/data
+      
+      # User home directory for PowerShell profiles
+      - ai-powershell-home:/home/appuser
+      
+      # Optional: Mount local AI models
+      # - ./models:/app/models:ro
+    
+    # Ports (if running as MCP server)
+    ports:
+      - "8000:8000"
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.insert(0, '/app'); from src.main import PowerShellAssistant; print('healthy')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Network
+    networks:
+      - ai-powershell-network
+  
+  # Optional: Sandbox execution environment
+  sandbox:
+    image: mcr.microsoft.com/powershell:latest
+    container_name: ai-powershell-sandbox
+    hostname: sandbox
+    restart: unless-stopped
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Read-only root filesystem
+    read_only: true
+    
+    # No network access
+    network_mode: none
+    
+    # Resource limits (strict)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    
+    # Temporary filesystem for execution
+    tmpfs:
+      - /tmp:size=100M,mode=1777
+      - /var/tmp:size=50M,mode=1777
+    
+    # Command: sleep to keep container running
+    command: ["pwsh", "-Command", "while ($true) { Start-Sleep -Seconds 3600 }"]
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    
+    # Labels
+    labels:
+      - "ai-powershell.role=sandbox"
+      - "ai-powershell.security=isolated"
+
+# Named volumes for data persistence
+volumes:
+  ai-powershell-logs:
+    driver: local
+    labels:
+      - "ai-powershell.volume=logs"
+  
+  ai-powershell-data:
+    driver: local
+    labels:
+      - "ai-powershell.volume=data"
+  
+  ai-powershell-home:
+    driver: local
+    labels:
+      - "ai-powershell.volume=home"
+
+# Network configuration
+networks:
+  ai-powershell-network:
+    driver: bridge
+    labels:
+      - "ai-powershell.network=main"

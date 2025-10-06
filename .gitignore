@@ -59,12 +59,24 @@ backup_*/
 
 # Test coverage
 .coverage
+.coverage.*
 htmlcov/
 .pytest_cache/
+coverage.xml
+.tox/
+.nox/
 
 # Temporary files
 tmp/
 temp/
+test_data/
+*.tmp
+
+# Test files
+test_main_manual.py
 
 # Kiro IDE
 .kiro/
+
+# Docker volumes
+docker-volumes/

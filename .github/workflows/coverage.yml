@@ -1,0 +1,182 @@
+name: Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  coverage:
+    name: Test Coverage Report
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install PowerShell Core
+      run: |
+        wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        sudo apt-get update
+        sudo apt-get install -y powershell
+    
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov coverage[toml]
+    
+    - name: Run tests with coverage
+      run: |
+        pytest --cov=src --cov-report=xml --cov-report=html --cov-report=term-missing --cov-report=json
+    
+    - name: Generate coverage badge
+      run: |
+        coverage report --format=markdown > coverage-report.md
+        echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+        cat coverage-report.md >> $GITHUB_STEP_SUMMARY
+    
+    - name: Check coverage threshold
+      run: |
+        coverage report --fail-under=80
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: Upload coverage HTML report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: coverage-html-report
+        path: htmlcov/
+    
+    - name: Upload coverage JSON report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: coverage-json-report
+        path: coverage.json
+    
+    - name: Comment coverage on PR
+      if: github.event_name == 'pull_request'
+      uses: py-cov-action/python-coverage-comment-action@v3
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        MINIMUM_GREEN: 80
+        MINIMUM_ORANGE: 60
+
+  coverage-diff:
+    name: Coverage Diff
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout PR code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install PowerShell Core
+      run: |
+        wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        sudo apt-get update
+        sudo apt-get install -y powershell
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov coverage[toml] diff-cover
+    
+    - name: Run tests with coverage
+      run: |
+        pytest --cov=src --cov-report=xml
+    
+    - name: Generate coverage diff
+      run: |
+        diff-cover coverage.xml --compare-branch=origin/${{ github.base_ref }} --fail-under=80
+    
+    - name: Upload diff coverage report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: coverage-diff-report
+        path: coverage.xml
+
+  module-coverage:
+    name: Module-level Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install PowerShell Core
+      run: |
+        wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        sudo apt-get update
+        sudo apt-get install -y powershell
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Test AI Engine coverage
+      run: |
+        pytest tests/ai_engine/ --cov=src/ai_engine --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Test Security Engine coverage
+      run: |
+        pytest tests/security/ --cov=src/security --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Test Execution Engine coverage
+      run: |
+        pytest tests/execution/ --cov=src/execution --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Test Config Module coverage
+      run: |
+        pytest tests/config/ --cov=src/config --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Test Log Engine coverage
+      run: |
+        pytest tests/log_engine/ --cov=src/log_engine --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Test Storage Engine coverage
+      run: |
+        pytest tests/storage/ --cov=src/storage --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Test Context Module coverage
+      run: |
+        pytest tests/context/ --cov=src/context --cov-report=term-missing --cov-fail-under=80

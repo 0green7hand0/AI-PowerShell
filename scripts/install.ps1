@@ -313,8 +313,10 @@ if (Test-Path `$ActivateScript) {
     exit 1
 }
 
-# Run the application
+# Run the application (new modular structure)
+Push-Location (Join-Path `$InstallDir "src")
 & python -m src.main @Arguments
+Pop-Location
 "@
     
     Set-Content -Path $launcherPath -Value $launcherContent
