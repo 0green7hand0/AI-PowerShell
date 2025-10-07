@@ -13,16 +13,18 @@
 ## 📚 快速导航
 
 - [🚀 快速开始](#快速开始)
+- [📖 完整文档索引](DOCUMENTATION.md) - 所有文档导航
 - [📖 中文文档](中文项目说明.md)
 - [📋 快速开始指南](快速开始.md)
 - [📁 项目结构](#项目结构)
 - [🔧 安装说明](#安装)
-- [📚 文档](#文档)
+- [📚 文档中心](docs/README.md)
 
 ## 核心特性
 
 - **模块化架构**: 采用高内聚低耦合的设计，6 个核心模块清晰分离
 - **自然语言处理**: 使用本地 AI 模型将中文/英文转换为 PowerShell 命令
+- **自定义模板系统**: 创建、管理和共享您自己的 PowerShell 脚本模板
 - **三层安全保护**: 命令白名单、权限检查和沙箱执行的完整安全体系
 - **跨平台支持**: 在 Windows、Linux 和 macOS 上与 PowerShell Core 协同工作
 - **本地 AI 处理**: 注重隐私的本地模型执行 - 不向外部服务发送数据
@@ -123,17 +125,45 @@ result = assistant.process_request("显示CPU使用率最高的5个进程")
 print(result.output)
 ```
 
-详细使用说明请参考 [快速开始指南](快速开始.md)
+**自定义模板管理**
+```bash
+# 创建自定义模板
+python src/main.py template create
+
+# 列出所有模板
+python src/main.py template list
+
+# 编辑模板
+python src/main.py template edit <template_id>
+
+# 导出模板
+python src/main.py template export <template_id> -o template.zip
+
+# 导入模板
+python src/main.py template import template.zip
+```
+
+详细使用说明请参考：
+- [快速开始指南](快速开始.md) - 系统基本使用
+- [自定义模板快速入门](docs/template-quick-start.md) - 5分钟学会创建模板
+- [自定义模板完整指南](docs/custom-template-guide.md) - 深入了解模板系统
 
 ## 文档
 
-- **[架构文档](docs/architecture.md)** - 系统架构和设计原则
-- **[开发者指南](docs/developer-guide.md)** - 开发和扩展指南
+### 📖 用户文档
 - **[快速开始指南](快速开始.md)** - 快速上手使用
+- **[自定义模板快速入门](docs/template-quick-start.md)** - 5分钟创建第一个模板
+- **[自定义模板完整指南](docs/custom-template-guide.md)** - 深入了解模板系统
+- **[模板CLI参考](docs/template-cli-reference.md)** - 命令行工具完整参考
 - **[中文项目说明](中文项目说明.md)** - 详细的中文文档
 - **[安装指南](docs/安装指南.md)** - 详细安装说明
 - **[使用示例](docs/使用示例.md)** - 实际使用案例
 - **[常见问题](docs/常见问题.md)** - 常见问题解答
+
+### 🔧 开发者文档
+- **[架构文档](docs/architecture.md)** - 系统架构和设计原则
+- **[开发者指南](docs/developer-guide.md)** - 开发和扩展指南
+- **[安全检查指南](docs/security-checker-guide.md)** - 安全机制说明
 
 ## 架构概览
 

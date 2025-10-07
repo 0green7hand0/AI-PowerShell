@@ -1,0 +1,20 @@
+{
+  "template_id": "内容测试",
+  "version_number": 2,
+  "timestamp": "2025-10-07T11:53:59.946478",
+  "content": "Write-Host 'old'",
+  "config": {
+    "name": "内容测试",
+    "description": "测试",
+    "keywords": [],
+    "category": "test",
+    "parameters": {},
+    "is_custom": true,
+    "created_at": "2025-10-07T11:53:59.701379",
+    "updated_at": "2025-10-07T11:53:59.701380",
+    "author": "user",
+    "version": "1.0.0",
+    "tags": []
+  },
+  "change_description": "内容更新"
+}

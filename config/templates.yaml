@@ -1,0 +1,268 @@
+# PowerShell 脚本模板配置文件
+
+templates:
+  # 文件管理类模板
+  file_management:
+    batch_rename:
+      name: "批量重命名文件"
+      file: "templates/file_management/batch_rename.ps1"
+      description: "按规则批量重命名文件"
+      keywords:
+        - "重命名"
+        - "改名"
+        - "批量"
+        - "rename"
+      parameters:
+        SOURCE_PATH:
+          type: "string"
+          default: "."
+          description: "源文件夹路径"
+        FILE_PATTERN:
+          type: "string"
+          default: "*.*"
+          description: "文件匹配模式"
+        NAME_PREFIX:
+          type: "string"
+          default: "file"
+          description: "文件名前缀"
+        USE_DATE:
+          type: "boolean"
+          default: false
+          description: "是否包含日期"
+        DATE_FORMAT:
+          type: "string"
+          default: "yyyyMMdd"
+          description: "日期格式"
+        START_NUMBER:
+          type: "integer"
+          default: 1
+          description: "起始序号"
+        NUMBER_DIGITS:
+          type: "integer"
+          default: 3
+          description: "序号位数"
+      examples:
+        - "批量重命名桌面的jpg文件为photo_日期_序号"
+        - "把所有pdf改成document_001, document_002..."
+        - "重命名下载文件夹的文件"
+    
+    file_organizer:
+      name: "文件分类整理"
+      file: "templates/file_management/file_organizer.ps1"
+      description: "按文件类型自动分类到不同文件夹"
+      keywords:
+        - "整理"
+        - "分类"
+        - "归档"
+        - "organize"
+      parameters:
+        SOURCE_PATH:
+          type: "string"
+          default: "."
+          description: "源文件夹路径"
+        CREATE_SUBFOLDERS:
+          type: "boolean"
+          default: true
+          description: "是否创建子文件夹"
+        MOVE_FILES:
+          type: "string"
+          default: "move"
+          description: "移动还是复制（move/copy）"
+      examples:
+        - "整理下载文件夹，按类型分类"
+        - "把桌面的文件按类型归档"
+        - "分类整理文档文件夹"
+  
+  # 系统监控类模板
+  system_monitoring:
+    resource_monitor:
+      name: "系统资源监控"
+      file: "templates/system_monitoring/resource_monitor.ps1"
+      description: "监控CPU、内存、磁盘使用情况"
+      keywords:
+        - "监控"
+        - "CPU"
+        - "内存"
+        - "磁盘"
+        - "性能"
+        - "monitor"
+      parameters:
+        CPU_THRESHOLD:
+          type: "integer"
+          default: 80
+          description: "CPU使用率阈值（百分比）"
+        MEMORY_THRESHOLD:
+          type: "integer"
+          default: 85
+          description: "内存使用率阈值（百分比）"
+        DISK_THRESHOLD:
+          type: "integer"
+          default: 90
+          description: "磁盘使用率阈值（百分比）"
+        CHECK_INTERVAL:
+          type: "integer"
+          default: 30
+          description: "检查间隔（秒）"
+        TOP_PROCESSES:
+          type: "integer"
+          default: 5
+          description: "显示前N个进程"
+        DURATION:
+          type: "integer"
+          default: 0
+          description: "监控持续时间（秒，0表示持续监控）"
+      examples:
+        - "每30秒检查一次CPU，超过80%就警告"
+        - "监控系统资源使用情况"
+        - "实时监控内存和磁盘"
+  
+  # 自动化任务类模板
+  automation:
+    backup_files:
+      name: "文件备份"
+      file: "templates/automation/backup_files.ps1"
+      description: "自动备份文件到指定位置"
+      keywords:
+        - "备份"
+        - "backup"
+        - "归档"
+        - "保存"
+      parameters:
+        SOURCE_PATH:
+          type: "string"
+          default: "."
+          description: "源文件夹路径"
+        BACKUP_PATH:
+          type: "string"
+          default: "D:\\Backups"
+          description: "备份目标路径"
+        INCLUDE_SUBFOLDERS:
+          type: "boolean"
+          default: true
+          description: "是否包含子文件夹"
+        COMPRESS:
+          type: "boolean"
+          default: true
+          description: "是否压缩备份"
+        KEEP_VERSIONS:
+          type: "integer"
+          default: 7
+          description: "保留的备份版本数"
+        EXCLUDE_PATTERNS:
+          type: "string"
+          default: ""
+          description: "排除的文件模式（逗号分隔）"
+      examples:
+        - "每天备份文档文件夹到D盘"
+        - "备份桌面文件，保留最近7个版本"
+        - "压缩备份项目文件夹"
+    
+    disk_cleanup:
+      name: "磁盘清理"
+      file: "templates/automation/disk_cleanup.ps1"
+      description: "清理临时文件、缓存、回收站"
+      keywords:
+        - "清理"
+        - "清空"
+        - "删除"
+        - "cleanup"
+        - "垃圾"
+      parameters:
+        CLEAN_TEMP:
+          type: "boolean"
+          default: true
+          description: "清理临时文件"
+        CLEAN_RECYCLE_BIN:
+          type: "boolean"
+          default: false
+          description: "清空回收站"
+        CLEAN_DOWNLOADS:
+          type: "boolean"
+          default: false
+          description: "清理下载文件夹"
+        DAYS_OLD:
+          type: "integer"
+          default: 30
+          description: "清理多少天前的文件"
+        MIN_FILE_SIZE:
+          type: "integer"
+          default: 0
+          description: "最小文件大小（MB）"
+      examples:
+        - "清理30天前的临时文件"
+        - "清空回收站释放空间"
+        - "清理系统垃圾文件"
+
+# 模板匹配规则
+matching_rules:
+  # 关键词权重
+  keyword_weights:
+    exact_match: 10      # 完全匹配
+    partial_match: 5     # 部分匹配
+    category_match: 3    # 分类匹配
+  
+  # 最小匹配分数
+  min_score: 5
+  
+  # 是否启用模糊匹配
+  fuzzy_matching: true
+
+# AI 生成配置
+ai_generation:
+  # 提示词模板
+  prompt_template: |
+    你是一个 PowerShell 脚本专家。请根据用户需求定制以下脚本模板。
+    
+    用户需求：{user_request}
+    
+    脚本模板：
+    {template_content}
+    
+    任务：
+    1. 理解用户的具体需求
+    2. 将模板中的 {{参数}} 占位符替换为合适的值
+    3. 根据需求调整脚本逻辑（如果需要）
+    4. 确保脚本可以直接运行
+    5. 保持代码清晰易读
+    
+    要求：
+    - 参数值必须符合用户需求
+    - 保持 PowerShell 语法正确
+    - 不要删除错误处理代码
+    - 不要删除用户友好的输出信息
+    - 如果用户没有指定某个参数，使用合理的默认值
+    
+    请直接返回完整的 PowerShell 脚本，不要有任何额外的解释：
+  
+  # 生成参数
+  temperature: 0.7
+  max_tokens: 2048
+  
+  # 是否添加生成说明
+  add_generation_comment: true
+  
+  # 生成说明模板
+  comment_template: |
+    # ============================================
+    # 此脚本由 AI PowerShell 智能助手生成
+    # 生成时间: {timestamp}
+    # 用户需求: {user_request}
+    # 基于模板: {template_name}
+    # ============================================
+
+# 脚本保存配置
+script_saving:
+  # 保存目录
+  output_dir: "scripts/generated"
+  
+  # 文件名模板
+  filename_template: "{template_name}_{timestamp}.ps1"
+  
+  # 时间戳格式
+  timestamp_format: "yyyyMMdd_HHmmss"
+  
+  # 是否覆盖已存在的文件
+  overwrite_existing: false
+  
+  # 最大保存数量（0表示不限制）
+  max_saved_scripts: 100

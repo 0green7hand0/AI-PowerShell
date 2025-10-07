@@ -7,11 +7,148 @@
 
 ## [未发布]
 
+### 🎨 自定义模板管理系统 (Custom Template Management)
+
+#### ✨ 新增功能
+- **📝 模板创建**: 交互式创建自定义 PowerShell 脚本模板
+  - 自动识别脚本参数和变量
+  - 智能类型推断 (string, integer, boolean, path)
+  - 参数占位符自动转换 (`{{PARAM_NAME}}`)
+  - 实时语法验证和错误提示
+  
+- **✏️ 模板编辑**: 完整的模板编辑功能
+  - 更新模板元数据（名称、描述、关键词）
+  - 修改参数配置和类型
+  - 更新脚本内容
+  - 自动版本备份
+
+- **🗂️ 分类管理**: 灵活的模板组织系统
+  - 创建自定义分类目录
+  - 移动模板到不同分类
+  - 删除空分类
+  - 系统模板和自定义模板分离
+
+- **📦 导入导出**: 模板分享和迁移
+  - 导出模板为 ZIP 包
+  - 导入模板包
+  - 冲突处理（覆盖/重命名）
+  - 包格式验证
+
+- **🕐 版本控制**: 自动历史记录管理
+  - 编辑时自动创建版本备份
+  - 查看历史版本列表
+  - 恢复到指定版本
+  - 自动清理旧版本
+
+- **🔍 智能搜索**: 增强的模板匹配
+  - 关键词搜索
+  - 自然语言匹配
+  - 中文关键词支持
+  - 自定义模板与系统模板统一搜索
+
+- **🛡️ 安全检查**: 模板安全验证
+  - PowerShell 语法验证
+  - 危险命令检测
+  - 路径遍历防护
+  - 网络访问检测
+
+- **🧪 模板测试**: 预览和测试功能
+  - 使用示例参数生成测试脚本
+  - 脚本预览
+  - 参数验证测试
+
+#### 🔧 命令行工具
+新增完整的模板管理 CLI：
+
+```bash
+# 创建模板
+python src/main.py template create
+
+# 列出模板
+python src/main.py template list [--custom-only]
+
+# 查看模板详情
+python src/main.py template info <template_id>
+
+# 编辑模板
+python src/main.py template edit <template_id>
+
+# 删除模板
+python src/main.py template delete <template_id>
+
+# 导出模板
+python src/main.py template export <template_id> -o <output.zip>
+
+# 导入模板
+python src/main.py template import <package.zip> [--overwrite]
+
+# 查看历史版本
+python src/main.py template history <template_id>
+
+# 恢复版本
+python src/main.py template restore <template_id> <version>
+
+# 测试模板
+python src/main.py template test <template_id>
+```
+
+#### 📚 文档和示例
+- **[自定义模板快速入门](docs/template-quick-start.md)**: 5分钟快速上手指南
+- **[自定义模板完整指南](docs/custom-template-guide.md)**: 深入的用户指南
+  - 详细的创建步骤
+  - 参数配置最佳实践
+  - 4个常见场景示例
+  - 故障排除指南
+- **[模板CLI参考](docs/template-cli-reference.md)**: 完整的命令行参考
+- **[安全检查指南](docs/security-checker-guide.md)**: 安全机制说明
+- **示例模板**: 3个实用的示例模板
+  - `simple_backup.ps1`: 文件备份工具
+  - `log_analyzer.ps1`: 日志分析工具
+  - `user_report.ps1`: 用户活动报告生成器
+
+#### 🏗️ 技术实现
+新增核心模块：
+
+- **CustomTemplateManager**: 自定义模板管理器
+- **TemplateCreator**: 模板创建器（参数识别、占位符转换）
+- **TemplateEditor**: 模板编辑器
+- **TemplateValidator**: 模板验证器（语法检查、参数验证）
+- **TemplateExporter**: 导入导出器
+- **TemplateVersionControl**: 版本控制管理器
+- **ConfigUpdater**: 配置文件自动更新器
+- **SecurityChecker**: 安全检查器
+
+#### 🧪 测试覆盖
+- 单元测试：8个测试模块，100+ 测试用例
+- 集成测试：完整的模板创建到使用流程
+- 端到端测试：真实用户场景验证
+- 测试覆盖率：85%+
+
+#### 📊 性能优化
+- 模板加载缓存机制
+- 延迟加载历史版本
+- 批量操作支持
+- 配置文件增量更新
+
+#### 🎯 用户体验
+- 交互式创建流程，友好的用户引导
+- 彩色输出和图标，清晰的视觉反馈
+- 详细的错误提示和修复建议
+- 完整的帮助文档和示例
+
+#### 🔄 与现有系统集成
+- 与 AI 引擎无缝集成
+- 与模板引擎统一接口
+- 与脚本生成器协同工作
+- 保持向后兼容性
+
 ### 计划功能
 - 🌐 Web 界面支持
 - 📱 移动端适配
 - 🔌 插件系统
 - 🤖 更多 AI 模型支持
+- 🏪 模板市场（分享和下载社区模板）
+- 📊 模板使用统计和推荐
 
 ## [2.0.0] - 2025-01-20
 
