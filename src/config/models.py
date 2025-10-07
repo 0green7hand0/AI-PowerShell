@@ -19,6 +19,14 @@ class AIConfig(BaseModel):
         default="llama",
         description="AI 模型名称"
     )
+    ollama_url: str = Field(
+        default="http://localhost:11434",
+        description="Ollama 服务地址"
+    )
+    use_ai_provider: bool = Field(
+        default=False,
+        description="是否启用 AI 提供商"
+    )
     temperature: float = Field(
         default=0.7,
         ge=0.0,
@@ -45,7 +53,7 @@ class AIConfig(BaseModel):
     @classmethod
     def validate_provider(cls, v: str) -> str:
         """验证 AI 提供商"""
-        allowed = ['local', 'ollama', 'openai', 'azure']
+        allowed = ['local', 'ollama', 'openai', 'azure', 'mock']
         if v not in allowed:
             raise ValueError(f"provider 必须是以下之一: {', '.join(allowed)}")
         return v

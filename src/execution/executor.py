@@ -31,20 +31,20 @@ class CommandExecutor(ExecutorInterface):
     自动检测可用的 PowerShell 版本（pwsh 或 powershell）。
     """
     
-    def __init__(self, encoding: str = "utf-8", default_timeout: int = 30):
+    def __init__(self, config: Optional[dict] = None):
         """初始化执行器
         
         Args:
-            encoding: 输出编码，Windows 默认使用 gbk，其他平台使用 utf-8
-            default_timeout: 默认超时时间（秒）
+            config: 配置字典，包含 encoding 和 timeout 等配置项
         """
-        self.encoding = encoding
-        self.default_timeout = default_timeout
+        config = config or {}
+        self.encoding = config.get('encoding', 'utf-8')
+        self.default_timeout = config.get('timeout', 30)
         self.powershell_cmd = self._detect_powershell()
         self.platform_name = platform.system()
         
         # Windows 平台自动使用 gbk 编码
-        if self.platform_name == "Windows" and encoding == "utf-8":
+        if self.platform_name == "Windows" and self.encoding == "utf-8":
             self.encoding = "gbk"
     
     def _detect_powershell(self) -> Optional[str]:

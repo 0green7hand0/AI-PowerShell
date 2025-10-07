@@ -6,8 +6,8 @@ PyYAML>=6.0.1
 # MCP Framework
 fastmcp>=0.1.0
 
-# AI/ML Libraries (for future tasks)
-# Note: These will be installed as needed in later tasks
+# AI/ML Libraries
+ollama>=0.1.0
 # llama-cpp-python>=0.2.0
 # transformers>=4.30.0
 # torch>=2.0.0

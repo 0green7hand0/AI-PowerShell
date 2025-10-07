@@ -48,26 +48,38 @@ class AIProvider(ABC):
         Returns:
             str: 构建的提示词
         """
-        prompt = f"""你是一个 PowerShell 命令助手。请将以下中文描述转换为 PowerShell 命令。
+        prompt = f"""你是一个 PowerShell 命令专家。请将中文描述转换为标准的 PowerShell 命令。
 
 用户输入: {text}
 
-要求:
-1. 只返回 PowerShell 命令，不要有其他解释
-2. 命令应该是可以直接执行的
-3. 如果需要参数，使用合理的默认值
-4. 优先使用 Get-* 等只读命令
+重要规则:
+1. 只返回一行 PowerShell 命令，不要有任何解释或说明
+2. 必须使用真实存在的 PowerShell cmdlet
+3. 命令必须可以直接在 Windows PowerShell 中执行
+4. 不要编造不存在的命令
+
+常用 PowerShell 命令参考:
+- 查看进程: Get-Process
+- 查看内存: Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 10
+- 查看服务: Get-Service
+- 查看文件: Get-ChildItem
+- 查看时间: Get-Date
+- 查看系统信息: Get-ComputerInfo
+- 查看磁盘: Get-PSDrive
+- 查看网络: Get-NetAdapter
+- 测试连接: Test-NetConnection
 
 """
         
         # 添加历史上下文
         if context.command_history:
             recent = context.get_recent_commands(3)
-            prompt += f"\n最近执行的命令:\n"
+            prompt += f"最近执行的命令:\n"
             for cmd in recent:
                 prompt += f"- {cmd}\n"
+            prompt += "\n"
         
-        prompt += "\nPowerShell 命令:"
+        prompt += "请直接返回 PowerShell 命令:"
         
         return prompt
     

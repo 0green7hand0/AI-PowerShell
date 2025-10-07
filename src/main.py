@@ -339,7 +339,7 @@ class PowerShellAssistant:
                 print(f"\n❌ 发生错误: {str(e)}")
         
         # 结束会话
-        self.context_manager.end_session()
+        self.context_manager.terminate_session()
     
     def _show_help(self):
         """显示帮助信息"""

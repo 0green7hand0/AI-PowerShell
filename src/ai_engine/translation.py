@@ -32,7 +32,7 @@ class NaturalLanguageTranslator:
         """懒加载 AI 提供商"""
         if self._ai_provider is None and self.config.get('use_ai_provider', False):
             from .providers import get_provider
-            provider_name = self.config.get('ai_provider', 'local')
+            provider_name = self.config.get('provider', 'local')
             self._ai_provider = get_provider(provider_name, self.config)
         return self._ai_provider
     
