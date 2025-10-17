@@ -1,0 +1,27 @@
+# GIFs Directory
+
+This directory contains animated GIFs demonstrating key features.
+
+## Guidelines
+
+- Follow the GIF specifications in DEMO_GUIDE.md
+- Keep file sizes small (< 5MB)
+- Use 10-15 FPS for smooth playback
+- Duration: 3-10 seconds
+
+## Required GIFs
+
+- command-translation.gif - Command translation process
+- command-execution.gif - Command execution process
+- history-search.gif - History search functionality
+- template-usage.gif - Template usage workflow
+- theme-toggle.gif - Theme switching animation
+- responsive-layout.gif - Responsive layout demonstration
+
+## Optimization
+
+Use tools like gifsicle or gifski to optimize GIF files:
+
+```bash
+gifsicle -O3 --colors 256 input.gif -o output.gif
+```

@@ -1,0 +1,378 @@
+/**
+ * Code Highlighting Themes
+ * 
+ * Custom themes for Highlight.js that adapt to light/dark mode
+ * Based on VS Code Light and VS Code Dark themes
+ * 
+ * Requirements: 6.6, 9.9
+ */
+
+/* ============================================
+   Light Theme (VS Code Light)
+   ============================================ */
+:root {
+  /* Base colors */
+  --hljs-bg: #ffffff;
+  --hljs-fg: #24292e;
+  
+  /* Syntax colors */
+  --hljs-comment: #6a737d;
+  --hljs-keyword: #d73a49;
+  --hljs-string: #032f62;
+  --hljs-number: #005cc5;
+  --hljs-function: #6f42c1;
+  --hljs-variable: #e36209;
+  --hljs-class: #22863a;
+  --hljs-operator: #d73a49;
+  --hljs-punctuation: #24292e;
+  --hljs-attribute: #005cc5;
+  --hljs-tag: #22863a;
+  --hljs-property: #005cc5;
+  --hljs-constant: #005cc5;
+  --hljs-type: #6f42c1;
+  --hljs-builtin: #005cc5;
+  --hljs-regexp: #032f62;
+  --hljs-symbol: #e36209;
+  --hljs-meta: #6a737d;
+  --hljs-deletion: #b31d28;
+  --hljs-addition: #22863a;
+  --hljs-emphasis: #24292e;
+  --hljs-strong: #24292e;
+  --hljs-link: #005cc5;
+  
+  /* UI colors */
+  --hljs-line-number-bg: #f6f8fa;
+  --hljs-line-number-fg: #6a737d;
+  --hljs-header-bg: #f6f8fa;
+  --hljs-header-border: #e1e4e8;
+  --hljs-scrollbar-bg: #f6f8fa;
+  --hljs-scrollbar-thumb: #d1d5da;
+}
+
+/* ============================================
+   Dark Theme (VS Code Dark)
+   ============================================ */
+[data-theme='dark'] {
+  /* Base colors */
+  --hljs-bg: #1e1e1e;
+  --hljs-fg: #d4d4d4;
+  
+  /* Syntax colors */
+  --hljs-comment: #6a9955;
+  --hljs-keyword: #569cd6;
+  --hljs-string: #ce9178;
+  --hljs-number: #b5cea8;
+  --hljs-function: #dcdcaa;
+  --hljs-variable: #9cdcfe;
+  --hljs-class: #4ec9b0;
+  --hljs-operator: #d4d4d4;
+  --hljs-punctuation: #d4d4d4;
+  --hljs-attribute: #9cdcfe;
+  --hljs-tag: #569cd6;
+  --hljs-property: #9cdcfe;
+  --hljs-constant: #4fc1ff;
+  --hljs-type: #4ec9b0;
+  --hljs-builtin: #4ec9b0;
+  --hljs-regexp: #d16969;
+  --hljs-symbol: #dcdcaa;
+  --hljs-meta: #569cd6;
+  --hljs-deletion: #f48771;
+  --hljs-addition: #b5cea8;
+  --hljs-emphasis: #d4d4d4;
+  --hljs-strong: #d4d4d4;
+  --hljs-link: #3794ff;
+  
+  /* UI colors */
+  --hljs-line-number-bg: #252526;
+  --hljs-line-number-fg: #858585;
+  --hljs-header-bg: #252526;
+  --hljs-header-border: #3e3e42;
+  --hljs-scrollbar-bg: #1e1e1e;
+  --hljs-scrollbar-thumb: #424242;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+  background: var(--hljs-bg);
+  color: var(--hljs-fg);
+}
+
+/* ============================================
+   Syntax Highlighting
+   ============================================ */
+
+/* Comments */
+.hljs-comment,
+.hljs-quote {
+  color: var(--hljs-comment);
+  font-style: italic;
+}
+
+/* Keywords */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-link {
+  color: var(--hljs-keyword);
+  font-weight: 500;
+}
+
+/* Strings */
+.hljs-string,
+.hljs-title,
+.hljs-name,
+.hljs-type,
+.hljs-attribute,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-tag,
+.hljs-template-variable {
+  color: var(--hljs-string);
+}
+
+/* Numbers */
+.hljs-number,
+.hljs-meta .hljs-string {
+  color: var(--hljs-number);
+}
+
+/* Functions */
+.hljs-function,
+.hljs-title.function_,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-params {
+  color: var(--hljs-function);
+}
+
+/* Variables */
+.hljs-variable,
+.hljs-attr {
+  color: var(--hljs-variable);
+}
+
+/* Classes and Types */
+.hljs-class,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: var(--hljs-class);
+}
+
+/* Operators */
+.hljs-operator,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: var(--hljs-operator);
+}
+
+/* Tags */
+.hljs-tag,
+.hljs-selector-id {
+  color: var(--hljs-tag);
+}
+
+/* Properties */
+.hljs-property,
+.hljs-attribute {
+  color: var(--hljs-property);
+}
+
+/* Constants */
+.hljs-constant,
+.hljs-meta-keyword {
+  color: var(--hljs-constant);
+}
+
+/* Regular Expressions */
+.hljs-regexp,
+.hljs-subst {
+  color: var(--hljs-regexp);
+}
+
+/* Meta */
+.hljs-meta {
+  color: var(--hljs-meta);
+}
+
+/* Deletion */
+.hljs-deletion {
+  color: var(--hljs-deletion);
+}
+
+/* Addition */
+.hljs-addition {
+  color: var(--hljs-addition);
+}
+
+/* Emphasis */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/* Strong */
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Links */
+.hljs-link {
+  text-decoration: underline;
+}
+
+/* ============================================
+   PowerShell Specific
+   ============================================ */
+.hljs-powershell .hljs-built_in {
+  color: var(--hljs-builtin);
+}
+
+.hljs-powershell .hljs-variable {
+  color: var(--hljs-variable);
+}
+
+.hljs-powershell .hljs-operator {
+  color: var(--hljs-operator);
+}
+
+.hljs-powershell .hljs-literal {
+  color: var(--hljs-keyword);
+}
+
+/* ============================================
+   Bash/Shell Specific
+   ============================================ */
+.hljs-bash .hljs-built_in,
+.hljs-shell .hljs-built_in {
+  color: var(--hljs-builtin);
+}
+
+.hljs-bash .hljs-variable,
+.hljs-shell .hljs-variable {
+  color: var(--hljs-variable);
+}
+
+/* ============================================
+   JavaScript Specific
+   ============================================ */
+.hljs-javascript .hljs-keyword {
+  color: var(--hljs-keyword);
+}
+
+.hljs-javascript .hljs-function {
+  color: var(--hljs-function);
+}
+
+.hljs-javascript .hljs-class {
+  color: var(--hljs-class);
+}
+
+/* ============================================
+   Python Specific
+   ============================================ */
+.hljs-python .hljs-keyword {
+  color: var(--hljs-keyword);
+}
+
+.hljs-python .hljs-function {
+  color: var(--hljs-function);
+}
+
+.hljs-python .hljs-class {
+  color: var(--hljs-class);
+}
+
+.hljs-python .hljs-built_in {
+  color: var(--hljs-builtin);
+}
+
+/* ============================================
+   JSON Specific
+   ============================================ */
+.hljs-json .hljs-attr {
+  color: var(--hljs-property);
+}
+
+.hljs-json .hljs-string {
+  color: var(--hljs-string);
+}
+
+.hljs-json .hljs-number {
+  color: var(--hljs-number);
+}
+
+.hljs-json .hljs-literal {
+  color: var(--hljs-keyword);
+}
+
+/* ============================================
+   YAML Specific
+   ============================================ */
+.hljs-yaml .hljs-attr {
+  color: var(--hljs-property);
+}
+
+.hljs-yaml .hljs-string {
+  color: var(--hljs-string);
+}
+
+.hljs-yaml .hljs-number {
+  color: var(--hljs-number);
+}
+
+/* ============================================
+   Markdown Specific
+   ============================================ */
+.hljs-markdown .hljs-section {
+  color: var(--hljs-keyword);
+  font-weight: bold;
+}
+
+.hljs-markdown .hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-markdown .hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-markdown .hljs-link {
+  color: var(--hljs-link);
+  text-decoration: underline;
+}
+
+.hljs-markdown .hljs-code {
+  color: var(--hljs-string);
+  background-color: var(--hljs-line-number-bg);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* ============================================
+   Inline Code
+   ============================================ */
+code.hljs {
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.hljs::selection,
+.hljs *::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme='dark'] .hljs::selection,
+[data-theme='dark'] .hljs *::selection {
+  background-color: rgba(96, 165, 250, 0.3);
+}

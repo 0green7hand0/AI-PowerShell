@@ -1,0 +1,27 @@
+{
+  "template_id": "参数测试",
+  "version_number": 13,
+  "timestamp": "2025-10-07T22:14:45.954930",
+  "content": "\nparam(\n    [string]$Path = {{Path}}\n)\nWrite-Host $Path\n",
+  "config": {
+    "name": "参数测试",
+    "description": "测试",
+    "keywords": [],
+    "category": "test",
+    "parameters": {
+      "Path": {
+        "type": "string",
+        "default": "\"C:\\temp\"",
+        "description": "",
+        "required": false
+      }
+    },
+    "is_custom": true,
+    "created_at": "2025-10-07T22:14:45.820294",
+    "updated_at": "2025-10-07T22:14:45.820296",
+    "author": "user",
+    "version": "1.0.0",
+    "tags": []
+  },
+  "change_description": "参数配置更新"
+}

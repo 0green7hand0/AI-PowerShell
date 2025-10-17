@@ -1,0 +1,748 @@
+openapi: 3.0.3
+info:
+  title: AI PowerShell Assistant Web API
+  description: RESTful API for AI PowerShell Assistant Web UI
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Command
+    description: Command translation and execution
+  - name: History
+    description: Command history management
+  - name: Template
+    description: Template management
+  - name: Config
+    description: Configuration management
+  - name: Logs
+    description: System logs
+  - name: Auth
+    description: Authentication
+
+paths:
+  /api/command/translate:
+    post:
+      tags:
+        - Command
+      summary: Translate natural language to PowerShell command
+      description: Translates user input in natural language to PowerShell command with security analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslateRequest'
+      responses:
+        '200':
+          description: Successful translation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslateResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/command/execute:
+    post:
+      tags:
+        - Command
+      summary: Execute PowerShell command
+      description: Executes a PowerShell command and returns the output
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteRequest'
+      responses:
+        '200':
+          description: Command executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteResponse'
+        '400':
+          description: Invalid request
+        '403':
+          description: Command blocked by security
+        '500':
+          description: Execution failed
+
+  /api/history:
+    get:
+      tags:
+        - History
+      summary: Get command history
+      description: Retrieves paginated command history with optional filtering
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [success, failed, all]
+      responses:
+        '200':
+          description: History retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryListResponse'
+
+  /api/history/{id}:
+    get:
+      tags:
+        - History
+      summary: Get history item details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: History item retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryItem'
+        '404':
+          description: History item not found
+
+    delete:
+      tags:
+        - History
+      summary: Delete history item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: History item deleted
+        '404':
+          description: History item not found
+
+  /api/templates:
+    get:
+      tags:
+        - Template
+      summary: Get template list
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Templates retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Template'
+
+    post:
+      tags:
+        - Template
+      summary: Create new template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateCreate'
+      responses:
+        '201':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '400':
+          description: Invalid template data
+
+  /api/templates/{id}:
+    get:
+      tags:
+        - Template
+      summary: Get template details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Template retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '404':
+          description: Template not found
+
+    put:
+      tags:
+        - Template
+      summary: Update template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateUpdate'
+      responses:
+        '200':
+          description: Template updated
+        '404':
+          description: Template not found
+
+    delete:
+      tags:
+        - Template
+      summary: Delete template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Template deleted
+        '404':
+          description: Template not found
+
+  /api/templates/{id}/generate:
+    post:
+      tags:
+        - Template
+      summary: Generate script from template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Script generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      script:
+                        type: string
+
+  /api/config:
+    get:
+      tags:
+        - Config
+      summary: Get configuration
+      responses:
+        '200':
+          description: Configuration retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+
+    put:
+      tags:
+        - Config
+      summary: Update configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUpdate'
+      responses:
+        '200':
+          description: Configuration updated
+        '400':
+          description: Invalid configuration
+
+  /api/logs:
+    get:
+      tags:
+        - Logs
+      summary: Get system logs
+      parameters:
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [DEBUG, INFO, WARNING, ERROR]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Logs retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LogEntry'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      user:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: User logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+
+components:
+  schemas:
+    TranslateRequest:
+      type: object
+      required:
+        - input
+      properties:
+        input:
+          type: string
+          description: Natural language input
+          example: "显示CPU使用率最高的5个进程"
+        context:
+          type: object
+          properties:
+            sessionId:
+              type: string
+            history:
+              type: array
+              items:
+                type: object
+
+    TranslateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            command:
+              type: string
+              example: "Get-Process | Sort-Object CPU -Descending | Select-Object -First 5"
+            confidence:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 1
+              example: 0.95
+            explanation:
+              type: string
+              example: "获取所有进程并按CPU使用率降序排序，选择前5个"
+            security:
+              $ref: '#/components/schemas/SecurityInfo'
+
+    SecurityInfo:
+      type: object
+      properties:
+        level:
+          type: string
+          enum: [safe, low, medium, high, critical]
+          example: "safe"
+        warnings:
+          type: array
+          items:
+            type: string
+        requiresConfirmation:
+          type: boolean
+        requiresElevation:
+          type: boolean
+
+    ExecuteRequest:
+      type: object
+      required:
+        - command
+        - sessionId
+      properties:
+        command:
+          type: string
+          example: "Get-Date"
+        sessionId:
+          type: string
+        timeout:
+          type: integer
+          default: 30
+
+    ExecuteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            output:
+              type: string
+              nullable: true
+            error:
+              type: string
+              nullable: true
+            executionTime:
+              type: number
+              format: float
+            returnCode:
+              type: integer
+
+    HistoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+        userInput:
+          type: string
+        command:
+          type: string
+        success:
+          type: boolean
+        output:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        executionTime:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    HistoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/HistoryItem'
+            total:
+              type: integer
+            page:
+              type: integer
+            limit:
+              type: integer
+
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        scriptContent:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateParameter'
+        keywords:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TemplateParameter:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [string, number, boolean, select]
+        required:
+          type: boolean
+        default:
+          nullable: true
+        options:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+
+    TemplateCreate:
+      type: object
+      required:
+        - name
+        - category
+        - scriptContent
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        scriptContent:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateParameter'
+        keywords:
+          type: array
+          items:
+            type: string
+
+    TemplateUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        scriptContent:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateParameter'
+        keywords:
+          type: array
+          items:
+            type: string
+
+    Config:
+      type: object
+      properties:
+        ai:
+          type: object
+          properties:
+            provider:
+              type: string
+            modelName:
+              type: string
+            temperature:
+              type: number
+            maxTokens:
+              type: integer
+        security:
+          type: object
+          properties:
+            whitelistMode:
+              type: boolean
+            requireConfirmation:
+              type: boolean
+            dangerousPatterns:
+              type: array
+              items:
+                type: string
+        execution:
+          type: object
+          properties:
+            timeout:
+              type: integer
+            shellType:
+              type: string
+            encoding:
+              type: string
+        general:
+          type: object
+          properties:
+            language:
+              type: string
+            theme:
+              type: string
+            logLevel:
+              type: string
+
+    ConfigUpdate:
+      type: object
+      properties:
+        ai:
+          type: object
+        security:
+          type: object
+        execution:
+          type: object
+        general:
+          type: object
+
+    LogEntry:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        level:
+          type: string
+          enum: [DEBUG, INFO, WARNING, ERROR]
+        message:
+          type: string
+        module:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

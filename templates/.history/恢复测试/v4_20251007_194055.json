@@ -1,8 +1,0 @@
-{
-  "template_id": "恢复测试",
-  "version_number": 4,
-  "timestamp": "2025-10-07T19:40:55.808905",
-  "content": "\n# 文件备份脚本\nparam(\n    [Parameter(Mandatory=$true)]\n    [string]$SourcePath,\n    \n    [Parameter(Mandatory=$false)]\n    [string]$BackupPath = {{BackupPath}},\n    \n    [int]$RetentionDays = {{RetentionDays}}\n)\n\nWrite-Host \"开始备份: $SourcePath\"\nWrite-Host \"备份目标: $BackupPath\"\nWrite-Host \"保留天数: $RetentionDays\"\n\n# 创建备份目录\nif (-not (Test-Path $BackupPath)) {\n    New-Item -ItemType Directory -Path $BackupPath | Out-Null\n}\n\n# 执行备份\n$timestamp = Get-Date -Format \"yyyyMMdd_HHmmss\"\n$backupFile = Join-Path $BackupPath \"backup_$timestamp.zip\"\n\nCompress-Archive -Path $SourcePath -DestinationPath $backupFile\n\nWrite-Host \"备份完成: $backupFile\"\n",
-  "config": {},
-  "change_description": "恢复前的自动备份 (恢复到 v1)"
-}

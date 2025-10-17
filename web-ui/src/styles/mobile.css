@@ -1,0 +1,304 @@
+/**
+ * Mobile-specific styles and optimizations
+ * 
+ * Provides touch-friendly sizes and mobile-optimized layouts
+ * Requirements: 6.4
+ */
+
+/* Touch-friendly button sizes */
+@media (max-width: 768px) {
+  /* Minimum touch target size: 44x44px (iOS) / 48x48px (Android) */
+  .el-button {
+    min-height: 44px;
+    padding: 12px 20px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .el-button--small {
+    min-height: 40px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .el-button--large {
+    min-height: 48px;
+    padding: 14px 24px;
+    font-size: 18px;
+  }
+
+  /* Touch-friendly input fields */
+  .el-input__inner,
+  .el-textarea__inner {
+    min-height: 44px;
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 12px 16px;
+  }
+
+  .el-input--small .el-input__inner {
+    min-height: 40px;
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .el-input--large .el-input__inner {
+    min-height: 48px;
+    font-size: 18px;
+    padding: 14px 18px;
+  }
+
+  /* Touch-friendly select dropdowns */
+  .el-select .el-input__inner {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* Touch-friendly checkboxes and radios */
+  .el-checkbox__inner,
+  .el-radio__inner {
+    width: 20px;
+    height: 20px;
+  }
+
+  .el-checkbox__label,
+  .el-radio__label {
+    font-size: 16px;
+    padding-left: 12px;
+  }
+
+  /* Touch-friendly switches */
+  .el-switch {
+    height: 28px;
+  }
+
+  .el-switch__core {
+    min-width: 48px;
+    height: 28px;
+  }
+
+  /* Touch-friendly icon buttons */
+  .el-button.is-circle {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Touch-friendly tabs */
+  .el-tabs__item {
+    min-height: 44px;
+    line-height: 44px;
+    padding: 0 20px;
+    font-size: 16px;
+  }
+
+  /* Touch-friendly cards */
+  .el-card {
+    border-radius: 12px;
+  }
+
+  .el-card__header {
+    padding: 16px;
+  }
+
+  .el-card__body {
+    padding: 16px;
+  }
+
+  /* Touch-friendly dialogs */
+  .el-dialog {
+    width: 90% !important;
+    margin: 5vh auto !important;
+  }
+
+  .el-dialog__header {
+    padding: 20px;
+  }
+
+  .el-dialog__body {
+    padding: 20px;
+  }
+
+  .el-dialog__footer {
+    padding: 16px 20px;
+  }
+
+  /* Touch-friendly message boxes */
+  .el-message-box {
+    width: 90%;
+    max-width: 420px;
+  }
+
+  /* Optimize form layouts */
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+
+  .el-form-item__label {
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 8px;
+  }
+
+  /* Optimize table layouts */
+  .el-table {
+    font-size: 14px;
+  }
+
+  .el-table th,
+  .el-table td {
+    padding: 12px 8px;
+  }
+
+  /* Prevent text selection on touch */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbars on mobile for cleaner look */
+  .hide-scrollbar-mobile {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar-mobile::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .el-button {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  .el-button--small {
+    min-height: 40px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .el-input__inner,
+  .el-textarea__inner {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .el-dialog {
+    width: 95% !important;
+  }
+
+  .el-dialog__header,
+  .el-dialog__body {
+    padding: 16px;
+  }
+
+  .el-form-item__label {
+    font-size: 15px;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .el-dialog {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .el-dialog__body {
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix iOS input zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* Fix iOS safe area */
+  @media (max-width: 768px) {
+    .page-content {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 64px + var(--space-3));
+    }
+
+    .bottom-nav {
+      padding-bottom: env(safe-area-inset-bottom);
+      height: calc(64px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* Android specific fixes */
+@media (max-width: 768px) {
+  /* Improve tap response */
+  button,
+  a,
+  .clickable {
+    touch-action: manipulation;
+  }
+
+  /* Prevent double-tap zoom */
+  * {
+    touch-action: pan-x pan-y;
+  }
+
+  input,
+  textarea,
+  select {
+    touch-action: manipulation;
+  }
+}
+
+/* Virtual keyboard handling */
+@media (max-width: 768px) {
+  /* Adjust layout when keyboard is visible */
+  .keyboard-visible .page-content {
+    padding-bottom: 0;
+  }
+
+  .keyboard-visible .bottom-nav {
+    display: none;
+  }
+
+  /* Ensure input is visible when keyboard appears */
+  .input-focused {
+    position: relative;
+    z-index: 1000;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Larger focus indicators */
+  *:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Better contrast for touch targets */
+  button:active,
+  a:active,
+  .clickable:active {
+    opacity: 0.7;
+  }
+}

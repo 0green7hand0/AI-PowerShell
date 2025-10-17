@@ -1,0 +1,25 @@
+# Videos Directory
+
+This directory contains demo videos of the Web UI.
+
+## Guidelines
+
+- Follow the video specifications in DEMO_GUIDE.md
+- Use MP4 format (H.264 codec)
+- Keep file sizes reasonable (< 50MB per video)
+- Add subtitles if possible
+
+## Required Videos
+
+- quick-start.mp4 - Quick start guide (2-3 minutes)
+- core-features.mp4 - Core features demo (5-7 minutes)
+- advanced-features.mp4 - Advanced features demo (5-7 minutes)
+
+## Video Hosting
+
+For large video files, consider hosting on:
+- YouTube
+- Vimeo
+- GitHub Releases
+
+And link to them in the documentation.

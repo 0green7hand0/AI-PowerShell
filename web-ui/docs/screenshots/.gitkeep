@@ -1,0 +1,28 @@
+# Screenshots Directory
+
+This directory contains screenshots of the Web UI for documentation purposes.
+
+## Guidelines
+
+- Follow the naming conventions in DEMO_GUIDE.md
+- Use PNG format for screenshots
+- Optimize file sizes before committing
+- Update screenshots when UI changes significantly
+
+## Required Screenshots
+
+- main-interface-light.png
+- main-interface-dark.png
+- chat-translation.png
+- chat-execution.png
+- chat-security-warning.png
+- history-list.png
+- history-detail.png
+- template-list.png
+- template-use.png
+- template-create.png
+- logs-view.png
+- settings-ai.png
+- settings-security.png
+- mobile-chat.png
+- tablet-view.png
