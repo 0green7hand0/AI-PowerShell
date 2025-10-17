@@ -30,6 +30,8 @@
 - **本地 AI 处理**: 注重隐私的本地模型执行 - 不向外部服务发送数据
 - **完整日志系统**: 结构化日志记录、审计跟踪和性能监控
 - **灵活配置管理**: 基于 YAML 的配置系统，支持多层级配置
+- **现代化 CLI 界面**: 彩色输出、进度指示、交互式输入和智能提示
+- **增强的用户体验**: 友好的错误提示、自动补全和命令历史记录
 
 ## 项目结构
 
@@ -44,6 +46,7 @@ AI-PowerShell/
 │   ├── log_engine/        # 日志引擎模块
 │   ├── storage/           # 存储引擎模块
 │   ├── context/           # 上下文管理模块
+│   ├── ui/                # UI 系统模块
 │   └── main.py            # 主入口文件
 ├── tests/                 # 测试目录
 │   ├── ai_engine/         # AI 引擎测试
@@ -55,7 +58,9 @@ AI-PowerShell/
 │   ├── context/           # 上下文管理测试
 │   └── integration/       # 集成测试
 ├── config/                # 配置文件目录
-│   └── default.yaml       # 默认配置文件
+│   ├── default.yaml       # 默认配置文件
+│   ├── templates.yaml     # 模板配置文件
+│   └── ui.yaml            # UI 配置文件
 ├── docs/                  # 文档目录
 │   ├── architecture.md    # 架构文档
 │   ├── developer-guide.md # 开发者指南
@@ -152,6 +157,9 @@ python src/main.py template import template.zip
 
 ### 📖 用户文档
 - **[快速开始指南](快速开始.md)** - 快速上手使用
+- **[CLI UI 系统指南](docs/ui-system-guide.md)** - 现代化用户界面使用说明
+- **[进度管理器指南](docs/progress-manager-guide.md)** - 进度指示和任务管理
+- **[启动体验指南](docs/startup-experience-guide.md)** - 首次启动和系统检查
 - **[自定义模板快速入门](docs/template-quick-start.md)** - 5分钟创建第一个模板
 - **[自定义模板完整指南](docs/custom-template-guide.md)** - 深入了解模板系统
 - **[模板CLI参考](docs/template-cli-reference.md)** - 命令行工具完整参考
@@ -179,6 +187,7 @@ python src/main.py template import template.zip
 - **日志引擎** (`log_engine/`): 结构化日志和审计跟踪
 - **存储引擎** (`storage/`): 数据持久化和历史记录
 - **上下文管理** (`context/`): 会话管理和上下文维护
+- **UI 系统** (`ui/`): 现代化 CLI 界面、进度管理和交互式输入
 
 详细架构说明请参考 [架构文档](docs/architecture.md)
 

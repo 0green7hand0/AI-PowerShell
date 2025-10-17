@@ -37,7 +37,8 @@ class TemplateEngine:
     def process_request(
         self,
         user_input: str,
-        use_ai: bool = True
+        use_ai: bool = True,
+        progress_callback=None
     ) -> Optional[GeneratedScript]:
         """
         处理用户请求，生成脚本
@@ -45,17 +46,22 @@ class TemplateEngine:
         Args:
             user_input: 用户输入的文本
             use_ai: 是否使用AI生成（如果为False，使用简单替换）
+            progress_callback: 进度回调函数，接收 (step, total, description) 参数
             
         Returns:
             生成的脚本对象，如果无法处理则返回None
         """
         try:
             # 1. 识别意图
+            if progress_callback:
+                progress_callback(1, 3, "识别意图...")
             print(f"正在识别意图...")
             intent = self.intent_recognizer.recognize(user_input)
             print(f"✓ 识别结果: {intent}")
             
             # 2. 匹配模板
+            if progress_callback:
+                progress_callback(2, 3, "匹配模板...")
             print(f"正在匹配模板...")
             template_match = self.template_matcher.match(intent)
             
@@ -66,6 +72,8 @@ class TemplateEngine:
             print(f"✓ 匹配到模板: {template_match.template.name} (分数: {template_match.score:.2f})")
             
             # 3. 生成脚本
+            if progress_callback:
+                progress_callback(3, 3, "生成脚本...")
             print(f"正在生成脚本...")
             generated_script = self.script_generator.generate(
                 template_match,

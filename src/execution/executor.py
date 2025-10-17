@@ -92,12 +92,18 @@ class CommandExecutor(ExecutorInterface):
         """
         return self.powershell_cmd is not None
     
-    def execute(self, command: str, timeout: Optional[int] = None) -> ExecutionResult:
+    def execute(
+        self, 
+        command: str, 
+        timeout: Optional[int] = None,
+        progress_callback=None
+    ) -> ExecutionResult:
         """执行 PowerShell 命令（同步）
         
         Args:
             command: 要执行的 PowerShell 命令
             timeout: 超时时间（秒），如果为 None 则使用默认超时时间
+            progress_callback: 进度回调函数，接收 (description) 参数
             
         Returns:
             ExecutionResult: 包含执行结果的对象
@@ -122,9 +128,15 @@ class CommandExecutor(ExecutorInterface):
         
         try:
             # 构建命令
+            if progress_callback:
+                progress_callback("准备执行命令...")
+            
             full_cmd = [self.powershell_cmd, '-Command', command]
             
             # 执行命令
+            if progress_callback:
+                progress_callback("执行 PowerShell 命令...")
+            
             result = subprocess.run(
                 full_cmd,
                 capture_output=True,
@@ -135,6 +147,9 @@ class CommandExecutor(ExecutorInterface):
             )
             
             execution_time = time.time() - start_time
+            
+            if progress_callback:
+                progress_callback("命令执行完成")
             
             return ExecutionResult(
                 success=result.returncode == 0,

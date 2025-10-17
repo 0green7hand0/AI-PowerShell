@@ -1,0 +1,75 @@
+# UI 配置文件
+# 控制 CLI 用户界面的外观和行为
+
+ui:
+  # 颜色设置
+  colors:
+    enabled: true
+    theme: "default"  # 可选: default, dark, light, minimal
+  
+  # 图标设置
+  icons:
+    enabled: true
+    style: "emoji"  # 可选: emoji, ascii, unicode, none
+  
+  # 进度指示器设置
+  progress:
+    enabled: true
+    animations: true
+  
+  # 交互式输入设置
+  input:
+    auto_complete: true
+    history_enabled: true
+    history_size: 1000
+    history_file: ".ai_powershell_history"
+  
+  # 显示设置
+  display:
+    max_width: 120
+    page_size: 20
+    auto_pager: true
+    show_lines: false  # 表格是否显示行线
+    box_style: "rounded"  # 可选: rounded, minimal, simple
+
+# 主题配置
+themes:
+  default:
+    success: "bold green"
+    error: "bold red"
+    warning: "bold yellow"
+    info: "bold blue"
+    primary: "bold cyan"
+    secondary: "bold magenta"
+    muted: "dim white"
+    highlight: "bold bright_cyan"
+  
+  dark:
+    success: "bold bright_green"
+    error: "bold bright_red"
+    warning: "bold bright_yellow"
+    info: "bold bright_blue"
+    primary: "bold bright_cyan"
+    secondary: "bold bright_magenta"
+    muted: "dim bright_white"
+    highlight: "bold bright_cyan on black"
+  
+  light:
+    success: "bold green"
+    error: "bold red"
+    warning: "bold yellow"
+    info: "bold blue"
+    primary: "bold blue"
+    secondary: "bold magenta"
+    muted: "dim black"
+    highlight: "bold blue on white"
+  
+  minimal:
+    success: "white"
+    error: "white"
+    warning: "white"
+    info: "white"
+    primary: "white"
+    secondary: "white"
+    muted: "dim white"
+    highlight: "bold white"

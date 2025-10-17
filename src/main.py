@@ -8,6 +8,7 @@ AI PowerShell 智能助手 - 主入口和控制器
 import sys
 import argparse
 import uuid
+import time
 from typing import Optional
 from pathlib import Path
 
@@ -22,6 +23,12 @@ from src.context import ContextManager
 from src.template_engine import TemplateEngine
 from src.template_engine.custom_template_manager import CustomTemplateManager
 from src.template_engine.exceptions import TemplateError
+from src.ui import (
+    ErrorHandler, UIConfig, UIManager, ProgressManager,
+    InteractiveInputManager, HelpSystem, UIConfigLoader, UIConfigManager,
+    UICompatibilityLayer, create_compatible_ui_config
+)
+from src.ui.error_handler import ErrorCategory
 
 
 class PowerShellAssistant:
@@ -104,6 +111,40 @@ class PowerShellAssistant:
             self.log_engine.warning(f"Custom template manager initialization failed: {e}")
             self.custom_template_manager = None
         
+        # 10. 初始化 UI 系统
+        try:
+            # 初始化 UI 配置管理器
+            self.ui_config_manager = UIConfigManager()
+            original_config = self.ui_config_manager.get_config()
+            
+            # 应用兼容性层，根据终端能力调整配置
+            self.ui_compatibility = UICompatibilityLayer(original_config)
+            self.ui_config = self.ui_compatibility.get_config()
+            
+            # 初始化 UI 管理器
+            self.ui_manager = UIManager(self.ui_config)
+            
+            # 初始化错误处理器
+            self.error_handler = ErrorHandler(self.ui_config)
+            
+            # 初始化进度管理器
+            self.progress_manager = ProgressManager(self.ui_manager.console, self.ui_config)
+            
+            # 初始化交互式输入管理器
+            self.interactive_input = InteractiveInputManager(self.ui_manager)
+            
+            # 初始化帮助系统
+            self.help_system = HelpSystem(self.ui_manager)
+            
+            self.log_engine.info("UI system initialized")
+        except Exception as e:
+            self.log_engine.warning(f"UI system initialization failed: {e}")
+            self.ui_manager = None
+            self.error_handler = None
+            self.progress_manager = None
+            self.interactive_input = None
+            self.help_system = None
+        
         self.log_engine.info("PowerShell Assistant initialization complete")
     
     def process_request(self, user_input: str, auto_execute: bool = False) -> ExecutionResult:
@@ -163,7 +204,15 @@ class PowerShellAssistant:
             
             # 3. AI 翻译
             self.log_engine.info(f"Translating input: {user_input}")
-            suggestion = self.ai_engine.translate_natural_language(user_input, context)
+            
+            # 使用进度指示器显示翻译过程
+            if self.progress_manager:
+                with self.progress_manager.create_spinner("正在翻译命令...") as spinner:
+                    suggestion = self.ai_engine.translate_natural_language(user_input, context)
+                    spinner.update("翻译完成")
+            else:
+                suggestion = self.ai_engine.translate_natural_language(user_input, context)
+            
             self.log_engine.log_translation(
                 user_input,
                 suggestion.generated_command,
@@ -224,6 +273,20 @@ class PowerShellAssistant:
             self.log_engine.error(f"Error processing request: {str(e)}", 
                                  user_input=user_input,
                                  correlation_id=correlation_id)
+            
+            # 使用错误处理器显示友好的错误消息
+            if self.error_handler:
+                self.error_handler.display_error(
+                    e,
+                    details=f"处理用户输入时发生错误: {user_input}",
+                    suggestions=[
+                        "检查输入的命令描述是否清晰",
+                        "尝试使用更简单的描述",
+                        "查看日志文件获取详细错误信息",
+                    ],
+                    related_commands=["help", "history"]
+                )
+            
             return ExecutionResult(
                 success=False,
                 command="",
@@ -265,24 +328,59 @@ class PowerShellAssistant:
         Returns:
             bool: 用户是否确认执行
         """
-        print("\n" + "=" * 60)
-        print("🤖 AI 翻译结果")
-        print("=" * 60)
-        print(f"原始输入: {suggestion.original_input}")
-        print(f"生成命令: {suggestion.generated_command}")
-        print(f"置信度: {suggestion.confidence_score:.2%}")
-        print(f"说明: {suggestion.explanation}")
-        
-        if validation.warnings:
-            print("\n⚠️  警告:")
-            for warning in validation.warnings:
-                print(f"  - {warning}")
-        
-        if validation.requires_elevation:
-            print("\n🔐 此命令需要管理员权限")
-        
-        print("\n风险等级:", self._format_risk_level(validation.risk_level))
-        print("=" * 60)
+        if self.ui_manager:
+            # 使用增强的 UI 显示
+            self.ui_manager.print_newline()
+            self.ui_manager.print_header("🤖 AI 翻译结果")
+            
+            # 显示命令信息
+            info_data = {
+                "原始输入": suggestion.original_input,
+                "生成命令": suggestion.generated_command,
+                "置信度": f"{suggestion.confidence_score:.2%}",
+                "说明": suggestion.explanation
+            }
+            self.ui_manager.print_dict(info_data)
+            
+            # 显示警告
+            if validation.warnings:
+                self.ui_manager.print_newline()
+                self.ui_manager.print_warning("警告信息:", icon=True)
+                for warning in validation.warnings:
+                    self.ui_manager.console.print(f"  - {warning}", style="warning")
+            
+            # 显示权限要求
+            if validation.requires_elevation:
+                self.ui_manager.print_newline()
+                self.ui_manager.print_info("🔐 此命令需要管理员权限", icon=False)
+            
+            # 显示风险等级
+            self.ui_manager.print_newline()
+            risk_display = self._format_risk_level(validation.risk_level)
+            self.ui_manager.console.print(f"风险等级: {risk_display}")
+            
+            self.ui_manager.print_separator()
+            self.ui_manager.print_newline()
+        else:
+            # 降级到基本显示
+            print("\n" + "=" * 60)
+            print("🤖 AI 翻译结果")
+            print("=" * 60)
+            print(f"原始输入: {suggestion.original_input}")
+            print(f"生成命令: {suggestion.generated_command}")
+            print(f"置信度: {suggestion.confidence_score:.2%}")
+            print(f"说明: {suggestion.explanation}")
+            
+            if validation.warnings:
+                print("\n⚠️  警告:")
+                for warning in validation.warnings:
+                    print(f"  - {warning}")
+            
+            if validation.requires_elevation:
+                print("\n🔐 此命令需要管理员权限")
+            
+            print("\n风险等级:", self._format_risk_level(validation.risk_level))
+            print("=" * 60)
         
         response = input("\n是否执行此命令? (y/N): ").strip().lower()
         return response in ['y', 'yes', '是', 'Y']
@@ -338,10 +436,23 @@ class PowerShellAssistant:
             ExecutionResult: 执行结果
         """
         if not self.template_engine:
+            error_msg = "模板引擎未初始化，无法生成脚本"
+            
+            if self.error_handler:
+                self.error_handler.display_error(
+                    Exception(error_msg),
+                    category=ErrorCategory.CONFIG_ERROR,
+                    suggestions=[
+                        "检查配置文件中的模板引擎设置",
+                        "确认模板目录存在且可访问",
+                        "尝试重新启动程序",
+                    ]
+                )
+            
             return ExecutionResult(
                 success=False,
                 command="",
-                error="模板引擎未初始化，无法生成脚本",
+                error=error_msg,
                 return_code=-1
             )
         
@@ -356,10 +467,24 @@ class PowerShellAssistant:
             )
             
             if not generated_script:
+                error_msg = "无法生成脚本，请尝试更具体的描述"
+                
+                if self.error_handler:
+                    self.error_handler.display_error(
+                        Exception(error_msg),
+                        category=ErrorCategory.USER_ERROR,
+                        suggestions=[
+                            "提供更详细的脚本需求描述",
+                            "使用 'template list' 查看可用模板",
+                            "参考示例命令格式",
+                        ],
+                        related_commands=["template list", "help"]
+                    )
+                
                 return ExecutionResult(
                     success=False,
                     command="",
-                    error="无法生成脚本，请尝试更具体的描述",
+                    error=error_msg,
                     return_code=-1
                 )
             
@@ -390,8 +515,24 @@ class PowerShellAssistant:
             
         except Exception as e:
             self.log_engine.error(f"Script generation failed: {str(e)}")
-            import traceback
-            traceback.print_exc()
+            
+            # 使用错误处理器显示友好的错误消息
+            if self.error_handler:
+                self.error_handler.display_error(
+                    e,
+                    details=f"生成脚本时发生错误: {user_input}",
+                    suggestions=[
+                        "检查模板配置是否正确",
+                        "确认所需参数都已提供",
+                        "查看日志文件获取详细错误信息",
+                    ],
+                    related_commands=["template list", "template test"],
+                    show_traceback=False
+                )
+            else:
+                import traceback
+                traceback.print_exc()
+            
             return ExecutionResult(
                 success=False,
                 command="",
@@ -442,22 +583,26 @@ class PowerShellAssistant:
         """
         # 启动新会话
         self.context_manager.start_session()
+        session_start_time = time.time()
+        commands_executed = 0
+        successful_commands = 0
+        failed_commands = 0
         
-        print("=" * 60)
-        print("🚀 AI PowerShell 智能助手 - 交互模式")
-        print("=" * 60)
-        print("输入中文描述，我会帮你生成并执行 PowerShell 命令")
-        print("特殊命令: exit/quit/退出 - 退出程序")
-        print("         help/帮助 - 显示帮助")
-        print("         history/历史 - 显示命令历史")
-        print("         clear/清屏 - 清空屏幕")
-        print("=" * 60)
-        print()
+        # 运行启动体验
+        from src.ui.startup_experience import StartupExperience
+        startup = StartupExperience()
+        startup_success = startup.run_startup_sequence()
+        
+        if not startup_success:
+            self.log_engine.warning("Startup checks failed, but continuing anyway")
         
         while True:
             try:
-                # 获取用户输入
-                user_input = input("💬 请输入 > ").strip()
+                # 获取用户输入 - 使用增强的交互式输入系统
+                if self.interactive_input:
+                    user_input = self.interactive_input.get_user_input("💬 请输入 > ")
+                else:
+                    user_input = input("💬 请输入 > ").strip()
                 
                 if not user_input:
                     continue
@@ -468,7 +613,10 @@ class PowerShellAssistant:
                     break
                 
                 if user_input.lower() in ['help', '帮助']:
-                    self._show_help()
+                    if self.help_system:
+                        self.help_system.show_main_help()
+                    else:
+                        self._show_help()
                     continue
                 
                 if user_input.lower() in ['history', '历史']:
@@ -482,6 +630,13 @@ class PowerShellAssistant:
                 # 处理正常请求
                 result = self.process_request(user_input, auto_execute=False)
                 
+                # 更新统计
+                commands_executed += 1
+                if result.success:
+                    successful_commands += 1
+                else:
+                    failed_commands += 1
+                
                 # 显示结果
                 self._display_result(result)
                 
@@ -492,8 +647,31 @@ class PowerShellAssistant:
                 print("\n\n👋 检测到 EOF，正在退出...")
                 break
             except Exception as e:
-                self.log_engine.log_error(e)
-                print(f"\n❌ 发生错误: {str(e)}")
+                self.log_engine.error(f"Error in interactive mode: {str(e)}")
+                
+                # 使用错误处理器显示友好的错误消息
+                if self.error_handler:
+                    self.error_handler.display_error(
+                        e,
+                        details="交互模式执行时发生错误",
+                        suggestions=[
+                            "检查输入命令是否正确",
+                            "使用 'help' 查看可用命令",
+                            "查看日志文件获取详细信息",
+                        ],
+                        show_traceback=False
+                    )
+                else:
+                    print(f"\n❌ 发生错误: {str(e)}")
+        
+        # 显示会话摘要
+        session_duration = time.time() - session_start_time
+        startup.display_session_summary({
+            'commands_executed': commands_executed,
+            'successful_commands': successful_commands,
+            'failed_commands': failed_commands,
+            'session_duration': session_duration,
+        })
         
         # 结束会话
         self.context_manager.terminate_session()
@@ -518,23 +696,42 @@ class PowerShellAssistant:
     
     def _show_history(self):
         """显示命令历史"""
-        print("\n" + "=" * 60)
-        print("📜 命令历史")
-        print("=" * 60)
+        from src.ui import UIManager, TableManager, ColumnConfig, TableConfig
         
-        recent_commands = self.context_manager.get_recent_commands(limit=10)
+        ui_manager = UIManager()
+        table_manager = TableManager(ui_manager.console)
+        
+        recent_commands = self.context_manager.get_recent_commands(limit=20)
         
         if not recent_commands:
-            print("暂无历史记录")
-        else:
-            for i, cmd_entry in enumerate(recent_commands, 1):
-                status = "✅" if cmd_entry.status.value == "completed" else "❌"
-                print(f"{i}. {status} {cmd_entry.user_input}")
-                print(f"   命令: {cmd_entry.translated_command}")
-                print(f"   时间: {cmd_entry.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
-                print()
+            ui_manager.print_info("暂无历史记录")
+            return
         
-        print("=" * 60 + "\n")
+        ui_manager.print_header("📜 命令历史", f"最近 {len(recent_commands)} 条")
+        
+        # 转换为表格数据
+        history_data = []
+        for i, cmd_entry in enumerate(recent_commands, 1):
+            history_data.append({
+                'index': str(i),
+                'status': '✓' if cmd_entry.status.value == "completed" else '✗',
+                'input': cmd_entry.user_input[:40] + '...' if len(cmd_entry.user_input) > 40 else cmd_entry.user_input,
+                'command': cmd_entry.translated_command[:50] + '...' if len(cmd_entry.translated_command) > 50 else cmd_entry.translated_command,
+                'time': cmd_entry.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            })
+        
+        columns = [
+            ColumnConfig(name='index', header='#', width=4, justify='right', style='muted'),
+            ColumnConfig(name='status', header='状态', width=6, justify='center', style='bold'),
+            ColumnConfig(name='input', header='用户输入', width=35, style='primary'),
+            ColumnConfig(name='command', header='执行命令', width=40, style='secondary'),
+            ColumnConfig(name='time', header='时间', width=20, style='muted'),
+        ]
+        
+        config = TableConfig(show_lines=False, box_style='rounded')
+        table_manager.display_table(history_data, columns, config)
+        
+        ui_manager.print_newline()
     
     def _clear_screen(self):
         """清空屏幕"""
@@ -548,119 +745,140 @@ class PowerShellAssistant:
         Args:
             result: 执行结果对象
         """
-        print("\n" + "-" * 60)
-        
-        if result.success:
-            print("✅ 执行成功")
-            if result.has_output:
-                print(f"\n📄 输出:")
-                print(result.output)
+        if self.ui_manager:
+            # 使用增强的 UI 显示
+            self.ui_manager.print_newline()
+            self.ui_manager.print_separator("-", 60)
+            
+            if result.success:
+                self.ui_manager.print_success("执行成功")
+                if result.has_output:
+                    self.ui_manager.print_newline()
+                    self.ui_manager.console.print("📄 输出:", style="info")
+                    self.ui_manager.console.print(result.output)
+            else:
+                self.ui_manager.print_error("执行失败")
+                if result.has_error:
+                    self.ui_manager.print_newline()
+                    self.ui_manager.console.print("🚫 错误:", style="error")
+                    self.ui_manager.console.print(result.error, style="error")
+            
+            if result.execution_time > 0:
+                self.ui_manager.print_newline()
+                self.ui_manager.console.print(
+                    f"⏱️  执行时间: {result.execution_time:.3f} 秒",
+                    style="muted"
+                )
+            
+            self.ui_manager.print_separator("-", 60)
+            self.ui_manager.print_newline()
         else:
-            print("❌ 执行失败")
-            if result.has_error:
-                print(f"\n🚫 错误:")
-                print(result.error)
-        
-        if result.execution_time > 0:
-            print(f"\n⏱️  执行时间: {result.execution_time:.3f} 秒")
-        
-        print("-" * 60 + "\n")
+            # 降级到基本显示
+            print("\n" + "-" * 60)
+            
+            if result.success:
+                print("✅ 执行成功")
+                if result.has_output:
+                    print(f"\n📄 输出:")
+                    print(result.output)
+            else:
+                print("❌ 执行失败")
+                if result.has_error:
+                    print(f"\n🚫 错误:")
+                    print(result.error)
+            
+            if result.execution_time > 0:
+                print(f"\n⏱️  执行时间: {result.execution_time:.3f} 秒")
+            
+            print("-" * 60 + "\n")
 
 
 def template_create_command(assistant: PowerShellAssistant):
     """处理 template create 命令 - 创建自定义模板"""
     if not assistant.custom_template_manager:
-        print("❌ 自定义模板管理器未初始化")
+        error = Exception("自定义模板管理器未初始化")
+        if assistant.error_handler:
+            assistant.error_handler.display_error(
+                error,
+                category=ErrorCategory.CONFIG_ERROR,
+                suggestions=[
+                    "检查配置文件中的模板管理器设置",
+                    "确认模板目录存在且可访问",
+                    "尝试重新启动程序",
+                ]
+            )
+        else:
+            print("❌ 自定义模板管理器未初始化")
         return 1
     
-    print("\n" + "=" * 60)
-    print("🎨 创建自定义模板")
-    print("=" * 60)
-    
     try:
-        # 1. 模板基本信息
-        print("\n1️⃣  模板基本信息")
-        print("-" * 60)
-        name = input("模板名称: ").strip()
-        if not name:
-            print("❌ 模板名称不能为空")
+        # 使用新的交互式向导
+        from src.ui.template_manager_ui import TemplateManagerUI
+        
+        ui = TemplateManagerUI()
+        
+        # 运行交互式向导
+        template_data = ui.interactive_template_wizard()
+        
+        if not template_data:
             return 1
         
-        description = input("模板描述: ").strip()
-        if not description:
-            print("❌ 模板描述不能为空")
-            return 1
+        # 显示进度
+        steps = [
+            "验证模板信息",
+            "解析脚本参数",
+            "生成模板文件",
+            "更新配置文件"
+        ]
         
-        category = input("模板分类 (默认: custom): ").strip() or "custom"
-        keywords_input = input("关键词 (逗号分隔): ").strip()
-        keywords = [k.strip() for k in keywords_input.split(',')] if keywords_input else []
+        with ui.show_progress_for_operation("创建模板", steps) as progress:
+            # 创建模板
+            template = assistant.custom_template_manager.create_template(
+                name=template_data['name'],
+                description=template_data['description'],
+                category=template_data['category'],
+                script_content=template_data['script_content'],
+                keywords=template_data['keywords']
+            )
         
-        # 2. 脚本来源
-        print("\n2️⃣  脚本来源")
-        print("-" * 60)
-        print("[1] 从文件导入")
-        print("[2] 直接输入脚本内容")
-        choice = input("选择 (1/2): ").strip()
+        # 显示操作摘要
+        details = {
+            '分类': template.category,
+            '文件路径': template.file_path,
+            '参数数量': len(template.parameters) if template.parameters else 0,
+            '关键词': ', '.join(template_data['keywords']) if template_data['keywords'] else '无'
+        }
         
-        script_content = ""
-        if choice == "1":
-            file_path = input("脚本文件路径: ").strip()
-            if not Path(file_path).exists():
-                print(f"❌ 文件不存在: {file_path}")
-                return 1
-            with open(file_path, 'r', encoding='utf-8') as f:
-                script_content = f.read()
-        elif choice == "2":
-            print("请输入脚本内容 (输入 'END' 结束):")
-            lines = []
-            while True:
-                line = input()
-                if line.strip() == 'END':
-                    break
-                lines.append(line)
-            script_content = '\n'.join(lines)
-        else:
-            print("❌ 无效的选择")
-            return 1
-        
-        if not script_content.strip():
-            print("❌ 脚本内容不能为空")
-            return 1
-        
-        # 3. 创建模板
-        print("\n3️⃣  正在创建模板...")
-        print("-" * 60)
-        
-        template = assistant.custom_template_manager.create_template(
-            name=name,
-            description=description,
-            category=category,
-            script_content=script_content,
-            keywords=keywords
-        )
-        
-        print("\n✅ 模板创建成功!")
-        print("=" * 60)
-        print(f"📄 模板信息:")
-        print(f"  名称: {template.name}")
-        print(f"  描述: {template.description}")
-        print(f"  分类: {template.category}")
-        print(f"  文件: {template.file_path}")
-        if template.parameters:
-            print(f"  参数数量: {len(template.parameters)}")
-        if keywords:
-            print(f"  关键词: {', '.join(keywords)}")
-        print("=" * 60)
+        ui.display_operation_summary('create', template, True, details)
         
         return 0
         
     except TemplateError as e:
-        print(f"\n❌ 创建失败: {str(e)}")
+        if assistant.error_handler:
+            assistant.error_handler.display_error(
+                e,
+                category=ErrorCategory.VALIDATION_ERROR,
+                suggestions=[
+                    "检查模板名称是否已存在",
+                    "确认脚本内容格式正确",
+                    "参考文档中的模板创建示例",
+                ],
+                related_commands=["template list"]
+            )
+        else:
+            print(f"\n❌ 创建失败: {str(e)}")
         return 1
     except Exception as e:
-        print(f"\n❌ 发生错误: {str(e)}")
-        import traceback
-        traceback.print_exc()
+        if assistant.error_handler:
+            assistant.error_handler.display_error(
+                e,
+                details="创建模板时发生未预期的错误",
+                show_traceback=False
+            )
+        else:
+            print(f"\n❌ 发生错误: {str(e)}")
+            import traceback
+            traceback.print_exc()
         return 1
 
 
@@ -671,39 +889,32 @@ def template_list_command(assistant: PowerShellAssistant, custom_only: bool = Fa
         return 1
     
     try:
-        print("\n" + "=" * 60)
-        print("📋 模板列表")
-        print("=" * 60)
+        # 使用增强的模板显示界面
+        from src.ui.template_manager_ui import TemplateManagerUI
         
-        templates = assistant.custom_template_manager.list_custom_templates()
+        ui = TemplateManagerUI()
         
-        if not templates:
-            print("\n暂无自定义模板")
-            print("\n💡 提示: 使用 'template create' 命令创建新模板")
+        # 获取模板列表
+        if custom_only:
+            templates = assistant.custom_template_manager.list_custom_templates()
+            title = "📋 自定义模板列表"
         else:
-            print(f"\n找到 {len(templates)} 个自定义模板:\n")
-            
-            # 按分类分组
-            by_category = {}
-            for template in templates:
-                cat = template.category
-                if cat not in by_category:
-                    by_category[cat] = []
-                by_category[cat].append(template)
-            
-            for category, cat_templates in by_category.items():
-                print(f"\n📁 {category}")
-                print("-" * 60)
-                for template in cat_templates:
-                    print(f"  • {template.name}")
-                    print(f"    描述: {template.description}")
-                    if hasattr(template, 'keywords') and template.keywords:
-                        print(f"    关键词: {', '.join(template.keywords)}")
-                    if template.parameters:
-                        print(f"    参数: {len(template.parameters)} 个")
-                    print()
+            # 获取所有模板（系统 + 自定义）
+            templates = assistant.custom_template_manager.list_custom_templates()
+            # 如果有 template_manager，也包含系统模板
+            if hasattr(assistant, 'template_manager') and assistant.template_manager:
+                system_templates = assistant.template_manager.list_templates()
+                templates.extend(system_templates)
+            title = "📋 模板列表"
         
-        print("=" * 60)
+        # 显示增强的模板列表
+        ui.display_template_list_enhanced(
+            templates,
+            title=title,
+            show_icons=True,
+            group_by_category=True
+        )
+        
         return 0
         
     except Exception as e:
@@ -718,67 +929,66 @@ def template_edit_command(assistant: PowerShellAssistant, template_id: str):
         return 1
     
     try:
+        # 使用增强的编辑界面
+        from src.ui.template_manager_ui import TemplateManagerUI
+        
+        ui = TemplateManagerUI()
+        
         # 获取模板信息
-        template = assistant.custom_template_manager.get_template_info(template_id)
-        if not template:
-            print(f"❌ 模板不存在: {template_id}")
+        template_info = assistant.custom_template_manager.get_template_info(template_id, 'custom')
+        if not template_info:
+            ui.ui_manager.print_error(f"模板不存在: {template_id}")
             return 1
         
-        print("\n" + "=" * 60)
-        print(f"✏️  编辑模板: {template.name}")
-        print("=" * 60)
+        # 创建临时模板对象用于显示
+        from types import SimpleNamespace
+        template = SimpleNamespace(**template_info)
         
-        print("\n当前配置:")
-        print(f"  名称: {template.name}")
-        print(f"  描述: {template.description}")
-        print(f"  分类: {template.category}")
-        if hasattr(template, 'keywords') and template.keywords:
-            print(f"  关键词: {', '.join(template.keywords)}")
-        
-        print("\n可编辑的字段:")
-        print("[1] 名称")
-        print("[2] 描述")
-        print("[3] 关键词")
-        print("[0] 完成编辑")
-        
-        updates = {}
-        
-        while True:
-            choice = input("\n选择要编辑的字段 (0-3): ").strip()
-            
-            if choice == "0":
-                break
-            elif choice == "1":
-                new_name = input("新名称: ").strip()
-                if new_name:
-                    updates['name'] = new_name
-            elif choice == "2":
-                new_desc = input("新描述: ").strip()
-                if new_desc:
-                    updates['description'] = new_desc
-            elif choice == "3":
-                new_keywords = input("新关键词 (逗号分隔): ").strip()
-                if new_keywords:
-                    updates['keywords'] = [k.strip() for k in new_keywords.split(',')]
-            else:
-                print("❌ 无效的选择")
+        # 运行交互式编辑器
+        updates = ui.interactive_template_editor(template)
         
         if not updates:
-            print("\n未进行任何修改")
             return 0
         
-        # 应用更新
-        print("\n正在更新模板...")
-        updated_template = assistant.custom_template_manager.edit_template(template_id, updates)
+        # 显示进度
+        steps = [
+            "验证更新信息",
+            "应用更新",
+            "更新配置文件"
+        ]
         
-        print("\n✅ 模板更新成功!")
-        print(f"  名称: {updated_template.name}")
-        print(f"  描述: {updated_template.description}")
+        with ui.show_progress_for_operation("更新模板", steps) as progress:
+            # 应用更新
+            updated_template = assistant.custom_template_manager.edit_template(
+                template_id,
+                'custom',
+                updates
+            )
+        
+        # 显示操作摘要
+        details = {
+            '更新字段': ', '.join(updates.keys()),
+            '新名称': updated_template.name if 'name' in updates else template.name,
+            '新描述': updated_template.description if 'description' in updates else template.description
+        }
+        
+        ui.display_operation_summary('edit', updated_template, True, details)
         
         return 0
         
     except TemplateError as e:
-        print(f"\n❌ 编辑失败: {str(e)}")
+        if assistant.error_handler:
+            assistant.error_handler.display_error(
+                e,
+                category=ErrorCategory.VALIDATION_ERROR,
+                suggestions=[
+                    "检查模板 ID 是否正确",
+                    "确认模板是自定义模板",
+                    "使用 'template list' 查看可用模板",
+                ]
+            )
+        else:
+            print(f"\n❌ 编辑失败: {str(e)}")
         return 1
     except Exception as e:
         print(f"\n❌ 发生错误: {str(e)}")
@@ -792,43 +1002,65 @@ def template_delete_command(assistant: PowerShellAssistant, template_id: str):
         return 1
     
     try:
+        # 使用增强的删除确认界面
+        from src.ui.template_manager_ui import TemplateManagerUI
+        
+        ui = TemplateManagerUI()
+        
         # 获取模板信息
-        template = assistant.custom_template_manager.get_template_info(template_id)
-        if not template:
-            print(f"❌ 模板不存在: {template_id}")
+        template_info = assistant.custom_template_manager.get_template_info(template_id, 'custom')
+        if not template_info:
+            ui.ui_manager.print_error(f"模板不存在: {template_id}")
             return 1
         
-        print("\n" + "=" * 60)
-        print(f"🗑️  删除模板")
-        print("=" * 60)
+        # 创建临时模板对象用于显示
+        from types import SimpleNamespace
+        template = SimpleNamespace(**template_info)
         
-        print(f"\n模板信息:")
-        print(f"  名称: {template.name}")
-        print(f"  描述: {template.description}")
-        print(f"  分类: {template.category}")
-        print(f"  文件: {template.file_path}")
+        # 显示删除确认对话框
+        confirmed = ui.confirm_template_deletion(template)
         
-        # 确认删除
-        print("\n⚠️  警告: 此操作不可恢复!")
-        confirm = input("\n确认删除? 输入模板名称以确认: ").strip()
+        if not confirmed:
+            ui.ui_manager.print_warning("已取消删除")
+            return 0
         
-        if confirm != template.name:
-            print("\n❌ 名称不匹配，取消删除")
-            return 1
+        # 显示进度
+        steps = [
+            "删除模板文件",
+            "更新配置文件",
+            "清理相关资源"
+        ]
         
-        # 执行删除
-        print("\n正在删除模板...")
-        success = assistant.custom_template_manager.delete_template(template_id)
+        with ui.show_progress_for_operation("删除模板", steps) as progress:
+            # 执行删除
+            success = assistant.custom_template_manager.delete_template(template_id, 'custom')
         
         if success:
-            print("\n✅ 模板已删除")
+            # 显示操作摘要
+            details = {
+                '模板名称': template.name,
+                '分类': template.category,
+                '文件路径': template.file_path
+            }
+            ui.display_operation_summary('delete', template, True, details)
             return 0
         else:
-            print("\n❌ 删除失败")
+            ui.ui_manager.print_error("删除失败")
             return 1
         
     except TemplateError as e:
-        print(f"\n❌ 删除失败: {str(e)}")
+        if assistant.error_handler:
+            assistant.error_handler.display_error(
+                e,
+                category=ErrorCategory.VALIDATION_ERROR,
+                suggestions=[
+                    "检查模板 ID 是否正确",
+                    "确认模板是自定义模板",
+                    "使用 'template list' 查看可用模板",
+                ]
+            )
+        else:
+            print(f"\n❌ 删除失败: {str(e)}")
         return 1
     except Exception as e:
         print(f"\n❌ 发生错误: {str(e)}")
@@ -905,25 +1137,16 @@ def template_history_command(assistant: PowerShellAssistant, template_id: str):
         return 1
     
     try:
-        print("\n" + "=" * 60)
-        print(f"📜 模板历史: {template_id}")
-        print("=" * 60)
+        from src.ui import UIManager, TemplateDisplay
+        
+        ui_manager = UIManager()
+        template_display = TemplateDisplay(ui_manager)
         
         # 获取历史版本
         versions = assistant.custom_template_manager.version_control.list_versions(template_id)
         
-        if not versions:
-            print("\n暂无历史版本")
-        else:
-            print(f"\n找到 {len(versions)} 个历史版本:\n")
-            for version in versions:
-                print(f"版本 {version.version_number}")
-                print(f"  时间: {version.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
-                if version.change_description:
-                    print(f"  说明: {version.change_description}")
-                print()
+        template_display.display_version_history(versions, template_id)
         
-        print("=" * 60)
         return 0
         
     except Exception as e:
@@ -961,6 +1184,169 @@ def template_restore_command(assistant: PowerShellAssistant, template_id: str, v
             print("\n❌ 恢复失败")
             return 1
         
+    except Exception as e:
+        print(f"\n❌ 发生错误: {str(e)}")
+        return 1
+
+
+def ui_config_show_command(assistant: PowerShellAssistant):
+    """处理 ui config show 命令 - 显示当前 UI 配置"""
+    if not assistant.ui_config_manager:
+        print("❌ UI 配置管理器未初始化")
+        return 1
+    
+    try:
+        from src.ui import UIManager
+        
+        ui = UIManager(assistant.ui_config)
+        
+        ui.print_header("⚙️ UI 配置", "当前配置信息")
+        
+        config_data = {
+            "彩色输出": "启用" if assistant.ui_config.enable_colors else "禁用",
+            "图标显示": "启用" if assistant.ui_config.enable_icons else "禁用",
+            "进度指示": "启用" if assistant.ui_config.enable_progress else "禁用",
+            "动画效果": "启用" if assistant.ui_config.enable_animations else "禁用",
+            "当前主题": assistant.ui_config.theme,
+            "图标样式": assistant.ui_config.icon_style.value,
+            "表格最大宽度": str(assistant.ui_config.max_table_width),
+            "分页大小": str(assistant.ui_config.page_size),
+            "自动分页": "启用" if assistant.ui_config.auto_pager else "禁用",
+        }
+        
+        ui.print_dict(config_data)
+        ui.print_newline()
+        
+        # 显示可用主题
+        themes = assistant.ui_config_manager.get_available_themes()
+        if themes:
+            ui.print_info("可用主题:", icon=True)
+            ui.print_list(themes)
+        
+        return 0
+    except Exception as e:
+        print(f"\n❌ 发生错误: {str(e)}")
+        return 1
+
+
+def ui_config_set_command(assistant: PowerShellAssistant, key: str, value: str):
+    """处理 ui config set 命令 - 设置 UI 配置项"""
+    if not assistant.ui_config_manager:
+        print("❌ UI 配置管理器未初始化")
+        return 1
+    
+    try:
+        # 解析值
+        bool_values = {'true': True, 'false': False, 'yes': True, 'no': False, '1': True, '0': False}
+        
+        updates = {}
+        
+        # 处理不同的配置项
+        if key == 'theme':
+            success = assistant.ui_config_manager.switch_theme(value)
+            if success:
+                print(f"✅ 主题已切换为: {value}")
+                return 0
+            else:
+                print(f"❌ 切换主题失败")
+                return 1
+        elif key == 'icon_style':
+            success = assistant.ui_config_manager.set_icon_style(value)
+            if success:
+                print(f"✅ 图标样式已设置为: {value}")
+                return 0
+            else:
+                print(f"❌ 设置图标样式失败")
+                return 1
+        elif key in ['colors', 'icons', 'progress', 'animations']:
+            if value.lower() not in bool_values:
+                print(f"❌ 无效的值: {value}，请使用 true/false")
+                return 1
+            enabled = bool_values[value.lower()]
+            success = assistant.ui_config_manager.toggle_feature(key, enabled)
+            if success:
+                status = "启用" if enabled else "禁用"
+                print(f"✅ {key} 已{status}")
+                return 0
+            else:
+                print(f"❌ 设置失败")
+                return 1
+        elif key == 'max_table_width':
+            try:
+                width = int(value)
+                updates['max_table_width'] = width
+            except ValueError:
+                print(f"❌ 无效的宽度值: {value}")
+                return 1
+        elif key == 'page_size':
+            try:
+                size = int(value)
+                updates['page_size'] = size
+            except ValueError:
+                print(f"❌ 无效的大小值: {value}")
+                return 1
+        elif key == 'auto_pager':
+            if value.lower() not in bool_values:
+                print(f"❌ 无效的值: {value}，请使用 true/false")
+                return 1
+            updates['auto_pager'] = bool_values[value.lower()]
+        else:
+            print(f"❌ 未知的配置项: {key}")
+            return 1
+        
+        if updates:
+            success = assistant.ui_config_manager.update_config(updates)
+            if success:
+                print(f"✅ 配置已更新: {key} = {value}")
+                return 0
+            else:
+                print(f"❌ 更新配置失败")
+                return 1
+        
+        return 0
+    except Exception as e:
+        print(f"\n❌ 发生错误: {str(e)}")
+        return 1
+
+
+def ui_config_reset_command(assistant: PowerShellAssistant):
+    """处理 ui config reset 命令 - 重置 UI 配置"""
+    if not assistant.ui_config_manager:
+        print("❌ UI 配置管理器未初始化")
+        return 1
+    
+    try:
+        print("\n⚠️  警告: 这将重置所有 UI 配置为默认值")
+        confirm = input("确认重置? (y/N): ").strip().lower()
+        
+        if confirm not in ['y', 'yes', '是']:
+            print("❌ 取消重置")
+            return 0
+        
+        success = assistant.ui_config_manager.reset_to_defaults()
+        if success:
+            print("✅ UI 配置已重置为默认值")
+            return 0
+        else:
+            print("❌ 重置失败")
+            return 1
+    except Exception as e:
+        print(f"\n❌ 发生错误: {str(e)}")
+        return 1
+
+
+def ui_check_command(assistant: PowerShellAssistant):
+    """处理 ui check 命令 - 检查终端兼容性"""
+    try:
+        if hasattr(assistant, 'ui_compatibility') and assistant.ui_compatibility:
+            assistant.ui_compatibility.print_compatibility_info()
+        else:
+            # 如果没有兼容性层，创建一个临时的
+            from src.ui import UICompatibilityLayer
+            compat = UICompatibilityLayer()
+            compat.print_compatibility_info()
+        
+        return 0
     except Exception as e:
         print(f"\n❌ 发生错误: {str(e)}")
         return 1
@@ -1175,6 +1561,24 @@ def main():
     test_parser.add_argument('template_id', help='模板ID')
     test_parser.add_argument('--no-script', action='store_true', help='不显示生成的脚本')
     
+    # ui 子命令
+    ui_parser = subparsers.add_parser('ui', help='UI 配置管理')
+    ui_subparsers = ui_parser.add_subparsers(dest='ui_action', help='UI 操作')
+    
+    # ui config show
+    ui_show_parser = ui_subparsers.add_parser('show', help='显示当前 UI 配置')
+    
+    # ui config set
+    ui_set_parser = ui_subparsers.add_parser('set', help='设置 UI 配置项')
+    ui_set_parser.add_argument('key', help='配置项名称')
+    ui_set_parser.add_argument('value', help='配置项值')
+    
+    # ui config reset
+    ui_reset_parser = ui_subparsers.add_parser('reset', help='重置 UI 配置为默认值')
+    
+    # ui check
+    ui_check_parser = ui_subparsers.add_parser('check', help='检查终端兼容性')
+    
     args = parser.parse_args()
     
     try:
@@ -1213,6 +1617,27 @@ def main():
             
             sys.exit(exit_code)
         
+        elif args.subcommand == 'ui':
+            if not args.ui_action:
+                print("❌ 请指定 UI 操作命令")
+                print("使用 'python -m src.main ui --help' 查看帮助")
+                sys.exit(1)
+            
+            # 根据不同的 UI 操作调用相应的函数
+            if args.ui_action == 'show':
+                exit_code = ui_config_show_command(assistant)
+            elif args.ui_action == 'set':
+                exit_code = ui_config_set_command(assistant, args.key, args.value)
+            elif args.ui_action == 'reset':
+                exit_code = ui_config_reset_command(assistant)
+            elif args.ui_action == 'check':
+                exit_code = ui_check_command(assistant)
+            else:
+                print(f"❌ 未知的 UI 操作: {args.ui_action}")
+                exit_code = 1
+            
+            sys.exit(exit_code)
+        
         elif args.command:
             # 单次执行模式
             result = assistant.process_request(args.command, auto_execute=args.auto)
@@ -1229,9 +1654,27 @@ def main():
         print("\n\n👋 程序被中断")
         sys.exit(130)
     except Exception as e:
-        print(f"\n❌ 发生致命错误: {str(e)}", file=sys.stderr)
-        import traceback
-        traceback.print_exc()
+        # 尝试使用错误处理器
+        try:
+            error_handler = ErrorHandler(UIConfig())
+            error_handler.display_error(
+                e,
+                category=ErrorCategory.SYSTEM_ERROR,
+                details="程序启动或执行时发生致命错误",
+                suggestions=[
+                    "检查配置文件是否正确",
+                    "确认所有依赖已正确安装",
+                    "查看日志文件获取详细错误信息",
+                    "尝试使用默认配置重新运行",
+                ],
+                show_traceback=True
+            )
+        except:
+            # 如果错误处理器也失败，使用基本错误输出
+            print(f"\n❌ 发生致命错误: {str(e)}", file=sys.stderr)
+            import traceback
+            traceback.print_exc()
+        
         sys.exit(1)
 
 

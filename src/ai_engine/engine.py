@@ -109,12 +109,18 @@ class AIEngine(AIEngineInterface):
             self._error_detector = ErrorDetector()
         return self._error_detector
     
-    def translate_natural_language(self, text: str, context: Context) -> Suggestion:
+    def translate_natural_language(
+        self, 
+        text: str, 
+        context: Context,
+        progress_callback=None
+    ) -> Suggestion:
         """将自然语言翻译为 PowerShell 命令
         
         Args:
             text: 用户输入的自然语言文本
             context: 当前上下文信息
+            progress_callback: 进度回调函数，接收 (step, total, description) 参数
             
         Returns:
             Suggestion: 包含生成命令和相关信息的建议对象
@@ -129,18 +135,32 @@ class AIEngine(AIEngineInterface):
         text = text.strip()
         
         # 1. 检查缓存
+        if progress_callback:
+            progress_callback(1, 4, "检查缓存...")
+        
         cached = self.cache.get(text)
         if cached:
+            if progress_callback:
+                progress_callback(4, 4, "从缓存获取结果")
             return cached
         
         # 2. 使用翻译器进行翻译
+        if progress_callback:
+            progress_callback(2, 4, "AI 模型处理中...")
+        
         suggestion = self.translator.translate(text, context)
         
         # 3. 错误检测和修正
+        if progress_callback:
+            progress_callback(3, 4, "错误检测和修正...")
+        
         if self.error_detector.has_errors(suggestion.generated_command):
             suggestion = self.error_detector.fix(suggestion)
         
         # 4. 缓存结果
+        if progress_callback:
+            progress_callback(4, 4, "完成")
+        
         self.cache.set(text, suggestion)
         
         return suggestion

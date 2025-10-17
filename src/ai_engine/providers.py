@@ -60,11 +60,12 @@ class AIProvider(ABC):
 
 常用 PowerShell 命令参考:
 - 查看进程: Get-Process
-- 查看内存: Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 10
+- 查看进程内存: Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 10
+- 查看系统内存: Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
 - 查看服务: Get-Service
 - 查看文件: Get-ChildItem
 - 查看时间: Get-Date
-- 查看系统信息: Get-ComputerInfo
+- 查看系统信息: systeminfo
 - 查看磁盘: Get-PSDrive
 - 查看网络: Get-NetAdapter
 - 测试连接: Test-NetConnection
