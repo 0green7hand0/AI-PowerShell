@@ -13,12 +13,14 @@
 ## 📚 快速导航
 
 - [🚀 快速开始](#快速开始)
-- [📖 完整文档索引](DOCUMENTATION.md) - 所有文档导航
+- [📖 完整文档索引](DOCUMENTATION.md) - 所有文档导航门户
 - [📖 中文文档](中文项目说明.md)
 - [📋 快速开始指南](快速开始.md)
 - [📁 项目结构](#项目结构)
 - [🔧 安装说明](#安装)
 - [📚 文档中心](docs/README.md)
+
+> **📢 文档重构说明**: 我们最近完成了文档体系的全面重构，将28个文档精简整合为15个核心文档，建立了清晰的三层架构（入门层、深入层、参考层）。所有文档内容已完整保留并优化组织。查看 [文档迁移映射表](docs/migration-map.md) 了解详情。
 
 ## 核心特性
 
@@ -61,12 +63,19 @@ AI-PowerShell/
 │   ├── default.yaml       # 默认配置文件
 │   ├── templates.yaml     # 模板配置文件
 │   └── ui.yaml            # UI 配置文件
-├── docs/                  # 文档目录
-│   ├── architecture.md    # 架构文档
-│   ├── developer-guide.md # 开发者指南
-│   ├── 安装指南.md
-│   ├── 使用示例.md
-│   └── 常见问题.md
+├── docs/                  # 文档目录（三层架构）
+│   ├── README.md          # 文档中心导航
+│   ├── user-guide.md      # 综合用户指南
+│   ├── template-guide.md  # 模板系统完整指南
+│   ├── architecture.md    # 系统架构文档
+│   ├── developer-guide.md # 开发者综合指南
+│   ├── deployment-guide.md # 部署运维指南
+│   ├── api-reference.md   # API 完整参考
+│   ├── cli-reference.md   # CLI 命令参考
+│   ├── config-reference.md # 配置参考
+│   ├── troubleshooting.md # 故障排除指南
+│   ├── CONTRIBUTING.md    # 文档贡献指南
+│   └── archive/           # 历史文档归档
 ├── scripts/               # 脚本目录
 │   ├── install.ps1        # Windows 安装脚本
 │   └── install.sh         # Linux/macOS 安装脚本
@@ -149,29 +158,48 @@ python src/main.py template import template.zip
 ```
 
 详细使用说明请参考：
-- [快速开始指南](快速开始.md) - 系统基本使用
-- [自定义模板快速入门](docs/template-quick-start.md) - 5分钟学会创建模板
-- [自定义模板完整指南](docs/custom-template-guide.md) - 深入了解模板系统
+- [快速开始指南](快速开始.md) - 5分钟快速上手
+- [用户指南](docs/user-guide.md) - 综合用户使用手册（UI系统、进度管理、安全机制）
+- [模板系统指南](docs/template-guide.md) - 完整的模板系统使用指南（快速入门、深入指南、CLI参考）
+- [故障排除指南](docs/troubleshooting.md) - 常见问题和解决方案
 
 ## 文档
 
-### 📖 用户文档
-- **[快速开始指南](快速开始.md)** - 快速上手使用
-- **[CLI UI 系统指南](docs/ui-system-guide.md)** - 现代化用户界面使用说明
-- **[进度管理器指南](docs/progress-manager-guide.md)** - 进度指示和任务管理
-- **[启动体验指南](docs/startup-experience-guide.md)** - 首次启动和系统检查
-- **[自定义模板快速入门](docs/template-quick-start.md)** - 5分钟创建第一个模板
-- **[自定义模板完整指南](docs/custom-template-guide.md)** - 深入了解模板系统
-- **[模板CLI参考](docs/template-cli-reference.md)** - 命令行工具完整参考
-- **[中文项目说明](中文项目说明.md)** - 详细的中文文档
-- **[安装指南](docs/安装指南.md)** - 详细安装说明
-- **[使用示例](docs/使用示例.md)** - 实际使用案例
-- **[常见问题](docs/常见问题.md)** - 常见问题解答
+我们的文档采用三层架构设计，帮助不同角色的用户快速找到所需信息：
 
-### 🔧 开发者文档
-- **[架构文档](docs/architecture.md)** - 系统架构和设计原则
+### 📖 入门层 - 快速上手
+- **[完整文档门户](DOCUMENTATION.md)** - 文档导航中心，按角色推荐阅读路径
+- **[快速开始指南](快速开始.md)** - 5分钟快速上手
+- **[中文项目说明](中文项目说明.md)** - 详细的中文项目介绍
+- **[文档中心](docs/README.md)** - 所有文档的分类导航
+
+### 📚 深入层 - 详细指南
+
+#### 用户指南
+- **[用户指南](docs/user-guide.md)** - 综合用户使用手册
+  - UI系统使用、进度管理、启动体验、安全机制、常见任务
+- **[模板系统指南](docs/template-guide.md)** - 完整的模板系统使用指南
+  - 快速入门、深入指南、CLI参考、最佳实践、故障排除
+
+#### 开发者文档
+- **[系统架构](docs/architecture.md)** - 系统架构和设计原则
+  - 整体架构、核心模块详解、数据流、设计模式、扩展点
 - **[开发者指南](docs/developer-guide.md)** - 开发和扩展指南
-- **[安全检查指南](docs/security-checker-guide.md)** - 安全机制说明
+  - 环境设置、项目结构、开发规范、模块开发、测试指南、贡献流程
+
+#### 运维文档
+- **[部署指南](docs/deployment-guide.md)** - 部署和运维完整指南
+  - 安装部署、Docker部署、CI/CD配置、发布流程、AI模型配置
+
+### 🔍 参考层 - 快速查找
+- **[API参考](docs/api-reference.md)** - 完整的API文档（按模块组织）
+- **[CLI命令参考](docs/cli-reference.md)** - 命令行工具完整参考（按字母顺序）
+- **[配置参考](docs/config-reference.md)** - 配置文件详细说明
+- **[故障排除指南](docs/troubleshooting.md)** - 常见问题和解决方案
+
+### 📝 其他资源
+- **[文档贡献指南](docs/CONTRIBUTING.md)** - 如何贡献和维护文档
+- **[文档迁移映射表](docs/migration-map.md)** - 旧文档到新文档的映射关系
 
 ## 架构概览
 
@@ -288,7 +316,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 支持
 
-- **文档**: [docs/](docs/)
+- **文档门户**: [DOCUMENTATION.md](DOCUMENTATION.md) - 完整文档导航
+- **文档中心**: [docs/README.md](docs/README.md) - 按类别浏览文档
+- **故障排除**: [docs/troubleshooting.md](docs/troubleshooting.md) - 常见问题解决
 - **问题反馈**: [GitHub Issues](https://github.com/0green7hand0/AI-PowerShell/issues)
 - **讨论**: [GitHub Discussions](https://github.com/0green7hand0/AI-PowerShell/discussions)
 

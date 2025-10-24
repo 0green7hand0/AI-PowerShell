@@ -523,7 +523,7 @@ ui.theme_manager.switch_theme(theme)
 ## 相关资源
 
 - [UI 配置指南](ui-configuration-guide.md) - 完整 UI 配置说明
-- [用户指南](user-guide.md) - 综合用户指南（包含 UI 系统使用说明）
+- [CLI UI 系统指南](ui-system-guide.md) - UI 系统使用说明
 - [Rich 文档](https://rich.readthedocs.io/) - Rich 库官方文档
 
 ## 贡献主题

@@ -464,12 +464,13 @@ ui.config.icon_style = "unicode"
 
 ## 相关文档
 
-- [用户指南](user-guide.md) - 综合用户指南（包含 UI 系统、进度管理、启动体验等）
-- [配置参考](config-reference.md) - 完整的配置项说明
+- [CLI UI 系统指南](ui-system-guide.md) - UI 系统使用说明
+- [进度管理器指南](progress-manager-guide.md) - 进度指示详细说明
+- [启动体验指南](startup-experience-guide.md) - 启动流程配置
 
 ## 反馈和支持
 
 如有问题或建议，请：
-- 查看 [故障排除指南](troubleshooting.md)
+- 查看 [常见问题](常见问题.md)
 - 提交 [Issue](https://github.com/0green7hand0/AI-PowerShell/issues)
 - 参与 [讨论](https://github.com/0green7hand0/AI-PowerShell/discussions)

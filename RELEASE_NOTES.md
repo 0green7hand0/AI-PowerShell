@@ -103,8 +103,13 @@ src/
 
 - **Architecture Guide** (`docs/architecture.md`): Complete system architecture
 - **Developer Guide** (`docs/developer-guide.md`): How to extend and contribute
-- **CI/CD Setup** (`docs/ci-cd-setup.md`): Continuous integration guide
-- **Module Implementation Docs**: Detailed docs for each module
+- **Deployment Guide** (`docs/deployment-guide.md`): Complete deployment and operations guide (includes CI/CD setup)
+- **User Guide** (`docs/user-guide.md`): Comprehensive user manual
+- **Template Guide** (`docs/template-guide.md`): Complete template system guide
+- **API Reference** (`docs/api-reference.md`): Full API documentation
+- **CLI Reference** (`docs/cli-reference.md`): Command-line reference
+- **Config Reference** (`docs/config-reference.md`): Configuration reference
+- **Troubleshooting** (`docs/troubleshooting.md`): Common issues and solutions
 
 ## 🔄 Migration Guide
 
