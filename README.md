@@ -74,7 +74,6 @@ AI-PowerShell/
 │   ├── cli-reference.md   # CLI 命令参考
 │   ├── config-reference.md # 配置参考
 │   ├── troubleshooting.md # 故障排除指南
-│   ├── CONTRIBUTING.md    # 文档贡献指南
 │   └── archive/           # 历史文档归档
 ├── scripts/               # 脚本目录
 │   ├── install.ps1        # Windows 安装脚本
@@ -198,7 +197,6 @@ python src/main.py template import template.zip
 - **[故障排除指南](docs/troubleshooting.md)** - 常见问题和解决方案
 
 ### 📝 其他资源
-- **[文档贡献指南](docs/CONTRIBUTING.md)** - 如何贡献和维护文档
 - **[文档迁移映射表](docs/migration-map.md)** - 旧文档到新文档的映射关系
 
 ## 架构概览
