@@ -16,19 +16,12 @@ export interface SwipeOptions {
 
 /**
  * Swipe composable for touch gesture support
- * 
+ *
  * Provides swipe detection for mobile devices
  * Requirements: 6.4
  */
-export function useSwipe(
-  target: Ref<HTMLElement | null>,
-  options: SwipeOptions = {}
-) {
-  const {
-    threshold = 50,
-    timeout = 500,
-    passive = true
-  } = options
+export function useSwipe(target: Ref<HTMLElement | null>, options: SwipeOptions = {}) {
+  const { threshold = 50, timeout = 500, passive = true } = options
 
   const isSwiping = ref(false)
   const direction = ref<SwipeDirection>('none')

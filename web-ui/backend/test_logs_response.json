@@ -1,0 +1,129 @@
+﻿{
+  "data": {
+    "logs": [
+      {
+        "level": "CRITICAL",
+        "message": "Test critical log 2: System critical failure",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:25:54,586"
+      },
+      {
+        "level": "INFO",
+        "message": "Test log generation completed",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:25:54,587"
+      },
+      {
+        "level": "INFO",
+        "message": " * Detected change in 'D:\\\\MCP_PowerShell_T\\\\web-ui\\\\backend\\\\api\\\\logs.py', reloading",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:35,953"
+      },
+      {
+        "level": "INFO",
+        "message": " * Detected change in 'D:\\\\MCP_PowerShell_T\\\\web-ui\\\\backend\\\\api\\\\logs.py', reloading",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:35,954"
+      },
+      {
+        "level": "INFO",
+        "message": " * Restarting with stat",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:36,060"
+      },
+      {
+        "level": "INFO",
+        "message": " * Restarting with stat",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:36,060"
+      },
+      {
+        "level": "WARNING",
+        "message": " * Debugger is active!",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:36,794"
+      },
+      {
+        "level": "WARNING",
+        "message": " * Debugger is active!",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:36,797"
+      },
+      {
+        "level": "INFO",
+        "message": " * Debugger PIN: 102-088-256",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:36,798"
+      },
+      {
+        "level": "INFO",
+        "message": " * Debugger PIN: 102-088-256",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:52:36,800"
+      },
+      {
+        "level": "INFO",
+        "message": "Loading config from: D:\\MCP_PowerShell_T\\config\\default.yaml",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:12,671"
+      },
+      {
+        "level": "INFO",
+        "message": "Project root: D:\\MCP_PowerShell_T",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:12,673"
+      },
+      {
+        "level": "INFO",
+        "message": "ContextManager initialized",
+        "source": "src.context.manager",
+        "timestamp": "2026-02-19 14:54:12,679"
+      },
+      {
+        "level": "INFO",
+        "message": "PowerShell Assistant initialization complete",
+        "source": "ai_powershell",
+        "timestamp": "2026-02-19 14:54:13"
+      },
+      {
+        "level": "INFO",
+        "message": "PowerShell Assistant initialization complete",
+        "source": "ai_powershell",
+        "timestamp": "2026-02-19 14:54:13,370"
+      },
+      {
+        "level": "INFO",
+        "message": "PowerShellAssistant initialized successfully",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:13,371"
+      },
+      {
+        "level": "INFO",
+        "message": "AI Provider: ollama, Model: qwen3:30b",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:13,371"
+      },
+      {
+        "level": "INFO",
+        "message": "Encoding: gbk",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:13,372"
+      },
+      {
+        "level": "INFO",
+        "message": "Reading log file from: D:\\MCP_PowerShell_T\\logs/assistant.log",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:13,372"
+      },
+      {
+        "level": "INFO",
+        "message": "Log file exists: True",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:13,372"
+      }
+    ],
+    "total": 20
+  },
+  "success": true
+}
+

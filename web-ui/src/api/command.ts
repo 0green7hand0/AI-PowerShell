@@ -1,9 +1,9 @@
 /**
  * Command API Service
- * 
+ *
  * Provides methods for translating natural language to PowerShell commands
  * and executing PowerShell commands.
- * 
+ *
  * Requirements: 1.2, 1.3
  */
 
@@ -28,6 +28,11 @@ export interface CommandContext {
     command: string
     timestamp: string
   }>
+  feedback?: {
+    previousCommand: string
+    feedback: string
+    explanation: string
+  }
 }
 
 /**
@@ -46,6 +51,11 @@ export interface SecurityInfo {
 export interface TranslateRequest {
   input: string
   context?: CommandContext
+  feedback?: {
+    previousCommand: string
+    feedback: string
+    explanation: string
+  }
 }
 
 /**
@@ -89,17 +99,17 @@ export interface ExecuteResponse {
 
 /**
  * Command API service
- * 
+ *
  * Provides methods for command translation and execution
  */
 export const commandApi = {
   /**
    * Translate natural language to PowerShell command
-   * 
+   *
    * @param data - Translation request data
    * @returns Promise resolving to translation response
    * @throws Error if translation fails
-   * 
+   *
    * @example
    * ```typescript
    * const result = await commandApi.translate({
@@ -114,7 +124,7 @@ export const commandApi = {
   translate: async (data: TranslateRequest): Promise<TranslateResponse> => {
     try {
       // apiClient.post returns the unwrapped data (response.data)
-      const response = await apiClient.post('/command/translate', data) as TranslateResponse
+      const response = (await apiClient.post('/command/translate', data)) as TranslateResponse
       return response
     } catch (error) {
       // Error is already handled by axios interceptor
@@ -124,11 +134,11 @@ export const commandApi = {
 
   /**
    * Execute a PowerShell command
-   * 
+   *
    * @param data - Execution request data
    * @returns Promise resolving to execution response
    * @throws Error if execution fails
-   * 
+   *
    * @example
    * ```typescript
    * const result = await commandApi.execute({
@@ -142,7 +152,7 @@ export const commandApi = {
   execute: async (data: ExecuteRequest): Promise<ExecuteResponse> => {
     try {
       // apiClient.post returns the unwrapped data (response.data)
-      const response = await apiClient.post('/command/execute', data) as ExecuteResponse
+      const response = (await apiClient.post('/command/execute', data)) as ExecuteResponse
       return response
     } catch (error) {
       // Error is already handled by axios interceptor
@@ -157,19 +167,17 @@ export const commandApi = {
 
 /**
  * Check if a command requires confirmation based on security level
- * 
+ *
  * @param security - Security information
  * @returns true if confirmation is required
  */
 export const requiresConfirmation = (security: SecurityInfo): boolean => {
-  return security.requiresConfirmation || 
-         security.level === 'high' || 
-         security.level === 'critical'
+  return security.requiresConfirmation || security.level === 'high' || security.level === 'critical'
 }
 
 /**
  * Get color class for security level
- * 
+ *
  * @param level - Security level
  * @returns CSS class name for the security level
  */
@@ -186,7 +194,7 @@ export const getSecurityLevelColor = (level: SecurityLevel): string => {
 
 /**
  * Get display text for security level
- * 
+ *
  * @param level - Security level
  * @returns Display text for the security level
  */

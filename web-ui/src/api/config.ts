@@ -1,9 +1,9 @@
 /**
  * Config API Service
- * 
+ *
  * Provides methods for managing system configuration including
  * AI settings, security settings, execution settings, and general settings.
- * 
+ *
  * Requirements: 1.4, 8.1-8.7
  */
 
@@ -97,18 +97,18 @@ export interface UpdateConfigResponse {
 
 /**
  * Config API service
- * 
+ *
  * Provides methods for configuration management
  */
 export const configApi = {
   /**
    * Get current application configuration
-   * 
+   *
    * @returns Promise resolving to config response
    * @throws Error if request fails
-   * 
+   *
    * Requirements: 8.1
-   * 
+   *
    * @example
    * ```typescript
    * const result = await configApi.getConfig()
@@ -117,7 +117,7 @@ export const configApi = {
    */
   getConfig: async (): Promise<GetConfigResponse> => {
     try {
-      const response = await apiClient.get('/config') as GetConfigResponse
+      const response = (await apiClient.get('/config')) as GetConfigResponse
       return response
     } catch (error) {
       // Error is already handled by axios interceptor
@@ -127,13 +127,13 @@ export const configApi = {
 
   /**
    * Update application configuration
-   * 
+   *
    * @param config - Partial configuration to update
    * @returns Promise resolving to updated config response
    * @throws Error if request fails or validation fails
-   * 
+   *
    * Requirements: 8.2, 8.3, 8.4
-   * 
+   *
    * @example
    * ```typescript
    * const result = await configApi.updateConfig({
@@ -147,7 +147,7 @@ export const configApi = {
    */
   updateConfig: async (config: UpdateConfigRequest): Promise<UpdateConfigResponse> => {
     try {
-      const response = await apiClient.put('/config', config) as UpdateConfigResponse
+      const response = (await apiClient.put('/config', config)) as UpdateConfigResponse
       return response
     } catch (error) {
       throw error
@@ -156,12 +156,12 @@ export const configApi = {
 
   /**
    * Reset configuration to default values
-   * 
+   *
    * @returns Promise resolving to default config response
    * @throws Error if request fails
-   * 
+   *
    * Requirements: 8.6
-   * 
+   *
    * @example
    * ```typescript
    * const result = await configApi.resetConfig()
@@ -170,7 +170,7 @@ export const configApi = {
    */
   resetConfig: async (): Promise<UpdateConfigResponse> => {
     try {
-      const response = await apiClient.post('/config/reset') as UpdateConfigResponse
+      const response = (await apiClient.post('/config/reset')) as UpdateConfigResponse
       return response
     } catch (error) {
       throw error

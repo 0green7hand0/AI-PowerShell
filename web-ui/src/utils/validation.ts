@@ -6,9 +6,9 @@
  * Sanitize HTML to prevent XSS attacks
  */
 export function sanitizeHtml(input: string): string {
-  const div = document.createElement('div');
-  div.textContent = input;
-  return div.innerHTML;
+  const div = document.createElement('div')
+  div.textContent = input
+  return div.innerHTML
 }
 
 /**
@@ -21,25 +21,25 @@ export function escapeHtml(input: string): string {
     '>': '&gt;',
     '"': '&quot;',
     "'": '&#x27;',
-    '/': '&#x2F;',
-  };
-  return input.replace(/[&<>"'/]/g, (char) => map[char]);
+    '/': '&#x2F;'
+  }
+  return input.replace(/[&<>"'/]/g, (char) => map[char])
 }
 
 /**
  * Validate email format
  */
 export function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
 }
 
 /**
  * Validate username (alphanumeric, underscore, hyphen, 3-20 chars)
  */
 export function isValidUsername(username: string): boolean {
-  const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
-  return usernameRegex.test(username);
+  const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/
+  return usernameRegex.test(username)
 }
 
 /**
@@ -50,29 +50,29 @@ export function isValidUsername(username: string): boolean {
  * - Contains at least one number
  */
 export function isStrongPassword(password: string): boolean {
-  if (password.length < 8) return false;
-  if (!/[A-Z]/.test(password)) return false;
-  if (!/[a-z]/.test(password)) return false;
-  if (!/[0-9]/.test(password)) return false;
-  return true;
+  if (password.length < 8) return false
+  if (!/[A-Z]/.test(password)) return false
+  if (!/[a-z]/.test(password)) return false
+  if (!/[0-9]/.test(password)) return false
+  return true
 }
 
 /**
  * Get password strength level
  */
 export function getPasswordStrength(password: string): 'weak' | 'medium' | 'strong' {
-  let strength = 0;
-  
-  if (password.length >= 8) strength++;
-  if (password.length >= 12) strength++;
-  if (/[A-Z]/.test(password)) strength++;
-  if (/[a-z]/.test(password)) strength++;
-  if (/[0-9]/.test(password)) strength++;
-  if (/[^A-Za-z0-9]/.test(password)) strength++;
-  
-  if (strength <= 2) return 'weak';
-  if (strength <= 4) return 'medium';
-  return 'strong';
+  let strength = 0
+
+  if (password.length >= 8) strength++
+  if (password.length >= 12) strength++
+  if (/[A-Z]/.test(password)) strength++
+  if (/[a-z]/.test(password)) strength++
+  if (/[0-9]/.test(password)) strength++
+  if (/[^A-Za-z0-9]/.test(password)) strength++
+
+  if (strength <= 2) return 'weak'
+  if (strength <= 4) return 'medium'
+  return 'strong'
 }
 
 /**
@@ -80,10 +80,10 @@ export function getPasswordStrength(password: string): 'weak' | 'medium' | 'stro
  */
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url);
-    return true;
+    new URL(url)
+    return true
   } catch {
-    return false;
+    return false
   }
 }
 
@@ -91,22 +91,22 @@ export function isValidUrl(url: string): boolean {
  * Validate IP address (IPv4)
  */
 export function isValidIpv4(ip: string): boolean {
-  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
-  if (!ipv4Regex.test(ip)) return false;
-  
-  const parts = ip.split('.');
-  return parts.every(part => {
-    const num = parseInt(part, 10);
-    return num >= 0 && num <= 255;
-  });
+  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/
+  if (!ipv4Regex.test(ip)) return false
+
+  const parts = ip.split('.')
+  return parts.every((part) => {
+    const num = parseInt(part, 10)
+    return num >= 0 && num <= 255
+  })
 }
 
 /**
  * Validate port number
  */
 export function isValidPort(port: number | string): boolean {
-  const portNum = typeof port === 'string' ? parseInt(port, 10) : port;
-  return !isNaN(portNum) && portNum >= 1 && portNum <= 65535;
+  const portNum = typeof port === 'string' ? parseInt(port, 10) : port
+  return !isNaN(portNum) && portNum >= 1 && portNum <= 65535
 }
 
 /**
@@ -114,16 +114,16 @@ export function isValidPort(port: number | string): boolean {
  */
 export function isValidFilePath(path: string): boolean {
   // Check for null bytes
-  if (path.includes('\0')) return false;
-  
+  if (path.includes('\0')) return false
+
   // Check for path traversal attempts
-  if (path.includes('../') || path.includes('..\\')) return false;
-  
+  if (path.includes('../') || path.includes('..\\')) return false
+
   // Check for invalid characters (Windows)
-  const invalidChars = /[<>:"|?*]/;
-  if (invalidChars.test(path)) return false;
-  
-  return true;
+  const invalidChars = /[<>:"|?*]/
+  if (invalidChars.test(path)) return false
+
+  return true
 }
 
 /**
@@ -132,30 +132,30 @@ export function isValidFilePath(path: string): boolean {
 export function isValidCommandInput(input: string): { valid: boolean; reason?: string } {
   // Check for null bytes
   if (input.includes('\0')) {
-    return { valid: false, reason: 'Input contains null bytes' };
+    return { valid: false, reason: 'Input contains null bytes' }
   }
-  
+
   // Check for excessive length
   if (input.length > 10000) {
-    return { valid: false, reason: 'Input is too long (max 10000 characters)' };
+    return { valid: false, reason: 'Input is too long (max 10000 characters)' }
   }
-  
+
   // Check for script injection attempts
   const dangerousPatterns = [
     /<script/i,
     /javascript:/i,
     /on\w+\s*=/i, // Event handlers like onclick=
     /eval\s*\(/i,
-    /expression\s*\(/i,
-  ];
-  
+    /expression\s*\(/i
+  ]
+
   for (const pattern of dangerousPatterns) {
     if (pattern.test(input)) {
-      return { valid: false, reason: 'Input contains potentially dangerous patterns' };
+      return { valid: false, reason: 'Input contains potentially dangerous patterns' }
     }
   }
-  
-  return { valid: true };
+
+  return { valid: true }
 }
 
 /**
@@ -163,10 +163,10 @@ export function isValidCommandInput(input: string): { valid: boolean; reason?: s
  */
 export function isValidJson(str: string): boolean {
   try {
-    JSON.parse(str);
-    return true;
+    JSON.parse(str)
+    return true
   } catch {
-    return false;
+    return false
   }
 }
 
@@ -174,45 +174,45 @@ export function isValidJson(str: string): boolean {
  * Validate number range
  */
 export function isInRange(value: number, min: number, max: number): boolean {
-  return value >= min && value <= max;
+  return value >= min && value <= max
 }
 
 /**
  * Validate string length
  */
 export function isValidLength(str: string, min: number, max: number): boolean {
-  return str.length >= min && str.length <= max;
+  return str.length >= min && str.length <= max
 }
 
 /**
  * Validate required field
  */
 export function isRequired(value: any): boolean {
-  if (value === null || value === undefined) return false;
-  if (typeof value === 'string' && value.trim() === '') return false;
-  if (Array.isArray(value) && value.length === 0) return false;
-  return true;
+  if (value === null || value === undefined) return false
+  if (typeof value === 'string' && value.trim() === '') return false
+  if (Array.isArray(value) && value.length === 0) return false
+  return true
 }
 
 /**
  * Validate alphanumeric string
  */
 export function isAlphanumeric(str: string): boolean {
-  return /^[a-zA-Z0-9]+$/.test(str);
+  return /^[a-zA-Z0-9]+$/.test(str)
 }
 
 /**
  * Validate numeric string
  */
 export function isNumeric(str: string): boolean {
-  return /^\d+$/.test(str);
+  return /^\d+$/.test(str)
 }
 
 /**
  * Validate hexadecimal string
  */
 export function isHexadecimal(str: string): boolean {
-  return /^[0-9A-Fa-f]+$/.test(str);
+  return /^[0-9A-Fa-f]+$/.test(str)
 }
 
 /**
@@ -220,76 +220,110 @@ export function isHexadecimal(str: string): boolean {
  */
 export function sanitizeInput(input: string): string {
   // Remove null bytes
-  let sanitized = input.replace(/\0/g, '');
-  
+  let sanitized = input.replace(/\0/g, '')
+
   // Remove control characters except newline and tab
-  sanitized = sanitized.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
-  
-  return sanitized;
+  sanitized = sanitized.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '')
+
+  // Remove HTML tags
+  sanitized = sanitized.replace(/<[^>]*>/g, '')
+
+  return sanitized
+}
+
+/**
+ * Validate maximum length
+ */
+export function validateMaxLength(str: string, maxLength: number): boolean {
+  return str.length <= maxLength
+}
+
+/**
+ * Validate email format
+ */
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+/**
+ * Validate required field
+ */
+export function validateRequired(value: any): boolean {
+  if (value === null || value === undefined) return false
+  if (typeof value === 'string' && value.trim() === '') return false
+  return true
+}
+
+/**
+ * Validate minimum length
+ */
+export function validateMinLength(str: string, minLength: number): boolean {
+  return str.length >= minLength
 }
 
 /**
  * Validate form data
  */
 export interface ValidationRule {
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  custom?: (value: any) => boolean;
-  message?: string;
+  required?: boolean
+  minLength?: number
+  maxLength?: number
+  pattern?: RegExp
+  custom?: (value: any) => boolean
+  message?: string
 }
 
 export interface ValidationResult {
-  valid: boolean;
-  errors: Record<string, string>;
+  valid: boolean
+  errors: Record<string, string>
 }
 
 export function validateForm(
   data: Record<string, any>,
   rules: Record<string, ValidationRule>
 ): ValidationResult {
-  const errors: Record<string, string> = {};
-  
+  const errors: Record<string, string> = {}
+
   for (const [field, rule] of Object.entries(rules)) {
-    const value = data[field];
-    
+    const value = data[field]
+
     // Check required
     if (rule.required && !isRequired(value)) {
-      errors[field] = rule.message || `${field} is required`;
-      continue;
+      errors[field] = rule.message || `${field} is required`
+      continue
     }
-    
+
     // Skip other validations if value is empty and not required
-    if (!isRequired(value)) continue;
-    
+    if (!isRequired(value)) continue
+
     // Check min length
     if (rule.minLength && typeof value === 'string' && value.length < rule.minLength) {
-      errors[field] = rule.message || `${field} must be at least ${rule.minLength} characters`;
-      continue;
+      errors[field] = rule.message || `${field} must be at least ${rule.minLength} characters`
+      continue
     }
-    
+
     // Check max length
     if (rule.maxLength && typeof value === 'string' && value.length > rule.maxLength) {
-      errors[field] = rule.message || `${field} must be at most ${rule.maxLength} characters`;
-      continue;
+      errors[field] = rule.message || `${field} must be at most ${rule.maxLength} characters`
+      continue
     }
-    
+
     // Check pattern
     if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) {
-      errors[field] = rule.message || `${field} format is invalid`;
-      continue;
+      errors[field] = rule.message || `${field} format is invalid`
+      continue
     }
-    
+
     // Check custom validation
     if (rule.custom && !rule.custom(value)) {
-      errors[field] = rule.message || `${field} is invalid`;
-      continue;
+      errors[field] = rule.message || `${field} is invalid`
+      continue
     }
   }
-  
+
   return {
     valid: Object.keys(errors).length === 0,
     errors
-  };
+  }
 }

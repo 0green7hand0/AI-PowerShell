@@ -53,6 +53,7 @@ export const formatFileSize = (bytes: number): string => {
  * Format duration in milliseconds to readable string
  */
 export const formatDuration = (ms: number): string => {
+  if (!ms || isNaN(ms)) return '0ms'
   if (ms < 1000) return `${ms}ms`
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
   if (ms < 3600000) return `${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s`
@@ -63,10 +64,9 @@ export const formatDuration = (ms: number): string => {
  * Format timestamp to readable string
  */
 export const formatTimestamp = (timestamp: string | Date | number): string => {
-  const date = typeof timestamp === 'string' || typeof timestamp === 'number' 
-    ? new Date(timestamp) 
-    : timestamp
-  
+  const date =
+    typeof timestamp === 'string' || typeof timestamp === 'number' ? new Date(timestamp) : timestamp
+
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',

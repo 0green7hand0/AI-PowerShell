@@ -15,11 +15,7 @@
 
       <!-- Level Filter -->
       <div class="filter-level">
-        <el-select
-          v-model="selectedLevel"
-          placeholder="日志级别"
-          @change="handleLevelChange"
-        >
+        <el-select v-model="selectedLevel" placeholder="日志级别" @change="handleLevelChange">
           <el-option label="全部" value="ALL">
             <span class="level-option">
               <span class="level-badge level-all">全部</span>
@@ -60,11 +56,7 @@
       </div>
 
       <!-- Clear Filters Button -->
-      <el-button
-        v-if="hasActiveFilters"
-        :icon="Close"
-        @click="handleClearFilters"
-      >
+      <el-button v-if="hasActiveFilters" :icon="Close" @click="handleClearFilters">
         清除过滤
       </el-button>
 
@@ -81,18 +73,10 @@
     <!-- Active Filters Display -->
     <div v-if="hasActiveFilters" class="active-filters">
       <span class="filter-label">当前过滤:</span>
-      <el-tag
-        v-if="selectedLevel !== 'ALL'"
-        closable
-        @close="handleLevelChange('ALL')"
-      >
+      <el-tag v-if="selectedLevel !== 'ALL'" closable @close="handleLevelChange('ALL')">
         级别: {{ selectedLevel }}
       </el-tag>
-      <el-tag
-        v-if="searchInput"
-        closable
-        @close="handleClearSearch"
-      >
+      <el-tag v-if="searchInput" closable @close="handleClearSearch">
         搜索: {{ searchInput }}
       </el-tag>
     </div>

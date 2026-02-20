@@ -19,7 +19,7 @@ const toastRef = ref()
 onMounted(() => {
   // Initialize app
   appStore.initialize()
-  
+
   // Initialize toast
   if (toastRef.value) {
     setToastInstance(toastRef.value)

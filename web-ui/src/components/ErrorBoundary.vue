@@ -13,23 +13,25 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
       </div>
-      
+
       <h2 class="error-title">出错了</h2>
-      
-      <p class="error-message">{{ errorMessage }}</p>
-      
+
+      <p class="error-message">
+        {{ errorMessage }}
+      </p>
+
       <div v-if="showDetails && errorDetails" class="error-details">
         <details>
           <summary>错误详情</summary>
           <pre>{{ errorDetails }}</pre>
         </details>
       </div>
-      
+
       <div class="error-actions">
         <button class="btn btn-primary" @click="handleReset">
           <svg
@@ -43,12 +45,12 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <polyline points="1 4 1 10 7 10"></polyline>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
           </svg>
           重试
         </button>
-        
+
         <button class="btn btn-secondary" @click="handleGoHome">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -61,15 +63,15 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
           返回首页
         </button>
       </div>
     </div>
   </div>
-  
+
   <slot v-else />
 </template>
 
@@ -102,15 +104,15 @@ onErrorCaptured((err: Error) => {
   error.value = err
   errorMessage.value = err.message || props.fallbackMessage
   errorDetails.value = err.stack || ''
-  
+
   // Log error to console in development
   if (import.meta.env.DEV) {
     console.error('ErrorBoundary caught error:', err)
   }
-  
+
   // Emit error event for parent components
   emit('error', err)
-  
+
   // Prevent error from propagating
   return false
 })
@@ -251,13 +253,21 @@ defineExpose({
 }
 
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-5px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(5px);
   }
 }

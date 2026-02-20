@@ -1,78 +1,98 @@
 <template>
-  <div :class="['message-card', `message-${message.type}`]">
+  <div :class="['message-card', `message-${props.message.type}`]">
     <!-- User Message -->
-    <div v-if="message.type === 'user'" class="user-message">
+    <div v-if="props.message.type === 'user'" class="user-message">
       <div class="message-content">
-        <div class="message-text">{{ message.content }}</div>
-        <div class="message-timestamp">{{ formatTime(message.timestamp) }}</div>
+        <div class="message-text">
+          {{ props.message.content }}
+        </div>
+        <div class="message-timestamp">
+          {{ formatTime(props.message.timestamp) }}
+        </div>
       </div>
       <div class="message-avatar user-avatar">
         <el-icon><User /></el-icon>
       </div>
     </div>
-
+    
     <!-- Assistant Message -->
-    <div v-else-if="message.type === 'assistant'" class="assistant-message">
+    <div v-else-if="props.message.type === 'assistant'" class="assistant-message">
       <div class="message-avatar assistant-avatar">
         <el-icon><Cpu /></el-icon>
       </div>
       <div class="message-content">
-        <div v-if="message.content" class="message-text">{{ message.content }}</div>
-        
+        <div v-if="props.message.content" class="message-text">
+          <div class="message-text-content">
+            {{ props.message.content }}
+          </div>
+          <el-button text size="small" class="copy-button" @click="handleCopyMessage">
+            <el-icon><DocumentCopy /></el-icon>
+          </el-button>
+        </div>
+
         <!-- Command Card -->
         <CommandCard
-          v-if="message.command"
-          :command="message.command.command"
-          :confidence="message.command.confidence"
-          :explanation="message.command.explanation"
-          :security="message.command.security"
+          v-if="props.message.command"
+          :key="props.message.command.command"
+          :command="props.message.command.command"
+          :confidence="props.message.command.confidence"
+          :explanation="props.message.command.explanation"
+          :security="props.message.command.security"
           @execute="handleExecute"
           @copy="handleCopy"
           @edit="handleEdit"
+          @feedback="handleFeedback"
+          @regenerate="handleRegenerate"
         />
 
         <!-- Execution Result -->
-        <div v-if="message.result" class="result-card">
+        <div v-if="props.message.result" class="result-card">
           <div class="result-header">
-            <el-icon :class="message.result.success ? 'success-icon' : 'error-icon'">
-              <component :is="message.result.success ? 'CircleCheck' : 'CircleClose'" />
+            <el-icon :class="props.message.result?.success ? 'success-icon' : 'error-icon'">
+              {{ props.message.result?.success ? '✓' : '✗' }}
             </el-icon>
             <span class="result-title">
-              {{ message.result.success ? '执行成功' : '执行失败' }}
+              {{ props.message.result?.success ? '执行成功' : '执行失败' }}
             </span>
-            <span class="result-time">{{ message.result.executionTime.toFixed(3) }}s</span>
+            <span class="result-time">{{ props.message.result?.executionTime.toFixed(3) }}s</span>
           </div>
-          
+
           <CodeBlock
-            v-if="message.result.output"
-            :code="message.result.output"
+            v-if="props.message.result?.output"
+            :code="props.message.result?.output"
             language="powershell"
             :copyable="true"
           />
-          
-          <div v-if="message.result.error" class="error-output">
-            <el-icon class="error-icon"><Warning /></el-icon>
-            <pre>{{ message.result.error }}</pre>
+
+          <div v-if="props.message.result?.error" class="error-output">
+            <el-icon class="error-icon">
+              <Warning />
+            </el-icon>
+            <pre>{{ props.message.result?.error }}</pre>
           </div>
         </div>
 
-        <div class="message-timestamp">{{ formatTime(message.timestamp) }}</div>
+        <div class="message-timestamp">
+          {{ formatTime(props.message.timestamp) }}
+        </div>
       </div>
     </div>
-
+    
     <!-- System Message -->
     <div v-else class="system-message">
       <div class="system-content">
         <el-icon><InfoFilled /></el-icon>
-        <span>{{ message.content }}</span>
+        <span>{{ props.message.content }}</span>
       </div>
-      <div class="message-timestamp">{{ formatTime(message.timestamp) }}</div>
+      <div class="message-timestamp">
+        {{ formatTime(props.message.timestamp) }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { User, Cpu, CircleCheck, CircleClose, Warning, InfoFilled } from '@element-plus/icons-vue'
+import { User, Cpu, Warning, InfoFilled, DocumentCopy } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { Message } from '../stores/chat'
 import { useChatStore } from '../stores/chat'
@@ -81,10 +101,10 @@ import CodeBlock from './CodeBlock.vue'
 
 /**
  * MessageCard - Individual message display component
- * 
+ *
  * Renders different styles for user messages, AI responses, and system messages.
  * Includes timestamp display.
- * 
+ *
  * Requirements: 2.1
  */
 
@@ -140,6 +160,34 @@ const handleCopy = (command: string) => {
 const handleEdit = (command: string) => {
   chatStore.currentInput = command
   ElMessage.info('命令已填充到输入框')
+}
+
+/**
+ * Handle message content copy
+ */
+const handleCopyMessage = () => {
+  if (props.message.content) {
+    navigator.clipboard.writeText(props.message.content)
+    ElMessage.success('已复制到剪贴板')
+  }
+}
+
+/**
+ * Handle user feedback
+ */
+const handleFeedback = (command: string, isCorrect: boolean) => {
+  const feedbackText = isCorrect ? '感谢您的反馈！这个命令是正确的。' : '感谢您的反馈！我们会改进这个命令。'
+  ElMessage.success(feedbackText)
+  
+  // Here you could also send the feedback to the backend for analysis
+  console.log('Feedback received:', { command, isCorrect, messageId: props.message.id })
+}
+
+/**
+ * Handle command regeneration
+ */
+const handleRegenerate = () => {
+  chatStore.regenerateCommand(props.message.id)
 }
 </script>
 
@@ -197,6 +245,26 @@ const handleEdit = (command: string) => {
   background-color: var(--color-bg-secondary);
   border-radius: var(--radius-lg);
   border-bottom-left-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.message-text-content {
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.copy-button {
+  flex-shrink: 0;
+  margin-top: 2px;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast) var(--ease-in-out);
+}
+
+.copy-button:hover {
+  opacity: 1;
 }
 
 .assistant-avatar {

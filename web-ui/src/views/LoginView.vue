@@ -6,7 +6,7 @@
         <p class="login-subtitle">Sign in to continue</p>
       </div>
 
-      <form @submit.prevent="handleLogin" class="login-form">
+      <form class="login-form" @submit.prevent="handleLogin">
         <div class="form-group">
           <label for="username" class="form-label">Username</label>
           <input
@@ -37,14 +37,10 @@
           {{ error }}
         </div>
 
-        <button
-          type="submit"
-          class="login-button"
-          :disabled="isLoading"
-        >
+        <button type="submit" class="login-button" :disabled="isLoading">
           <span v-if="!isLoading">Sign In</span>
           <span v-else class="loading-text">
-            <span class="spinner"></span>
+            <span class="spinner" />
             Signing in...
           </span>
         </button>
@@ -60,52 +56,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { isValidUsername, sanitizeInput } from '@/utils/validation';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { isValidUsername, sanitizeInput } from '@/utils/validation'
 
-const router = useRouter();
-const authStore = useAuthStore();
+const router = useRouter()
+const authStore = useAuthStore()
 
-const username = ref('');
-const password = ref('');
-const error = ref('');
-const isLoading = ref(false);
+const username = ref('')
+const password = ref('')
+const error = ref('')
+const isLoading = ref(false)
 
 async function handleLogin() {
-  error.value = '';
-  
+  error.value = ''
+
   // Validate username
   if (!isValidUsername(username.value)) {
-    error.value = 'Username must be 3-20 characters and contain only letters, numbers, underscore, and hyphen';
-    return;
+    error.value =
+      'Username must be 3-20 characters and contain only letters, numbers, underscore, and hyphen'
+    return
   }
-  
+
   // Validate password
   if (password.value.length < 1) {
-    error.value = 'Password is required';
-    return;
+    error.value = 'Password is required'
+    return
   }
-  
-  isLoading.value = true;
+
+  isLoading.value = true
 
   try {
     // Sanitize inputs
-    const sanitizedUsername = sanitizeInput(username.value);
-    const sanitizedPassword = sanitizeInput(password.value);
-    
+    const sanitizedUsername = sanitizeInput(username.value)
+    const sanitizedPassword = sanitizeInput(password.value)
+
     await authStore.login({
       username: sanitizedUsername,
       password: sanitizedPassword
-    });
+    })
 
     // Redirect to home page
-    router.push('/');
+    router.push('/')
   } catch (err: any) {
-    error.value = err.response?.data?.error?.message || 'Login failed. Please try again.';
+    error.value = err.response?.data?.error?.message || 'Login failed. Please try again.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 </script>
@@ -263,7 +260,7 @@ async function handleLogin() {
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .login-card {
+[data-theme='dark'] .login-card {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 </style>

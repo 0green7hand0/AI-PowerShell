@@ -1,9 +1,9 @@
 /**
  * App Store
- * 
+ *
  * Manages global application state including theme, sidebar,
  * configuration, and system status.
- * 
+ *
  * Requirements: 8.1, 8.4, 8.6
  */
 
@@ -91,7 +91,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Toggle theme between light and dark
-   * 
+   *
    * Requirements: 6.2
    */
   const toggleTheme = (): void => {
@@ -102,7 +102,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Set theme explicitly
-   * 
+   *
    * @param newTheme - Theme to set
    */
   const setTheme = (newTheme: Theme): void => {
@@ -113,12 +113,12 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Apply theme to document
-   * 
+   *
    * @param themeValue - Theme to apply
    */
   const applyTheme = (themeValue: Theme): void => {
     document.documentElement.setAttribute('data-theme', themeValue)
-    
+
     // Update Element Plus theme
     if (themeValue === 'dark') {
       document.documentElement.classList.add('dark')
@@ -129,7 +129,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Save theme to localStorage
-   * 
+   *
    * @param themeValue - Theme to save
    */
   const saveThemeToStorage = (themeValue: Theme): void => {
@@ -162,7 +162,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Set sidebar collapsed state
-   * 
+   *
    * @param collapsed - Whether sidebar should be collapsed
    */
   const setSidebarCollapsed = (collapsed: boolean): void => {
@@ -172,7 +172,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Save sidebar state to localStorage
-   * 
+   *
    * @param collapsed - Sidebar collapsed state
    */
   const saveSidebarStateToStorage = (collapsed: boolean): void => {
@@ -191,7 +191,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Load configuration from backend
-   * 
+   *
    * Requirements: 8.1
    */
   const loadConfig = async (): Promise<void> => {
@@ -220,9 +220,9 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Update configuration
-   * 
+   *
    * @param updates - Partial configuration updates
-   * 
+   *
    * Requirements: 8.4
    */
   const updateConfig = async (updates: Partial<AppConfig>): Promise<boolean> => {
@@ -255,7 +255,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Reset configuration to defaults
-   * 
+   *
    * Requirements: 8.6
    */
   const resetConfig = async (): Promise<boolean> => {
@@ -288,7 +288,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Check system status
-   * 
+   *
    * Requirements: 5.6
    */
   const checkSystemStatus = async (): Promise<void> => {
@@ -323,7 +323,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * Initialize app store
-   * 
+   *
    * Loads theme, sidebar state, and configuration
    */
   const initialize = async (): Promise<void> => {

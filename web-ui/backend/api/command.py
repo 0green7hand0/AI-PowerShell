@@ -26,19 +26,33 @@ def get_assistant():
     """Get or create PowerShellAssistant instance"""
     global _assistant, _assistant_config_path
     
+    # Get project root directory (3 levels up from this file)
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    
     # Config path
-    config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'config', 'default.yaml'))
+    config_path = os.path.join(project_root, 'config', 'default.yaml')
     
     # Recreate assistant if config path changed or not initialized
     if _assistant is None or _assistant_config_path != config_path:
         try:
             from src.main import PowerShellAssistant
             current_app.logger.info(f"Loading config from: {config_path}")
-            _assistant = PowerShellAssistant(config_path=config_path)
-            _assistant_config_path = config_path
-            current_app.logger.info("PowerShellAssistant initialized successfully")
-            current_app.logger.info(f"AI Provider: {_assistant.config.ai.provider}, Model: {_assistant.config.ai.model_name}")
-            current_app.logger.info(f"Encoding: {_assistant.executor.encoding}")
+            current_app.logger.info(f"Project root: {project_root}")
+            
+            # Change to project root directory before initializing
+            original_cwd = os.getcwd()
+            os.chdir(project_root)
+            
+            try:
+                _assistant = PowerShellAssistant(config_path=config_path)
+                _assistant_config_path = config_path
+                current_app.logger.info("PowerShellAssistant initialized successfully")
+                current_app.logger.info(f"AI Provider: {_assistant.config.ai.provider}, Model: {_assistant.config.ai.model_name}")
+                current_app.logger.info(f"Encoding: {_assistant.executor.encoding}")
+            finally:
+                # Restore original working directory
+                os.chdir(original_cwd)
+                
         except Exception as e:
             current_app.logger.error(f"Failed to initialize PowerShellAssistant: {str(e)}", exc_info=True)
             raise RuntimeError(f"Failed to initialize PowerShellAssistant: {str(e)}")
@@ -90,11 +104,21 @@ def translate_command():
         context = Context(
             session_id=translate_req.context.get('sessionId', 'web-session') if translate_req.context else 'web-session',
             working_directory=os.getcwd(),
-            command_history=translate_req.context.get('history', []) if translate_req.context else []
+            command_history=translate_req.context.get('history', []) if translate_req.context else [],
+            feedback=translate_req.feedback
         )
+        
+        # Debug: Print context feedback
+        current_app.logger.info(f"[调试] Context feedback: {context.feedback}")
+        current_app.logger.info(f"[调试] translate_req.feedback: {translate_req.feedback}")
+        
+        # Check if this is a regeneration request with feedback
+        is_regeneration = translate_req.feedback is not None
         
         # Translate using AI engine
         current_app.logger.info(f"📝 用户输入: {translate_req.input}")
+        if is_regeneration:
+            current_app.logger.info(f"🔄 重新生成模式 - 反馈: {translate_req.feedback}")
         current_app.logger.info(f"🤖 开始 AI 翻译...")
         
         suggestion = assistant.ai_engine.translate_natural_language(translate_req.input, context)

@@ -24,17 +24,14 @@
     <div class="action-bar">
       <div class="action-left">
         <el-tooltip content="快捷键：Enter 发送，Shift+Enter 换行" placement="top">
-          <el-icon class="hint-icon"><QuestionFilled /></el-icon>
+          <el-icon class="hint-icon">
+            <QuestionFilled />
+          </el-icon>
         </el-tooltip>
       </div>
 
       <div class="action-right">
-        <el-button
-          v-if="inputValue.length > 0"
-          text
-          size="small"
-          @click="handleClear"
-        >
+        <el-button v-if="inputValue.length > 0" text size="small" @click="handleClear">
           清空
         </el-button>
 
@@ -43,10 +40,12 @@
           size="default"
           :disabled="!canSubmit"
           :loading="loading"
-          @click="handleSubmit"
           class="send-button"
+          @click="handleSubmit"
         >
-          <el-icon v-if="!loading"><Promotion /></el-icon>
+          <el-icon v-if="!loading">
+            <Promotion />
+          </el-icon>
           {{ loading ? '发送中...' : '发送' }}
         </el-button>
       </div>
@@ -62,11 +61,11 @@ import { isValidCommandInput, sanitizeInput } from '@/utils/validation'
 
 /**
  * InputBox - Multi-line input component for chat
- * 
+ *
  * Supports multi-line text input with character count,
  * keyboard shortcuts (Enter to send, Shift+Enter for newline),
  * and loading state.
- * 
+ *
  * Requirements: 2.2, 2.3, 2.4, 7.2
  */
 
@@ -123,19 +122,19 @@ const handleKeyDown = (event: KeyboardEvent) => {
  */
 const handleSubmit = () => {
   if (!canSubmit.value) return
-  
+
   const trimmedValue = inputValue.value.trim()
-  
+
   // Validate input
   const validation = isValidCommandInput(trimmedValue)
   if (!validation.valid) {
     ElMessage.error(validation.reason || '输入包含无效内容')
     return
   }
-  
+
   // Sanitize input
   const sanitizedValue = sanitizeInput(trimmedValue)
-  
+
   emit('submit', sanitizedValue)
   inputValue.value = ''
 }
@@ -151,9 +150,12 @@ const handleClear = () => {
 /**
  * Watch for external changes to modelValue
  */
-watch(() => props.modelValue, (newValue) => {
-  inputValue.value = newValue
-})
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    inputValue.value = newValue
+  }
+)
 
 /**
  * Emit updates to parent

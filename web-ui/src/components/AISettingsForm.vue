@@ -19,11 +19,7 @@
     >
       <!-- Provider -->
       <el-form-item label="AI 提供商" prop="provider">
-        <el-select
-          v-model="formData.provider"
-          placeholder="选择 AI 提供商"
-          @change="handleChange"
-        >
+        <el-select v-model="formData.provider" placeholder="选择 AI 提供商" @change="handleChange">
           <el-option label="本地模型 (Local)" value="local" />
           <el-option label="Ollama" value="ollama" />
           <el-option label="OpenAI" value="openai" />
@@ -32,9 +28,7 @@
           <el-option label="Google Gemini" value="gemini" />
         </el-select>
         <template #extra>
-          <span class="form-item-help">
-            选择用于命令翻译的 AI 服务提供商
-          </span>
+          <span class="form-item-help"> 选择用于命令翻译的 AI 服务提供商 </span>
         </template>
       </el-form-item>
 
@@ -46,9 +40,7 @@
           @input="handleChange"
         />
         <template #extra>
-          <span class="form-item-help">
-            使用的具体模型名称，不同提供商支持的模型不同
-          </span>
+          <span class="form-item-help"> 使用的具体模型名称，不同提供商支持的模型不同 </span>
         </template>
       </el-form-item>
 
@@ -121,22 +113,13 @@
           @input="handleChange"
         />
         <template #extra>
-          <span class="form-item-help">
-            可选。如果未设置，将使用环境变量中的密钥
-          </span>
+          <span class="form-item-help"> 可选。如果未设置，将使用环境变量中的密钥 </span>
         </template>
       </el-form-item>
 
       <!-- Info Card -->
-      <el-alert
-        type="info"
-        :closable="false"
-        show-icon
-        class="ai-settings-form__info"
-      >
-        <template #title>
-          推荐配置
-        </template>
+      <el-alert type="info" :closable="false" show-icon class="ai-settings-form__info">
+        <template #title> 推荐配置 </template>
         <template #default>
           <ul class="ai-settings-form__recommendations">
             <li><strong>快速响应：</strong> gpt-3.5-turbo, Temperature: 0.3, Max Tokens: 1000</li>
@@ -180,9 +163,7 @@ const formData = ref<AIConfig>({ ...props.modelValue })
 // ============================================================================
 
 const rules: FormRules = {
-  provider: [
-    { required: true, message: '请选择 AI 提供商', trigger: 'change' }
-  ],
+  provider: [{ required: true, message: '请选择 AI 提供商', trigger: 'change' }],
   modelName: [
     { required: true, message: '请输入模型名称', trigger: 'blur' },
     { min: 2, max: 100, message: '模型名称长度应在 2-100 个字符之间', trigger: 'blur' }
@@ -193,11 +174,15 @@ const rules: FormRules = {
   ],
   maxTokens: [
     { required: true, message: '请设置最大令牌数', trigger: 'change' },
-    { type: 'number', min: 100, max: 8000, message: '最大令牌数应在 100-8000 之间', trigger: 'change' }
+    {
+      type: 'number',
+      min: 100,
+      max: 8000,
+      message: '最大令牌数应在 100-8000 之间',
+      trigger: 'change'
+    }
   ],
-  apiKey: [
-    { min: 0, max: 500, message: 'API 密钥长度不能超过 500 个字符', trigger: 'blur' }
-  ]
+  apiKey: [{ min: 0, max: 500, message: 'API 密钥长度不能超过 500 个字符', trigger: 'blur' }]
 }
 
 // ============================================================================
@@ -234,7 +219,7 @@ const handleChange = () => {
  */
 const validate = async (): Promise<boolean> => {
   if (!formRef.value) return false
-  
+
   try {
     await formRef.value.validate()
     return true

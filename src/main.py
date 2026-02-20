@@ -59,32 +59,26 @@ class PowerShellAssistant:
         self.config_manager = ConfigManager(config_path)
         self.config = self.config_manager.load_config()
         
-        # 2. 初始化日志引擎（最先初始化，用于记录其他组件的初始化过程）
+        # 2. 初始化日志引擎（最先初始化）
         self.log_engine = LogEngine(self.config.logging)
-        self.log_engine.info("Initializing PowerShell Assistant...")
         
         # 3. 初始化存储引擎
         self.storage = StorageFactory.create_storage(
             storage_type="file",  # 默认使用文件存储
             config=self.config.storage.model_dump()  # 转换为字典
         )
-        self.log_engine.info("Storage engine initialized: file")
         
         # 4. 初始化上下文管理器
         self.context_manager = ContextManager(storage=self.storage)
-        self.log_engine.info("Context manager initialized")
         
         # 5. 初始化 AI 引擎
         self.ai_engine = AIEngine(self.config.ai.model_dump())  # 转换为字典
-        self.log_engine.info(f"AI engine initialized: {self.config.ai.provider}")
         
         # 6. 初始化安全引擎
         self.security_engine = SecurityEngine(self.config.security.model_dump())  # 转换为字典
-        self.log_engine.info("Security engine initialized")
         
         # 7. 初始化执行引擎
         self.executor = CommandExecutor(self.config.execution.model_dump())  # 转换为字典
-        self.log_engine.info("Execution engine initialized")
         
         # 8. 初始化模板引擎
         try:
@@ -92,7 +86,6 @@ class PowerShellAssistant:
                 self.config.model_dump(),
                 ai_provider=self.ai_engine.translator.ai_provider if hasattr(self.ai_engine.translator, 'ai_provider') else None
             )
-            self.log_engine.info("Template engine initialized")
         except Exception as e:
             self.log_engine.warning(f"Template engine initialization failed: {e}")
             self.template_engine = None
@@ -104,7 +97,6 @@ class PowerShellAssistant:
                     templates_dir="templates",
                     config_path="config/templates.yaml"
                 )
-                self.log_engine.info("Custom template manager initialized")
             else:
                 self.custom_template_manager = None
         except Exception as e:
@@ -135,8 +127,6 @@ class PowerShellAssistant:
             
             # 初始化帮助系统
             self.help_system = HelpSystem(self.ui_manager)
-            
-            self.log_engine.info("UI system initialized")
         except Exception as e:
             self.log_engine.warning(f"UI system initialization failed: {e}")
             self.ui_manager = None
@@ -588,13 +578,18 @@ class PowerShellAssistant:
         successful_commands = 0
         failed_commands = 0
         
-        # 运行启动体验
-        from src.ui.startup_experience import StartupExperience
-        startup = StartupExperience()
-        startup_success = startup.run_startup_sequence()
+        # 检查是否禁用启动屏幕
+        import os
+        disable_startup = os.environ.get("DISABLE_STARTUP_SCREEN", "0") == "1"
         
-        if not startup_success:
-            self.log_engine.warning("Startup checks failed, but continuing anyway")
+        if not disable_startup:
+            # 运行启动体验
+            from src.ui.startup_experience import StartupExperience
+            startup = StartupExperience()
+            startup_success = startup.run_startup_sequence()
+            
+            if not startup_success:
+                self.log_engine.warning("Startup checks failed, but continuing anyway")
         
         while True:
             try:
@@ -1351,6 +1346,9 @@ def ui_check_command(assistant: PowerShellAssistant):
         print(f"\n❌ 发生错误: {str(e)}")
         return 1
 
+
+# 注意：以下命令处理函数将在未来版本中移至 src/commands/ 目录
+# 目前保留在此处以保持向后兼容
 
 def template_test_command(assistant: PowerShellAssistant, template_id: str, show_script: bool = True):
     """处理 template test 命令 - 测试模板"""

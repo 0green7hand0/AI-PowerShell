@@ -3,7 +3,9 @@
     <!-- Header -->
     <div class="command-header">
       <div class="header-left">
-        <el-icon class="command-icon"><Monitor /></el-icon>
+        <el-icon class="command-icon">
+          <Monitor />
+        </el-icon>
         <span class="command-title">生成的命令</span>
       </div>
       <SecurityBadge :level="security.level" size="small" />
@@ -11,11 +13,7 @@
 
     <!-- Command Code Block -->
     <div class="command-body">
-      <CodeBlock
-        :code="command"
-        language="powershell"
-        :copyable="false"
-      />
+      <CodeBlock :code="command" language="powershell" :copyable="false" />
     </div>
 
     <!-- Confidence Bar -->
@@ -34,14 +32,20 @@
 
     <!-- Explanation -->
     <div v-if="explanation" class="explanation-section">
-      <el-icon class="info-icon"><InfoFilled /></el-icon>
-      <p class="explanation-text">{{ explanation }}</p>
+      <el-icon class="info-icon">
+        <InfoFilled />
+      </el-icon>
+      <p class="explanation-text">
+        {{ explanation }}
+      </p>
     </div>
 
     <!-- Security Warnings -->
     <div v-if="security.warnings.length > 0" class="warnings-section">
       <div class="warning-header">
-        <el-icon class="warning-icon"><Warning /></el-icon>
+        <el-icon class="warning-icon">
+          <Warning />
+        </el-icon>
         <span>安全警告</span>
       </div>
       <ul class="warning-list">
@@ -53,31 +57,45 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons">
-      <el-button
-        size="small"
-        @click="handleCopy"
-      >
+      <el-button size="small" @click="handleCopy">
         <el-icon><DocumentCopy /></el-icon>
         复制
       </el-button>
-      
-      <el-button
-        size="small"
-        @click="handleEdit"
-      >
+
+      <el-button size="small" @click="handleEdit">
         <el-icon><Edit /></el-icon>
         编辑
       </el-button>
-      
-      <el-button
-        type="primary"
-        size="small"
-        @click="handleExecute"
-        :loading="isExecuting"
-      >
+
+      <el-button type="primary" size="small" :loading="isExecuting" @click="handleExecute">
         <el-icon><CaretRight /></el-icon>
         执行
       </el-button>
+    </div>
+
+    <!-- User Feedback Section -->
+    <div v-if="showFeedback" class="feedback-section">
+      <div class="feedback-label">
+        <span>这个命令有用吗？</span>
+      </div>
+      <div class="feedback-buttons">
+        <el-button
+          size="small"
+          :type="feedback === 'correct' ? 'success' : 'default'"
+          @click="handleFeedback(true)"
+        >
+          <el-icon><Select /></el-icon>
+          正确
+        </el-button>
+        <el-button
+          size="small"
+          :type="feedback === 'incorrect' ? 'danger' : 'default'"
+          @click="handleFeedback(false)"
+        >
+          <el-icon><CloseBold /></el-icon>
+          不正确
+        </el-button>
+      </div>
     </div>
 
     <!-- Security Confirmation Dialog -->
@@ -96,13 +114,15 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { 
-  Monitor, 
-  DocumentCopy, 
-  Edit, 
-  CaretRight, 
-  InfoFilled, 
-  Warning 
+import {
+  Monitor,
+  DocumentCopy,
+  Edit,
+  CaretRight,
+  InfoFilled,
+  Warning,
+  Select,
+  CloseBold
 } from '@element-plus/icons-vue'
 import type { SecurityInfo } from '../api/command'
 import SecurityBadge from './SecurityBadge.vue'
@@ -111,10 +131,10 @@ import SecurityConfirmDialog from './SecurityConfirmDialog.vue'
 
 /**
  * CommandCard - Command display and action component
- * 
+ *
  * Displays generated PowerShell command with syntax highlighting,
  * confidence score, security badge, and action buttons.
- * 
+ *
  * Requirements: 2.8, 2.9, 2.10, 2.11, 2.12
  */
 
@@ -131,10 +151,14 @@ const emit = defineEmits<{
   (e: 'execute', command: string): void
   (e: 'copy', command: string): void
   (e: 'edit', command: string): void
+  (e: 'feedback', command: string, isCorrect: boolean): void
+  (e: 'regenerate'): void
 }>()
 
 const showConfirmDialog = ref(false)
 const isExecuting = ref(false)
+const feedback = ref<'correct' | 'incorrect' | null>(null)
+const showFeedback = ref(true)
 
 /**
  * Get confidence bar color based on confidence level
@@ -168,9 +192,11 @@ const handleEdit = () => {
  */
 const handleExecute = () => {
   // Show confirmation dialog for high-risk commands
-  if (props.security.requiresConfirmation || 
-      props.security.level === 'high' || 
-      props.security.level === 'critical') {
+  if (
+    props.security.requiresConfirmation ||
+    props.security.level === 'high' ||
+    props.security.level === 'critical'
+  ) {
     showConfirmDialog.value = true
   } else {
     confirmExecute()
@@ -184,11 +210,31 @@ const confirmExecute = () => {
   showConfirmDialog.value = false
   isExecuting.value = true
   emit('execute', props.command)
-  
-  // Reset executing state after a delay
+
+  // Reset execution state
   setTimeout(() => {
     isExecuting.value = false
   }, 1000)
+}
+
+/**
+ * Handle user feedback
+ */
+const handleFeedback = (isCorrect: boolean) => {
+  feedback.value = isCorrect ? 'correct' : 'incorrect'
+  emit('feedback', props.command, isCorrect)
+
+  // If incorrect, trigger regeneration
+  if (!isCorrect) {
+    emit('regenerate')
+    // Don't hide feedback section when regenerating
+    // It will be reset when new command is generated
+  } else {
+    // Hide feedback section only when user confirms it's correct
+    setTimeout(() => {
+      showFeedback.value = false
+    }, 2000)
+  }
 }
 </script>
 
@@ -315,6 +361,26 @@ const confirmExecute = () => {
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--color-border);
   background-color: var(--color-bg-primary);
+}
+
+/* Feedback Section */
+.feedback-section {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.feedback-label {
+  text-align: center;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.feedback-buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
 }
 
 /* Responsive */

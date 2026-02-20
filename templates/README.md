@@ -1,365 +1,266 @@
 # PowerShell 脚本模板库
 
-## 📚 模板分类
+这个目录包含了各种实用的 PowerShell 脚本模板，可以通过 AI PowerShell 智能助手快速生成和使用。
 
-本项目包含两类模板：
+## 📁 模板分类
 
-- **系统模板**: 预定义的通用模板，位于 `automation/`, `file_management/`, `system_monitoring/` 等目录
-- **自定义模板**: 用户创建的个性化模板，位于 `custom/` 目录
+### 1. 文件管理 (file_management)
 
-## 📚 系统模板列表
+#### batch_rename.ps1 - 批量重命名文件
+- 按规则批量重命名文件
+- 支持自定义前缀、日期、序号
+- 示例：`批量重命名桌面的jpg文件为photo_日期_序号`
 
-### 文件管理 (file_management/)
+#### file_organizer.ps1 - 文件分类整理
+- 按文件类型自动分类到不同文件夹
+- 支持移动或复制
+- 示例：`整理下载文件夹，按类型分类`
 
-#### 1. batch_rename.ps1 - 批量重命名文件
-**功能：** 按规则批量重命名文件
+### 2. 系统监控 (system_monitoring)
 
-**使用示例：**
-```
-帮我生成一个脚本，把桌面的jpg照片重命名为 vacation_2025_序号.jpg
-```
+#### resource_monitor.ps1 - 系统资源监控
+- 监控 CPU、内存、磁盘使用情况
+- 可设置阈值告警
+- 显示资源占用最高的进程
+- 示例：`每30秒检查一次CPU，超过80%就警告`
 
-**参数：**
-- SOURCE_PATH: 源文件夹路径
-- FILE_PATTERN: 文件匹配模式（如 *.jpg）
-- NAME_PREFIX: 文件名前缀
-- USE_DATE: 是否包含日期
-- START_NUMBER: 起始序号
+### 3. 自动化任务 (automation)
 
----
+#### backup_files.ps1 - 文件备份
+- 自动备份文件到指定位置
+- 支持压缩和版本管理
+- 可排除特定文件
+- 示例：`每天备份文档文件夹到D盘`
 
-#### 2. file_organizer.ps1 - 文件分类整理
-**功能：** 按文件类型自动分类到不同文件夹
+#### disk_cleanup.ps1 - 磁盘清理
+- 清理临时文件、缓存、回收站
+- 可设置清理规则
+- 示例：`清理30天前的临时文件`
 
-**使用示例：**
-```
-帮我整理下载文件夹，按文件类型分类
-```
+### 4. 进程管理 (process_management) ⭐ 新增
 
-**参数：**
-- SOURCE_PATH: 源文件夹路径
-- CREATE_SUBFOLDERS: 是否创建子文件夹
-- MOVE_FILES: 移动还是复制（move/copy）
+#### process_manager.ps1 - 进程管理工具
+- 列出进程并按 CPU/内存排序
+- 查找特定进程
+- 终止进程
+- 监控高资源占用进程
+- 示例：
+  - `列出CPU占用最高的10个进程`
+  - `查找chrome进程`
+  - `终止notepad进程`
+  - `监控高资源占用进程`
 
----
+### 5. 网络诊断 (network_diagnostics) ⭐ 新增
 
-### 系统监控 (system_monitoring/)
+#### network_check.ps1 - 网络连接诊断
+- 测试网络连通性（Ping）
+- DNS 解析检查
+- 端口连接测试
+- 路由追踪
+- 本地网络接口信息
+- 示例：
+  - `测试到百度的网络连接`
+  - `检查DNS解析和80、443端口`
+  - `诊断网络连接问题，包含路由追踪`
 
-#### 3. resource_monitor.ps1 - 系统资源监控
-**功能：** 监控CPU、内存、磁盘使用情况
+### 6. 日志分析 (log_analysis) ⭐ 新增
 
-**使用示例：**
-```
-生成一个监控脚本，每30秒检查一次CPU，超过80%就警告
-```
+#### log_analyzer.ps1 - 日志分析工具
+- 分析日志文件
+- 提取错误、警告信息
+- 统计日志级别分布
+- 搜索特定模式
+- 导出分析结果
+- 示例：
+  - `分析日志文件，提取所有错误`
+  - `统计日志中的错误和警告数量`
+  - `搜索包含特定关键词的日志`
 
-**参数：**
-- CPU_THRESHOLD: CPU使用率阈值
-- MEMORY_THRESHOLD: 内存使用率阈值
-- DISK_THRESHOLD: 磁盘使用率阈值
-- CHECK_INTERVAL: 检查间隔（秒）
-- TOP_PROCESSES: 显示前N个进程
+### 7. 定时任务 (scheduled_tasks) ⭐ 新增
 
----
+#### task_scheduler.ps1 - 定时任务管理
+- 创建 Windows 计划任务
+- 查看所有任务
+- 查询任务详情
+- 启用/禁用/删除任务
+- 支持多种计划类型（每天、每周、每小时、间隔、启动时、登录时）
+- 示例：
+  - `列出所有计划任务`
+  - `创建每天9点执行的备份任务`
+  - `创建每周一三五执行的清理任务`
 
-### 自动化任务 (automation/)
+## 🚀 使用方法
 
-#### 4. backup_files.ps1 - 文件备份
-**功能：** 自动备份文件到指定位置
+### 方法 1: 通过 AI 自然语言
 
-**使用示例：**
-```
-帮我生成一个备份脚本，每天备份文档文件夹到D盘
-```
-
-**参数：**
-- SOURCE_PATH: 源文件夹路径
-- BACKUP_PATH: 备份目标路径
-- INCLUDE_SUBFOLDERS: 是否包含子文件夹
-- COMPRESS: 是否压缩备份
-- KEEP_VERSIONS: 保留的备份版本数
-
----
-
-#### 5. disk_cleanup.ps1 - 磁盘清理
-**功能：** 清理临时文件、缓存、回收站
-
-**使用示例：**
-```
-生成一个清理脚本，清理30天前的临时文件
-```
-
-**参数：**
-- CLEAN_TEMP: 清理临时文件
-- CLEAN_RECYCLE_BIN: 清空回收站
-- CLEAN_DOWNLOADS: 清理下载文件夹
-- DAYS_OLD: 清理多少天前的文件
-- MIN_FILE_SIZE: 最小文件大小（MB）
-
----
-
-## 🎯 如何使用
-
-### 方式1：通过AI助手（推荐）
+直接用中文描述你的需求，AI 会自动匹配合适的模板并生成脚本：
 
 ```bash
-# 启动程序
 python -m src.main
 
-# 用中文描述需求
-💬 请输入 > 生成一个脚本，批量重命名桌面的照片
+# 然后输入：
+生成脚本：列出CPU占用最高的10个进程
+生成脚本：测试到百度的网络连接
+生成脚本：分析日志文件，提取所有错误
 ```
 
-### 方式2：直接使用模板
-
-```powershell
-# 复制模板
-cp templates/file_management/batch_rename.ps1 my_rename.ps1
-
-# 手动修改参数
-# 编辑 my_rename.ps1，替换 {{参数}} 占位符
-
-# 执行脚本
-.\my_rename.ps1
-```
-
----
-
-## 🎨 自定义模板功能
-
-### 创建自定义模板
-
-您可以创建自己的模板来满足特定需求：
-
-```bash
-# 交互式创建模板
-python src/main.py template create
-```
-
-系统会引导您完成：
-1. 输入模板基本信息（名称、描述、分类）
-2. 提供脚本内容（从文件或直接输入）
-3. 识别和配置参数
-4. 验证并保存模板
-
-### 管理自定义模板
+### 方法 2: 通过命令行
 
 ```bash
 # 列出所有模板
-python src/main.py template list
+python -m src.main template list
 
-# 只列出自定义模板
-python src/main.py template list --custom-only
-
-# 编辑模板
-python src/main.py template edit <template_name>
-
-# 删除模板
-python src/main.py template delete <template_name>
+# 测试特定模板
+python -m src.main template test process_manager
 
 # 查看模板详情
-python src/main.py template info <template_name>
+python -m src.main template info process_manager
 ```
 
-### 导入导出模板
-
-```bash
-# 导出模板（可分享给他人）
-python src/main.py template export <template_name> -o template.zip
-
-# 导入模板
-python src/main.py template import template.zip
-```
-
-### 版本控制
-
-系统自动保存模板修改历史：
-
-```bash
-# 查看历史版本
-python src/main.py template history <template_name>
-
-# 恢复到指定版本
-python src/main.py template restore <template_name> <version>
-```
-
-### 自定义模板目录结构
-
-```
-templates/custom/
-├── examples/              # 示例模板
-│   ├── simple_backup.ps1
-│   ├── log_analyzer.ps1
-│   └── user_report.ps1
-├── my_category/           # 用户自定义分类
-│   └── my_template.ps1
-└── ...
-```
-
-详细使用指南请参考：[自定义模板用户指南](../docs/custom-template-guide.md)
-
----
-
-## 📝 模板规范
-
-### 模板结构
+### 方法 3: 直接运行脚本
 
 ```powershell
-<#
-.SYNOPSIS
-    简短描述
-    
-.DESCRIPTION
-    详细描述
-    
-.TEMPLATE_PARAMETERS
-    {{PARAM1}} - 参数1说明
-    {{PARAM2}} - 参数2说明
-    
-.EXAMPLE
-    使用示例
-#>
+# 进程管理
+.\templates\process_management\process_manager.ps1 -ACTION list -TOP_COUNT 10
 
-param(
-    [Parameter(Mandatory=$false)]
-    [string]$Param1 = "{{PARAM1}}",
-    ...
-)
+# 网络诊断
+.\templates\network_diagnostics\network_check.ps1 -TARGET_HOST "www.baidu.com" -CHECK_DNS $true
 
-# 脚本逻辑
-...
+# 日志分析
+.\templates\log_analysis\log_analyzer.ps1 -LOG_FILE "logs\assistant.log" -LOG_LEVEL ERROR
+
+# 定时任务
+.\templates\scheduled_tasks\task_scheduler.ps1 -ACTION list
 ```
 
-### 参数占位符
+## 📝 模板参数说明
 
-使用 `{{参数名}}` 格式，AI会自动替换：
+每个模板都有可配置的参数，使用 `{{参数名}}` 占位符表示。AI 会根据你的需求自动填充这些参数。
 
-```powershell
-$SourcePath = "{{SOURCE_PATH}}"  # AI会替换为实际路径
-$Threshold = {{CPU_THRESHOLD}}    # AI会替换为数字
-$Enable = ${{USE_FEATURE}}        # AI会替换为 $true 或 $false
+### 进程管理参数
+
+- `ACTION`: 操作类型（list/find/kill/monitor）
+- `PROCESS_NAME`: 进程名称
+- `TOP_COUNT`: 显示前N个进程
+- `SORT_BY`: 排序字段（cpu/memory/name）
+- `CPU_THRESHOLD`: CPU阈值（%）
+- `MEMORY_THRESHOLD`: 内存阈值（MB）
+
+### 网络诊断参数
+
+- `TARGET_HOST`: 目标主机
+- `PING_COUNT`: Ping次数
+- `CHECK_DNS`: 是否检查DNS
+- `CHECK_PORTS`: 是否检查端口
+- `PORTS`: 端口列表（逗号分隔）
+- `TRACE_ROUTE`: 是否路由追踪
+
+### 日志分析参数
+
+- `LOG_FILE`: 日志文件路径
+- `LOG_LEVEL`: 日志级别（ERROR/WARNING/INFO/DEBUG/ALL）
+- `TAIL_LINES`: 读取行数（0=全部）
+- `SEARCH_PATTERN`: 搜索模式
+- `SHOW_STATS`: 显示统计
+- `EXPORT_RESULTS`: 导出结果
+
+### 定时任务参数
+
+- `ACTION`: 操作类型（create/list/info/delete/enable/disable）
+- `TASK_NAME`: 任务名称
+- `SCRIPT_PATH`: 脚本路径
+- `SCHEDULE_TYPE`: 计划类型（daily/weekly/hourly/interval/startup/logon）
+- `START_TIME`: 开始时间
+- `RUN_AS_ADMIN`: 管理员权限
+
+## 🎯 使用示例
+
+### 示例 1: 监控系统资源
+
+```
+用户输入：监控CPU和内存，超过80%就警告
+
+AI 生成：
+- 使用 process_manager.ps1
+- ACTION = monitor
+- CPU_THRESHOLD = 80
+- MEMORY_THRESHOLD = 80
 ```
 
----
+### 示例 2: 诊断网络问题
 
-## 🔧 添加新模板
+```
+用户输入：检查到百度的网络连接，包括DNS和端口
 
-### 方式1：使用命令行工具（推荐）
-
-```bash
-# 交互式创建，系统会自动处理所有步骤
-python src/main.py template create
+AI 生成：
+- 使用 network_check.ps1
+- TARGET_HOST = www.baidu.com
+- CHECK_DNS = true
+- CHECK_PORTS = true
+- PORTS = 80,443
 ```
 
-优势：
-- 自动识别参数
-- 自动验证语法
-- 自动更新配置
-- 支持版本控制
+### 示例 3: 分析错误日志
 
-### 方式2：手动创建（高级用户）
+```
+用户输入：分析日志文件，只看错误信息
 
-#### 1. 创建模板文件
-
-```bash
-# 在对应分类下创建
-touch templates/分类名/模板名.ps1
+AI 生成：
+- 使用 log_analyzer.ps1
+- LOG_FILE = logs/assistant.log
+- LOG_LEVEL = ERROR
+- SHOW_STATS = true
 ```
 
-#### 2. 编写模板
+### 示例 4: 创建定时备份
 
-- 添加详细的注释
-- 使用参数占位符 `{{PARAM_NAME}}`
-- 添加错误处理
-- 添加用户友好的输出
+```
+用户输入：创建每天早上9点执行的备份任务
 
-#### 3. 更新配置文件
-
-在 `config/templates.yaml` 中添加模板配置：
-
-```yaml
-templates:
-  分类名:
-    模板名:
-      name: "模板显示名称"
-      file: "templates/分类名/模板名.ps1"
-      description: "模板描述"
-      keywords: ["关键词1", "关键词2"]
-      parameters:
-        PARAM_NAME:
-          type: "string"
-          default: "默认值"
-          description: "参数描述"
-          required: true
+AI 生成：
+- 使用 task_scheduler.ps1
+- ACTION = create
+- TASK_NAME = DailyBackup
+- SCHEDULE_TYPE = daily
+- START_TIME = 09:00
 ```
 
----
+## 🔧 自定义模板
 
-## 💡 最佳实践
+你可以创建自己的模板：
 
-### 1. 参数设计
+1. 在相应分类目录下创建 `.ps1` 文件
+2. 使用 `{{参数名}}` 作为占位符
+3. 在 `config/templates.yaml` 中注册模板
+4. 定义参数和关键词
 
-- 使用有意义的参数名
-- 提供合理的默认值
-- 添加参数验证
-
-### 2. 用户体验
-
-- 显示清晰的进度信息
-- 使用颜色区分不同类型的输出
-- 在执行前显示预览
-- 重要操作需要用户确认
-
-### 3. 错误处理
-
-- 使用 try-catch 捕获错误
-- 提供有用的错误信息
-- 优雅地处理失败情况
-
-### 4. 日志记录
-
-- 记录关键操作
-- 显示执行结果统计
-- 便于问题排查
-
----
+详细说明请参考 [模板开发指南](../docs/template-guide.md)
 
 ## 📊 模板统计
 
-| 分类 | 模板数 | 说明 |
-|------|--------|------|
-| 文件管理 | 2 | 文件操作相关 |
-| 系统监控 | 1 | 系统资源监控 |
-| 自动化任务 | 2 | 自动化脚本 |
-| 自定义模板 | 3 | 示例自定义模板 |
-| **总计** | **8** | **系统 + 自定义模板** |
+- 总模板数: 9 个
+- 文件管理: 2 个
+- 系统监控: 1 个
+- 自动化任务: 2 个
+- 进程管理: 1 个 ⭐
+- 网络诊断: 1 个 ⭐
+- 日志分析: 1 个 ⭐
+- 定时任务: 1 个 ⭐
+
+## 🆕 最近更新
+
+**2025-02-18**
+- ✅ 新增进程管理模板
+- ✅ 新增网络诊断模板
+- ✅ 新增日志分析模板
+- ✅ 新增定时任务管理模板
+
+## 📚 相关文档
+
+- [模板系统指南](../docs/template-guide.md)
+- [用户使用指南](../docs/user-guide.md)
+- [配置参考](../docs/config-reference.md)
 
 ---
 
-## 🚀 未来计划
-
-### 即将添加的模板
-
-- [ ] 网络诊断工具
-- [ ] 日志分析脚本
-- [ ] Excel数据处理
-- [ ] 邮件自动化
-- [ ] 定时任务管理
-- [ ] 文件同步工具
-- [ ] 系统信息收集
-- [ ] 性能测试工具
-
----
-
-## 📞 贡献模板
-
-欢迎贡献新模板！请确保：
-
-1. 遵循模板规范
-2. 添加详细注释
-3. 测试脚本功能
-4. 更新README文档
-
----
-
-**让PowerShell脚本更智能、更易用！** 🎉
+**提示**: 所有模板都经过测试，可以直接使用。如果遇到问题，请查看 [故障排除指南](../docs/troubleshooting.md)。

@@ -3,26 +3,16 @@
     <div class="logs-header">
       <h1 class="logs-title">系统日志</h1>
       <div class="logs-actions">
-        <el-button
-          :icon="Refresh"
-          :loading="logsStore.isLoading"
-          @click="handleRefresh"
-        >
+        <el-button :icon="Refresh" :loading="logsStore.isLoading" @click="handleRefresh">
           刷新
         </el-button>
+        <el-button :icon="Delete" @click="handleClearLogs"> 清空日志 </el-button>
         <el-button
-          :icon="logsStore.isConnected ? Link : Connection"
-          :type="logsStore.isConnected ? 'success' : 'default'"
-          :loading="isConnecting"
-          @click="handleToggleWebSocket"
+          :icon="Filter"
+          :type="showAnalytics ? 'primary' : 'default'"
+          @click="handleToggleAnalytics"
         >
-          {{ logsStore.isConnected ? '实时连接' : '连接实时日志' }}
-        </el-button>
-        <el-button
-          :icon="Delete"
-          @click="handleClearLogs"
-        >
-          清空日志
+          {{ showAnalytics ? '隐藏分析' : '显示分析' }}
         </el-button>
       </div>
     </div>
@@ -31,6 +21,13 @@
     <div class="logs-status">
       <SystemStatus />
     </div>
+
+    <!-- Log Analytics -->
+    <transition name="fade">
+      <div v-if="showAnalytics" class="logs-analytics">
+        <LogAnalytics :logs="logsStore.logs" />
+      </div>
+    </transition>
 
     <!-- Log Filter -->
     <div class="logs-filter">
@@ -46,68 +43,24 @@
         </div>
       </el-card>
 
-      <LogList
-        v-else
-        :logs="logsStore.filteredLogs"
-        :auto-scroll="logsStore.autoScroll"
-      />
+      <LogList v-else :logs="logsStore.filteredLogs" :auto-scroll="logsStore.autoScroll" />
     </div>
-
-    <!-- Connection Status Indicator -->
-    <transition name="slide-up">
-      <div v-if="showConnectionStatus" class="connection-status" :class="connectionStatusClass">
-        <el-icon><component :is="connectionStatusIcon" /></el-icon>
-        <span>{{ connectionStatusText }}</span>
-      </div>
-    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useLogsStore } from '../stores/logs'
-import { Refresh, Delete, Link, Connection } from '@element-plus/icons-vue'
-import { SuccessFilled, WarningFilled } from '@element-plus/icons-vue'
+import { Refresh, Delete, Filter } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import SystemStatus from '../components/SystemStatus.vue'
 import LogFilter from '../components/LogFilter.vue'
 import LogList from '../components/LogList.vue'
+import LogAnalytics from '../components/LogAnalytics.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
 
 const logsStore = useLogsStore()
-const isConnecting = ref(false)
-const showConnectionStatus = ref(false)
-const connectionStatusTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
-
-/**
- * Connection status computed properties
- */
-const connectionStatusClass = computed(() => {
-  return logsStore.isConnected ? 'status-connected' : 'status-disconnected'
-})
-
-const connectionStatusIcon = computed(() => {
-  return logsStore.isConnected ? SuccessFilled : WarningFilled
-})
-
-const connectionStatusText = computed(() => {
-  return logsStore.isConnected ? '实时日志已连接' : '实时日志已断开'
-})
-
-/**
- * Show connection status notification
- */
-const showConnectionNotification = () => {
-  showConnectionStatus.value = true
-  
-  if (connectionStatusTimeout.value) {
-    clearTimeout(connectionStatusTimeout.value)
-  }
-  
-  connectionStatusTimeout.value = setTimeout(() => {
-    showConnectionStatus.value = false
-  }, 3000)
-}
+const showAnalytics = ref(true)
 
 /**
  * Handle refresh logs
@@ -117,38 +70,16 @@ const handleRefresh = async () => {
 }
 
 /**
- * Handle toggle WebSocket connection
- */
-const handleToggleWebSocket = async () => {
-  if (logsStore.isConnected) {
-    logsStore.disconnectWebSocket()
-    showConnectionNotification()
-  } else {
-    isConnecting.value = true
-    try {
-      await logsStore.connectWebSocket()
-      showConnectionNotification()
-    } finally {
-      isConnecting.value = false
-    }
-  }
-}
-
-/**
  * Handle clear logs
  */
 const handleClearLogs = async () => {
   try {
-    await ElMessageBox.confirm(
-      '确定要清空所有日志吗？此操作不可恢复。',
-      '确认清空',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
-    
+    await ElMessageBox.confirm('确定要清空所有日志吗？此操作不可恢复。', '确认清空', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
     logsStore.clearLogs()
   } catch {
     // User cancelled
@@ -156,20 +87,27 @@ const handleClearLogs = async () => {
 }
 
 /**
+ * Handle toggle analytics view
+ */
+const handleToggleAnalytics = () => {
+  showAnalytics.value = !showAnalytics.value
+}
+
+/**
  * Initialize on mount
  */
 onMounted(async () => {
   // Fetch initial logs
-  await logsStore.fetchLogs({ limit: 100 })
-  
+  await logsStore.fetchLogs({ limit: 1000 })
+
   // Check system status
   await logsStore.checkSystemStatus()
-  
+
   // Setup periodic status check (every 30 seconds)
   const statusCheckInterval = setInterval(() => {
     logsStore.checkSystemStatus()
   }, 30000)
-  
+
   // Store interval ID for cleanup
   ;(window as any).__logsStatusCheckInterval = statusCheckInterval
 })
@@ -178,20 +116,10 @@ onMounted(async () => {
  * Cleanup on unmount
  */
 onUnmounted(() => {
-  // Disconnect WebSocket if connected
-  if (logsStore.isConnected) {
-    logsStore.disconnectWebSocket()
-  }
-  
   // Clear status check interval
   if ((window as any).__logsStatusCheckInterval) {
     clearInterval((window as any).__logsStatusCheckInterval)
     delete (window as any).__logsStatusCheckInterval
-  }
-  
-  // Clear connection status timeout
-  if (connectionStatusTimeout.value) {
-    clearTimeout(connectionStatusTimeout.value)
   }
 })
 </script>
@@ -200,10 +128,10 @@ onUnmounted(() => {
 .logs-view {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh;
   gap: var(--space-4);
   padding: var(--space-6);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .logs-header {
@@ -235,6 +163,10 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+.logs-analytics {
+  margin-bottom: var(--space-4);
+}
+
 .logs-content {
   flex: 1;
   min-height: 0;
@@ -261,44 +193,15 @@ onUnmounted(() => {
   margin: 0;
 }
 
-.connection-status {
-  position: fixed;
-  bottom: var(--space-6);
-  right: var(--space-6);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  z-index: 1000;
+
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--duration-normal) var(--ease-in-out);
 }
 
-.status-connected {
-  background-color: var(--color-success);
-  color: white;
-}
-
-.status-disconnected {
-  background-color: var(--color-warning);
-  color: white;
-}
-
-/* Animations */
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all var(--duration-normal) var(--ease-in-out);
-}
-
-.slide-up-enter-from {
-  transform: translateY(100%);
-  opacity: 0;
-}
-
-.slide-up-leave-to {
-  transform: translateY(100%);
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 

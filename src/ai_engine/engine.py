@@ -4,7 +4,7 @@ AI 引擎主类
 负责协调 AI 翻译流程，包括缓存管理、翻译器调用和错误检测。
 """
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 from ..interfaces.base import AIEngineInterface, Suggestion, Context
 
@@ -89,12 +89,12 @@ class AIEngine(AIEngineInterface):
         )
         
         # 延迟导入以避免循环依赖
-        self._translator = None
-        self._error_detector = None
-        self._provider = None
+        self._translator: Optional[Any] = None
+        self._error_detector: Optional[Any] = None
+        self._provider: Optional[Any] = None
     
     @property
-    def translator(self):
+    def translator(self) -> Any:
         """懒加载翻译器"""
         if self._translator is None:
             from .translation import NaturalLanguageTranslator
@@ -102,7 +102,7 @@ class AIEngine(AIEngineInterface):
         return self._translator
     
     @property
-    def error_detector(self):
+    def error_detector(self) -> Any:
         """懒加载错误检测器"""
         if self._error_detector is None:
             from .error_detection import ErrorDetector
@@ -134,15 +134,24 @@ class AIEngine(AIEngineInterface):
         
         text = text.strip()
         
-        # 1. 检查缓存
+        # 检查是否是重新生成请求（带有反馈）
+        is_regeneration = context.feedback is not None and context.feedback.get('feedback') == 'incorrect'
+        
+        # 1. 检查缓存（重新生成时跳过缓存）
         if progress_callback:
             progress_callback(1, 4, "检查缓存...")
         
-        cached = self.cache.get(text)
-        if cached:
-            if progress_callback:
-                progress_callback(4, 4, "从缓存获取结果")
-            return cached
+        if not is_regeneration:
+            cached = self.cache.get(text)
+            if cached:
+                if progress_callback:
+                    progress_callback(4, 4, "从缓存获取结果")
+                return cached
+        else:
+            # 重新生成时清除该文本的缓存
+            if text in self.cache._cache:
+                del self.cache._cache[text]
+                print(f"[重新生成] 已清除缓存: {text}")
         
         # 2. 使用翻译器进行翻译
         if progress_callback:

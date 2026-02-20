@@ -1,11 +1,11 @@
 /**
  * Axios API Client
- * 
+ *
  * Configured axios instance with interceptors for:
  * - Request preprocessing (auth, headers)
  * - Response handling (data extraction, error handling)
  * - Error notification (user-friendly messages)
- * 
+ *
  * Requirements: 1.2, 1.3, 6.9
  */
 
@@ -43,7 +43,7 @@ const apiClient = axios.create({
 
 /**
  * Request interceptor
- * 
+ *
  * Adds authentication tokens and other headers before sending requests
  */
 apiClient.interceptors.request.use(
@@ -73,14 +73,17 @@ apiClient.interceptors.request.use(
 
 /**
  * Response interceptor
- * 
+ *
  * Handles successful responses and errors
  */
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // Log response in development mode
     if (import.meta.env?.DEV) {
-      console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data)
+      console.log(
+        `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`,
+        response.data
+      )
     }
 
     // Return the data directly (unwrap response)
@@ -111,7 +114,7 @@ interface ApiErrorResponse {
 
 /**
  * Handle API errors and show user-friendly messages
- * 
+ *
  * @param error - Axios error object
  */
 const handleApiError = (error: AxiosError<ApiErrorResponse>) => {

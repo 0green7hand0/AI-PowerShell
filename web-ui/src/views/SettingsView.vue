@@ -16,26 +16,24 @@
           <el-icon><Setting /></el-icon>
           设置
         </h1>
-        <p class="settings-view__subtitle">
-          配置 AI PowerShell 助手的各项参数
-        </p>
+        <p class="settings-view__subtitle">配置 AI PowerShell 助手的各项参数</p>
       </div>
 
       <div class="settings-view__actions">
         <el-button
           :icon="Refresh"
-          @click="handleReset"
           :loading="appStore.isSavingConfig"
           :disabled="!hasChanges"
+          @click="handleReset"
         >
           重置
         </el-button>
         <el-button
           type="primary"
           :icon="Check"
-          @click="handleSave"
           :loading="appStore.isSavingConfig"
           :disabled="!hasChanges"
+          @click="handleSave"
         >
           保存设置
         </el-button>
@@ -59,10 +57,7 @@
               AI 设置
             </span>
           </template>
-          <AISettingsForm
-            v-model="localConfig.ai"
-            @change="handleConfigChange"
-          />
+          <AISettingsForm v-model="localConfig.ai" @change="handleConfigChange" />
         </el-tab-pane>
 
         <!-- Security Settings Tab -->
@@ -73,10 +68,7 @@
               安全设置
             </span>
           </template>
-          <SecuritySettingsForm
-            v-model="localConfig.security"
-            @change="handleConfigChange"
-          />
+          <SecuritySettingsForm v-model="localConfig.security" @change="handleConfigChange" />
         </el-tab-pane>
 
         <!-- Execution Settings Tab -->
@@ -87,10 +79,7 @@
               执行设置
             </span>
           </template>
-          <ExecutionSettingsForm
-            v-model="localConfig.execution"
-            @change="handleConfigChange"
-          />
+          <ExecutionSettingsForm v-model="localConfig.execution" @change="handleConfigChange" />
         </el-tab-pane>
 
         <!-- General Settings Tab -->
@@ -101,10 +90,7 @@
               通用设置
             </span>
           </template>
-          <GeneralSettingsForm
-            v-model="localConfig.general"
-            @change="handleConfigChange"
-          />
+          <GeneralSettingsForm v-model="localConfig.general" @change="handleConfigChange" />
         </el-tab-pane>
       </el-tabs>
 
@@ -116,21 +102,15 @@
         show-icon
         class="settings-view__warning"
       >
-        <template #title>
-          您有未保存的更改
-        </template>
-        <template #default>
-          请点击"保存设置"按钮保存您的更改，或点击"重置"按钮放弃更改。
-        </template>
+        <template #title> 您有未保存的更改 </template>
+        <template #default> 请点击"保存设置"按钮保存您的更改，或点击"重置"按钮放弃更改。 </template>
       </el-alert>
     </div>
 
     <!-- Error State -->
     <div v-else class="settings-view__error">
       <el-empty description="加载配置失败">
-        <el-button type="primary" @click="handleReload">
-          重新加载
-        </el-button>
+        <el-button type="primary" @click="handleReload"> 重新加载 </el-button>
       </el-empty>
     </div>
   </div>
@@ -138,15 +118,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import {
-  Setting,
-  Refresh,
-  Check,
-  Cpu,
-  Lock,
-  Monitor,
-  Tools
-} from '@element-plus/icons-vue'
+import { Setting, Refresh, Check, Cpu, Lock, Monitor, Tools } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAppStore } from '../stores/app'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
@@ -199,7 +171,7 @@ const handleSave = async () => {
   if (!localConfig.value) return
 
   const success = await appStore.updateConfig(localConfig.value)
-  
+
   if (success) {
     hasChanges.value = false
     ElMessage.success('设置已保存')
@@ -211,18 +183,14 @@ const handleSave = async () => {
  */
 const handleReset = async () => {
   try {
-    await ElMessageBox.confirm(
-      '确定要重置所有设置为默认值吗？此操作不可撤销。',
-      '重置设置',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要重置所有设置为默认值吗？此操作不可撤销。', '重置设置', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
 
     const success = await appStore.resetConfig()
-    
+
     if (success) {
       initializeLocalConfig()
       ElMessage.success('设置已重置为默认值')
@@ -249,15 +217,11 @@ const checkUnsavedChanges = async (): Promise<boolean> => {
   }
 
   try {
-    await ElMessageBox.confirm(
-      '您有未保存的更改，确定要离开吗？',
-      '未保存的更改',
-      {
-        confirmButtonText: '离开',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('您有未保存的更改，确定要离开吗？', '未保存的更改', {
+      confirmButtonText: '离开',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
     return true
   } catch (error) {
     return false
@@ -297,7 +261,7 @@ onMounted(async () => {
   if (!appStore.config) {
     await appStore.loadConfig()
   }
-  
+
   initializeLocalConfig()
 })
 

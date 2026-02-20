@@ -8,15 +8,15 @@
   >
     <!-- Warning Icon -->
     <div class="delete-dialog__icon">
-      <i class="el-icon-warning"></i>
+      <i class="el-icon-warning" />
     </div>
 
     <!-- Warning Message -->
     <div class="delete-dialog__content">
       <h3 class="delete-dialog__title">确认删除模板？</h3>
       <p class="delete-dialog__message">
-        您即将删除模板 <strong>{{ template?.name }}</strong>。
-        此操作无法撤销，请谨慎操作。
+        您即将删除模板 <strong>{{ template?.name }}</strong
+        >。 此操作无法撤销，请谨慎操作。
       </p>
 
       <!-- Template Info -->
@@ -46,25 +46,21 @@
           clearable
           @keyup.enter="handleConfirm"
         />
-        <p v-if="showError" class="delete-dialog__error">
-          模板名称不匹配，请重新输入
-        </p>
+        <p v-if="showError" class="delete-dialog__error">模板名称不匹配，请重新输入</p>
       </div>
     </div>
 
     <!-- Actions -->
     <template #footer>
       <div class="delete-dialog__footer">
-        <el-button @click="handleCancel" :disabled="isDeleting">
-          取消
-        </el-button>
+        <el-button :disabled="isDeleting" @click="handleCancel"> 取消 </el-button>
         <el-button
           type="danger"
-          @click="handleConfirm"
           :disabled="!isConfirmationValid || isDeleting"
           :loading="isDeleting"
+          @click="handleConfirm"
         >
-          <i v-if="!isDeleting" class="el-icon-delete"></i>
+          <i v-if="!isDeleting" class="el-icon-delete" />
           {{ isDeleting ? '删除中...' : '确认删除' }}
         </el-button>
       </div>
@@ -123,13 +119,16 @@ const isConfirmationValid = computed(() => {
 // Watchers
 // ============================================================================
 
-watch(() => props.visible, (newValue) => {
-  if (newValue) {
-    // Reset state when dialog opens
-    confirmationInput.value = ''
-    showError.value = false
+watch(
+  () => props.visible,
+  (newValue) => {
+    if (newValue) {
+      // Reset state when dialog opens
+      confirmationInput.value = ''
+      showError.value = false
+    }
   }
-})
+)
 
 watch(confirmationInput, () => {
   // Hide error when user types

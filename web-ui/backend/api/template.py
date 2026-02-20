@@ -134,17 +134,27 @@ def get_templates():
         # Get assistant instance
         assistant = get_assistant()
         
-        # Try to get templates from custom template manager
+        # Get templates from both system and custom sources
         templates = []
-        if hasattr(assistant, 'custom_template_manager') and assistant.custom_template_manager:
-            try:
-                templates = assistant.custom_template_manager.list_custom_templates()
-            except Exception as e:
-                current_app.logger.warning(f"Failed to list custom templates: {str(e)}")
+        
+        # 1. Get all templates from template_engine.template_manager
+        if hasattr(assistant, 'template_engine') and assistant.template_engine:
+            if hasattr(assistant.template_engine, 'template_manager') and assistant.template_engine.template_manager:
+                try:
+                    # Get all templates
+                    all_templates = assistant.template_engine.template_manager.list_templates()
+                    current_app.logger.info(f"template_manager.list_templates() returned {len(all_templates)} templates")
+                    templates.extend(all_templates)
+                except Exception as e:
+                    current_app.logger.error(f"Failed to list templates: {str(e)}", exc_info=True)
+            else:
+                current_app.logger.warning("template_manager not available in template_engine")
+        else:
+            current_app.logger.warning("template_engine not available")
         
         # If no templates found, return sample templates for demonstration
         if not templates:
-            current_app.logger.info("No custom templates found, returning sample templates")
+            current_app.logger.info("No templates found, returning sample templates")
             templates = get_sample_templates()
         
         # Filter by category if provided
@@ -163,12 +173,26 @@ def get_templates():
         # Format templates for response
         template_list = []
         for template in templates:
+            # Load template content if not already loaded
+            try:
+                if hasattr(template, 'load_content'):
+                    content = template.load_content()
+                elif hasattr(template, 'content'):
+                    content = template.content or ""
+                elif hasattr(template, 'script_content'):
+                    content = template.script_content
+                else:
+                    content = ""
+            except Exception as e:
+                current_app.logger.warning(f"Failed to load content for template {template.name}: {str(e)}")
+                content = ""
+            
             template_list.append({
-                'id': template.name,  # Use name as ID for now
+                'id': template.id if hasattr(template, 'id') else template.name,
                 'name': template.name,
                 'description': template.description,
-                'category': template.category,
-                'script_content': template.script_content,
+                'category': template.category.value if hasattr(template.category, 'value') else str(template.category),
+                'scriptContent': content,
                 'parameters': [
                     {
                         'name': p.name,
@@ -177,11 +201,11 @@ def get_templates():
                         'default': p.default,
                         'description': p.description
                     }
-                    for p in template.parameters
+                    for p in (template.parameters.values() if isinstance(template.parameters, dict) else template.parameters)
                 ],
                 'keywords': getattr(template, 'keywords', []),
-                'created_at': datetime.now().isoformat(),
-                'updated_at': datetime.now().isoformat()
+                'createdAt': datetime.now().isoformat(),
+                'updatedAt': datetime.now().isoformat()
             })
         
         response = {
@@ -228,7 +252,19 @@ def get_template_detail(template_id):
             }), 503
         
         # Get template info
-        template = assistant.custom_template_manager.get_template_info(template_id)
+        # Try to find template in all categories if no category provided
+        categories = assistant.custom_template_manager.list_categories(include_system=True)
+        template = None
+        
+        for cat in categories:
+            try:
+                template = assistant.custom_template_manager.get_template_info(template_id, cat['name'])
+                if template:
+                    break
+            except Exception:
+                continue
+        
+
         
         if not template:
             return jsonify({
@@ -246,7 +282,7 @@ def get_template_detail(template_id):
                 'name': template.name,
                 'description': template.description,
                 'category': template.category,
-                'script_content': template.script_content,
+                'scriptContent': template.script_content,
                 'parameters': [
                     {
                         'name': p.name,
@@ -258,8 +294,8 @@ def get_template_detail(template_id):
                     for p in template.parameters
                 ],
                 'keywords': getattr(template, 'keywords', []),
-                'created_at': datetime.now().isoformat(),
-                'updated_at': datetime.now().isoformat()
+                'createdAt': datetime.now().isoformat(),
+                'updatedAt': datetime.now().isoformat()
             }
         }
         
@@ -348,6 +384,11 @@ def create_template():
                 'name': template.name,
                 'description': template.description,
                 'category': template.category,
+                'scriptContent': '',
+                'parameters': [],
+                'keywords': [],
+                'createdAt': datetime.now().isoformat(),
+                'updatedAt': datetime.now().isoformat(),
                 'message': 'Template created successfully'
             }
         }
@@ -461,6 +502,11 @@ def update_template(template_id):
                 'name': template.name,
                 'description': template.description,
                 'category': template.category,
+                'scriptContent': '',
+                'parameters': [],
+                'keywords': [],
+                'createdAt': datetime.now().isoformat(),
+                'updatedAt': datetime.now().isoformat(),
                 'message': 'Template updated successfully'
             }
         }
@@ -613,7 +659,17 @@ def generate_script(template_id):
             }), 503
         
         # Get template
-        template = assistant.custom_template_manager.get_template_info(template_id)
+        # Try to find template in all categories if no category provided
+        categories = assistant.custom_template_manager.list_categories(include_system=True)
+        template = None
+        
+        for cat in categories:
+            try:
+                template = assistant.custom_template_manager.get_template_info(template_id, cat['name'])
+                if template:
+                    break
+            except Exception:
+                continue
         
         if not template:
             return jsonify({

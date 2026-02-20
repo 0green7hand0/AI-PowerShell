@@ -16,26 +16,14 @@
           <el-icon><Document /></el-icon>
           模板管理
         </h1>
-        <p class="template-view__subtitle">
-          管理和使用 PowerShell 脚本模板
-        </p>
+        <p class="template-view__subtitle">管理和使用 PowerShell 脚本模板</p>
       </div>
 
       <div class="template-view__actions">
-        <el-button
-          :icon="Refresh"
-          @click="handleRefresh"
-          :loading="templateStore.isLoading"
-        >
+        <el-button :icon="Refresh" :loading="templateStore.isLoading" @click="handleRefresh">
           刷新
         </el-button>
-        <el-button
-          type="primary"
-          :icon="Plus"
-          @click="handleCreate"
-        >
-          创建模板
-        </el-button>
+        <el-button type="primary" :icon="Plus" @click="handleCreate"> 创建模板 </el-button>
       </div>
     </div>
 
@@ -46,16 +34,16 @@
         placeholder="搜索模板名称、描述或关键词..."
         :prefix-icon="Search"
         clearable
-        @input="handleSearchInput"
         class="template-view__search"
+        @input="handleSearchInput"
       />
 
       <el-select
         v-model="templateStore.selectedCategory"
         placeholder="选择分类"
         clearable
-        @change="handleCategoryChange"
         class="template-view__category-filter"
+        @change="handleCategoryChange"
       >
         <el-option
           v-for="category in templateStore.categories"
@@ -87,7 +75,9 @@
               <FolderOpened />
             </el-icon>
             <div class="template-view__stat-info">
-              <span class="template-view__stat-value">{{ templateStore.categories.length - 1 }}</span>
+              <span class="template-view__stat-value">{{
+                templateStore.categories.length - 1
+              }}</span>
               <span class="template-view__stat-label">分类数量</span>
             </div>
           </div>
@@ -99,7 +89,9 @@
               <Filter />
             </el-icon>
             <div class="template-view__stat-info">
-              <span class="template-view__stat-value">{{ templateStore.filteredTemplates.length }}</span>
+              <span class="template-view__stat-value">{{
+                templateStore.filteredTemplates.length
+              }}</span>
               <span class="template-view__stat-label">筛选结果</span>
             </div>
           </div>
@@ -123,6 +115,7 @@
 
     <!-- Use Template Dialog -->
     <TemplateUseDialog
+      ref="useDialogRef"
       v-model:visible="showUseDialog"
       :template="selectedTemplate"
       :is-generating="isGenerating"
@@ -130,7 +123,6 @@
       @generate="handleGenerate"
       @execute="handleExecute"
       @cancel="handleUseCancel"
-      ref="useDialogRef"
     />
 
     <!-- Create/Edit Template Dialog -->
@@ -155,14 +147,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import {
-  Document,
-  Refresh,
-  Plus,
-  Search,
-  FolderOpened,
-  Filter
-} from '@element-plus/icons-vue'
+import { Document, Refresh, Plus, Search, FolderOpened, Filter } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useTemplateStore } from '../stores/template'
 import { useChatStore } from '../stores/chat'
@@ -206,7 +191,7 @@ const useDialogRef = ref<InstanceType<typeof TemplateUseDialog>>()
  */
 const getCategoryLabel = (category: string): string => {
   if (category === 'all') return '全部分类'
-  
+
   const labelMap: Record<string, string> = {
     automation: '自动化',
     file_management: '文件管理',
@@ -310,11 +295,11 @@ const handleExecute = async (script: string) => {
   try {
     // Add script to chat and navigate to chat view
     await chatStore.sendMessage(`执行以下脚本：\n${script}`)
-    
+
     // Close dialog and navigate to chat
     showUseDialog.value = false
     router.push('/chat')
-    
+
     ElMessage.success('脚本已发送到聊天界面执行')
   } catch (error) {
     console.error('Failed to execute script:', error)

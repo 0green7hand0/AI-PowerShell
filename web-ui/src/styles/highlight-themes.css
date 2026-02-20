@@ -14,7 +14,7 @@
   /* Base colors */
   --hljs-bg: #ffffff;
   --hljs-fg: #24292e;
-  
+
   /* Syntax colors */
   --hljs-comment: #6a737d;
   --hljs-keyword: #d73a49;
@@ -39,7 +39,7 @@
   --hljs-emphasis: #24292e;
   --hljs-strong: #24292e;
   --hljs-link: #005cc5;
-  
+
   /* UI colors */
   --hljs-line-number-bg: #f6f8fa;
   --hljs-line-number-fg: #6a737d;
@@ -56,7 +56,7 @@
   /* Base colors */
   --hljs-bg: #1e1e1e;
   --hljs-fg: #d4d4d4;
-  
+
   /* Syntax colors */
   --hljs-comment: #6a9955;
   --hljs-keyword: #569cd6;
@@ -81,7 +81,7 @@
   --hljs-emphasis: #d4d4d4;
   --hljs-strong: #d4d4d4;
   --hljs-link: #3794ff;
-  
+
   /* UI colors */
   --hljs-line-number-bg: #252526;
   --hljs-line-number-fg: #858585;

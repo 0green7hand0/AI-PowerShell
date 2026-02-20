@@ -1,9 +1,9 @@
 /**
  * History Store
- * 
+ *
  * Manages command history state and provides actions for
  * fetching, searching, deleting, and re-executing history items.
- * 
+ *
  * Requirements: 3.1, 3.4, 3.5, 3.6
  */
 
@@ -75,7 +75,7 @@ export const useHistoryStore = defineStore('history', () => {
       earlier: []
     }
 
-    items.value.forEach(item => {
+    items.value.forEach((item) => {
       const itemDate = new Date(item.timestamp)
       const itemDay = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate())
 
@@ -115,10 +115,10 @@ export const useHistoryStore = defineStore('history', () => {
 
   /**
    * Fetch history from the backend
-   * 
+   *
    * @param page - Page number (default: current page)
    * @param append - Whether to append to existing items (for infinite scroll)
-   * 
+   *
    * Requirements: 3.1, 3.7
    */
   const fetchHistory = async (page?: number, append: boolean = false): Promise<void> => {
@@ -135,7 +135,7 @@ export const useHistoryStore = defineStore('history', () => {
 
       if (response.success) {
         // Convert API items to store items (parse timestamp)
-        const newItems: HistoryItem[] = response.data.items.map(item => ({
+        const newItems: HistoryItem[] = response.data.items.map((item) => ({
           ...item,
           timestamp: new Date(item.timestamp)
         }))
@@ -163,9 +163,9 @@ export const useHistoryStore = defineStore('history', () => {
 
   /**
    * Search history with a query string
-   * 
+   *
    * @param query - Search query
-   * 
+   *
    * Requirements: 3.6
    */
   const searchHistory = async (query: string): Promise<void> => {
@@ -176,9 +176,9 @@ export const useHistoryStore = defineStore('history', () => {
 
   /**
    * Delete a history item
-   * 
+   *
    * @param id - History item ID
-   * 
+   *
    * Requirements: 3.4, 3.5
    */
   const deleteHistory = async (id: string): Promise<void> => {
@@ -187,7 +187,7 @@ export const useHistoryStore = defineStore('history', () => {
 
       if (response.success) {
         // Remove item from local state
-        items.value = items.value.filter(item => item.id !== id)
+        items.value = items.value.filter((item) => item.id !== id)
         total.value -= 1
 
         ElMessage.success('历史记录已删除')
@@ -205,9 +205,9 @@ export const useHistoryStore = defineStore('history', () => {
 
   /**
    * Re-execute a command from history
-   * 
+   *
    * @param item - History item to re-execute
-   * 
+   *
    * Requirements: 3.5
    */
   const reExecute = async (item: HistoryItem): Promise<void> => {
@@ -240,7 +240,7 @@ export const useHistoryStore = defineStore('history', () => {
 
   /**
    * Load more history items (for infinite scroll)
-   * 
+   *
    * Requirements: 3.7
    */
   const loadMore = async (): Promise<void> => {
@@ -254,7 +254,7 @@ export const useHistoryStore = defineStore('history', () => {
 
   /**
    * Select a history item for viewing details
-   * 
+   *
    * @param item - History item to select
    */
   const selectItem = (item: HistoryItem | null): void => {

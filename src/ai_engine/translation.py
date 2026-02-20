@@ -48,10 +48,24 @@ class NaturalLanguageTranslator:
         """
         text = text.strip()
         
+        # 检查是否是重新生成请求（带有反馈）
+        print(f"[调试] context.feedback: {context.feedback}")
+        print(f"[调试] context.feedback is not None: {context.feedback is not None}")
+        if context.feedback is not None:
+            print(f"[调试] context.feedback.get('feedback'): {context.feedback.get('feedback')}")
+        is_regeneration = context.feedback is not None and context.feedback.get('feedback') == 'incorrect'
+        print(f"[调试] is_regeneration: {is_regeneration}")
+        
+        if is_regeneration:
+            print(f"[重新生成] 输入: {text}, 反馈: {context.feedback}")
+            # 尝试使用不同的策略重新生成
+            return self._regenerate_with_feedback(text, context)
+        
         # 1. 尝试规则匹配（快速路径）
         rule_result = self._match_rules(text)
         if rule_result:
             command, explanation, confidence = rule_result
+            print(f"[规则匹配] 命令: {command}, 置信度: {confidence}")
             return Suggestion(
                 original_input=text,
                 generated_command=command,
@@ -62,7 +76,12 @@ class NaturalLanguageTranslator:
         
         # 2. 尝试使用 AI 模型（慢速路径）
         if self.ai_provider:
-            return self.ai_provider.generate(text, context)
+            try:
+                print(f"[AI 翻译] 输入: {text}")
+                return self.ai_provider.generate(text, context)
+            except Exception as e:
+                # AI 生成失败，记录错误并回退到基本翻译
+                print(f"[AI 翻译失败] {e}")
         
         # 3. 回退到基本翻译
         return self._fallback_translation(text)
@@ -117,6 +136,27 @@ class NaturalLanguageTranslator:
         """
         return {
             # 文件和目录操作 - 注意顺序很重要，更具体的规则应该在前面
+            # 只匹配简单的盘符查询，复杂查询（如包含特定文件类型）让 AI 处理
+            r'([a-zA-Z])盘有什么$': (
+                'Get-ChildItem {drive}:\\',
+                '列出指定盘符的文件和文件夹',
+                0.95
+            ),
+            r'([a-zA-Z])盘有什么文件$': (
+                'Get-ChildItem {drive}:\\',
+                '列出指定盘符的文件和文件夹',
+                0.95
+            ),
+            r'(显示|查看|列出)([a-zA-Z])盘$': (
+                'Get-ChildItem {drive}:\\',
+                '列出指定盘符的文件和文件夹',
+                0.95
+            ),
+            r'(显示|查看|列出)([a-zA-Z])盘(文件|内容)$': (
+                'Get-ChildItem {drive}:\\',
+                '列出指定盘符的文件和文件夹',
+                0.95
+            ),
             r'(显示|查看).*(当前|现在).*(目录|位置|路径)': (
                 'Get-Location',
                 '显示当前工作目录',
@@ -159,6 +199,16 @@ class NaturalLanguageTranslator:
                 '获取当前日期和时间',
                 0.95
             ),
+            r'(当前|现在).*(内存|memory).*(占用|使用)': (
+                'Get-Counter "\\Memory\\% Committed Bytes In Use"',
+                '显示当前内存占用率',
+                0.95
+            ),
+            r'(显示|查看).*(内存|memory).*(占用|使用)': (
+                'Get-Counter "\\Memory\\Available MBytes"',
+                '显示可用内存',
+                0.90
+            ),
             r'(显示|查看).*(CPU|处理器|cpu).*使用率.*最高.*(\d+)': (
                 'Get-Process | Sort-Object CPU -Descending | Select-Object -First {count}',
                 '显示CPU使用率最高的进程',
@@ -167,6 +217,11 @@ class NaturalLanguageTranslator:
             r'(显示|查看).*(CPU|处理器|cpu).*最高.*(\d+)': (
                 'Get-Process | Sort-Object CPU -Descending | Select-Object -First {count}',
                 '显示CPU使用率最高的进程',
+                0.90
+            ),
+            r'(显示|查看).*(系统|电脑).*(信息|配置)': (
+                'Get-ComputerInfo',
+                '显示系统信息',
                 0.90
             ),
             r'(显示|查看|列出).*(进程|任务)': (
@@ -186,6 +241,16 @@ class NaturalLanguageTranslator:
             ),
             
             # 网络相关
+            r'(当前|现在).*(网速|网络速度|下载速度|上传速度)': (
+                'Get-NetAdapterStatistics | Select-Object Name, ReceivedBytes, SentBytes',
+                '显示网络适配器统计信息',
+                0.85
+            ),
+            r'(测试|检查).*(网速|网络速度)': (
+                'Test-NetConnection -ComputerName www.baidu.com -InformationLevel Detailed',
+                '测试网络连接速度',
+                0.85
+            ),
             r'(测试|检查|ping).*(网络|连接).*?([^\s]+)': (
                 'Test-NetConnection {host}',
                 '测试到指定主机的网络连接',
@@ -194,6 +259,11 @@ class NaturalLanguageTranslator:
             r'(显示|查看).*(IP|ip|网络).*(地址|配置)': (
                 'Get-NetIPAddress',
                 '显示网络IP地址配置',
+                0.90
+            ),
+            r'(显示|查看).*(网卡|网络适配器)': (
+                'Get-NetAdapter',
+                '显示网络适配器信息',
                 0.90
             ),
             
@@ -206,6 +276,18 @@ class NaturalLanguageTranslator:
             r'(搜索|查找|grep).*文件.*?([^\s]+)': (
                 'Select-String -Path {pattern} -Pattern {search}',
                 '在文件中搜索指定内容',
+                0.85
+            ),
+            
+            # 文件大小查询
+            r'([a-zA-Z])盘.*?([^\s]+).*?(占用|大小|空间)': (
+                'Get-ChildItem {drive}:\\{name} -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum',
+                '计算指定文件夹的总大小',
+                0.90
+            ),
+            r'(查看|显示).*?([^\s]+).*?(占用|大小|空间)': (
+                'Get-ChildItem {name} -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum',
+                '计算指定文件夹的总大小',
                 0.85
             ),
         }
@@ -261,6 +343,11 @@ class NaturalLanguageTranslator:
         """
         command = template
         
+        # 提取盘符参数
+        if '{drive}' in template:
+            drive = self._extract_drive(text, match)
+            command = command.replace('{drive}', drive)
+        
         # 提取路径参数
         if '{path}' in template:
             path = self._extract_path(text, match)
@@ -288,6 +375,21 @@ class NaturalLanguageTranslator:
         
         return command
     
+    def _extract_drive(self, text: str, match: re.Match) -> str:
+        """从文本中提取盘符"""
+        # 尝试从匹配组中提取
+        groups = match.groups()
+        for group in groups:
+            if group and len(group) == 1 and group.isalpha():
+                return group.upper()
+        
+        # 尝试查找盘符模式
+        drive_match = re.search(r'([a-zA-Z])盘', text)
+        if drive_match:
+            return drive_match.group(1).upper()
+        
+        return 'C'
+    
     def _extract_path(self, text: str, match: re.Match) -> str:
         """从文本中提取路径"""
         # 尝试从匹配组中提取
@@ -306,12 +408,24 @@ class NaturalLanguageTranslator:
     def _extract_name(self, text: str, match: re.Match) -> str:
         """从文本中提取名称"""
         groups = match.groups()
-        if groups and len(groups) >= 3:
-            return groups[-1]
         
-        # 提取最后一个单词
-        words = text.split()
-        return words[-1] if words else 'NewFolder'
+        # 尝试从匹配组中提取名称（通常是第二个非盘符的组）
+        for i, group in enumerate(groups):
+            if group and len(group) > 1 and not group in ['显示', '查看', '列出', '占用', '大小', '空间', '有什么', '什么', '文件', '内容']:
+                return group
+        
+        # 尝试从文本中提取文件夹名称（排除常见的动词和名词）
+        import re
+        # 移除盘符部分
+        text_without_drive = re.sub(r'[a-zA-Z]盘', '', text)
+        # 移除常见词汇
+        text_clean = re.sub(r'(显示|查看|列出|占用|大小|空间|有什么|什么|文件|内容|多大)', '', text_without_drive)
+        # 提取剩余的有意义的词
+        words = text_clean.strip().split()
+        if words:
+            return words[0]
+        
+        return '*'
     
     def _extract_count(self, text: str, match: re.Match) -> str:
         """从文本中提取数量"""
@@ -401,3 +515,131 @@ class NaturalLanguageTranslator:
             explanation=explanation,
             alternatives=[]
         )
+    
+    def _regenerate_with_feedback(self, text: str, context: Context) -> Suggestion:
+        """根据反馈重新生成命令
+        
+        Args:
+            text: 用户输入
+            context: 包含反馈的上下文
+            
+        Returns:
+            Suggestion: 重新生成的翻译建议
+        """
+        feedback = context.feedback
+        previous_command = feedback.get('previousCommand', '') if feedback else ''
+        
+        print(f"[重新生成] 之前的命令: {previous_command}")
+        
+        # 根据用户输入和之前的命令，尝试生成更准确的命令
+        # 这里使用更智能的规则匹配
+        
+        # 检查是否是"新建文件"相关的请求
+        if '新建' in text or '创建' in text:
+            if '文件' in text:
+                # 提取文件名
+                file_name = self._extract_file_name(text)
+                if file_name:
+                    command = f'New-Item -ItemType File -Path "{file_name}"'
+                    explanation = f'创建新文件: {file_name}'
+                    confidence = 0.90
+                else:
+                    command = 'New-Item -ItemType File'
+                    explanation = '创建新文件'
+                    confidence = 0.85
+            elif '文件夹' in text or '目录' in text:
+                dir_name = self._extract_dir_name(text)
+                if dir_name:
+                    command = f'New-Item -ItemType Directory -Path "{dir_name}"'
+                    explanation = f'创建新目录: {dir_name}'
+                    confidence = 0.90
+                else:
+                    command = 'New-Item -ItemType Directory'
+                    explanation = '创建新目录'
+                    confidence = 0.85
+            else:
+                command = 'New-Item'
+                explanation = '创建新项目'
+                confidence = 0.80
+        
+        # 检查是否是"C盘"相关的请求
+        elif 'c盘' in text.lower() or 'C盘' in text:
+            if '新建' in text or '创建' in text:
+                file_name = self._extract_file_name(text)
+                if file_name:
+                    command = f'New-Item -ItemType File -Path "C:\\{file_name}"'
+                    explanation = f'在C盘创建新文件: {file_name}'
+                    confidence = 0.90
+                else:
+                    command = 'New-Item -ItemType File -Path "C:\\newfile.txt"'
+                    explanation = '在C盘创建新文件'
+                    confidence = 0.85
+            else:
+                command = 'Get-ChildItem C:\\'
+                explanation = '列出C盘的文件和文件夹'
+                confidence = 0.95
+        
+        # 检查是否是盘符相关的请求
+        elif re.search(r'([a-zA-Z])盘', text):
+            drive = self._extract_drive(text, None)
+            if '新建' in text or '创建' in text:
+                file_name = self._extract_file_name(text)
+                if file_name:
+                    command = f'New-Item -ItemType File -Path "{drive}:\\{file_name}"'
+                    explanation = f'在{drive}盘创建新文件: {file_name}'
+                    confidence = 0.90
+                else:
+                    command = f'New-Item -ItemType File -Path "{drive}:\\newfile.txt"'
+                    explanation = f'在{drive}盘创建新文件'
+                    confidence = 0.85
+            else:
+                command = f'Get-ChildItem {drive}:\\'
+                explanation = f'列出{drive}盘的文件和文件夹'
+                confidence = 0.95
+        
+        # 其他情况，尝试使用更智能的匹配
+        else:
+            # 尝试使用 AI 模型
+            if self.ai_provider:
+                try:
+                    print(f"[AI 重新生成] 输入: {text}")
+                    return self.ai_provider.generate(text, context)
+                except Exception as e:
+                    print(f"[AI 重新生成失败] {e}")
+            
+            # 回退到基本翻译
+            return self._fallback_translation(text)
+        
+        print(f"[重新生成] 新命令: {command}, 置信度: {confidence}")
+        
+        return Suggestion(
+            original_input=text,
+            generated_command=command,
+            confidence_score=confidence,
+            explanation=explanation,
+            alternatives=self._generate_alternatives(text, command)
+        )
+    
+    def _extract_file_name(self, text: str) -> str:
+        """从文本中提取文件名"""
+        # 移除常见词汇
+        text_clean = re.sub(r'(新建|创建|文件|在|盘|c|C)', '', text)
+        # 提取剩余的有意义的词
+        words = text_clean.strip().split()
+        if words:
+            file_name = words[0]
+            # 如果没有扩展名，添加默认扩展名
+            if '.' not in file_name:
+                file_name += '.txt'
+            return file_name
+        return 'newfile.txt'
+    
+    def _extract_dir_name(self, text: str) -> str:
+        """从文本中提取目录名"""
+        # 移除常见词汇
+        text_clean = re.sub(r'(新建|创建|文件夹|目录|在|盘|c|C)', '', text)
+        # 提取剩余的有意义的词
+        words = text_clean.strip().split()
+        if words:
+            return words[0]
+        return 'newfolder'

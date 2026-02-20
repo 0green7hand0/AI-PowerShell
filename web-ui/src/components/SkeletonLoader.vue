@@ -1,44 +1,52 @@
 <template>
   <div class="skeleton-loader" :class="typeClass">
     <!-- Text skeleton -->
-    <div v-if="type === 'text'" class="skeleton-text" :style="{ width: width }"></div>
-    
+    <div v-if="type === 'text'" class="skeleton-text" :style="{ width: width }" />
+
     <!-- Card skeleton -->
     <div v-else-if="type === 'card'" class="skeleton-card">
       <div class="skeleton-card-header">
-        <div class="skeleton-avatar"></div>
+        <div class="skeleton-avatar" />
         <div class="skeleton-card-title">
-          <div class="skeleton-text" style="width: 60%"></div>
-          <div class="skeleton-text" style="width: 40%; height: 12px"></div>
+          <div class="skeleton-text" style="width: 60%" />
+          <div class="skeleton-text" style="width: 40%; height: 12px" />
         </div>
       </div>
       <div class="skeleton-card-body">
-        <div class="skeleton-text" style="width: 100%"></div>
-        <div class="skeleton-text" style="width: 90%"></div>
-        <div class="skeleton-text" style="width: 80%"></div>
+        <div class="skeleton-text" style="width: 100%" />
+        <div class="skeleton-text" style="width: 90%" />
+        <div class="skeleton-text" style="width: 80%" />
       </div>
     </div>
-    
+
     <!-- List skeleton -->
     <div v-else-if="type === 'list'" class="skeleton-list">
       <div v-for="i in rows" :key="i" class="skeleton-list-item">
-        <div class="skeleton-avatar"></div>
+        <div class="skeleton-avatar" />
         <div class="skeleton-list-content">
-          <div class="skeleton-text" style="width: 70%"></div>
-          <div class="skeleton-text" style="width: 50%; height: 12px"></div>
+          <div class="skeleton-text" style="width: 70%" />
+          <div class="skeleton-text" style="width: 50%; height: 12px" />
         </div>
       </div>
     </div>
-    
+
     <!-- Avatar skeleton -->
-    <div v-else-if="type === 'avatar'" class="skeleton-avatar" :style="{ width: size, height: size }"></div>
-    
+    <div
+      v-else-if="type === 'avatar'"
+      class="skeleton-avatar"
+      :style="{ width: size, height: size }"
+    />
+
     <!-- Image skeleton -->
-    <div v-else-if="type === 'image'" class="skeleton-image" :style="{ width: width, height: height }"></div>
-    
+    <div
+      v-else-if="type === 'image'"
+      class="skeleton-image"
+      :style="{ width: width, height: height }"
+    />
+
     <!-- Button skeleton -->
-    <div v-else-if="type === 'button'" class="skeleton-button" :style="{ width: width }"></div>
-    
+    <div v-else-if="type === 'button'" class="skeleton-button" :style="{ width: width }" />
+
     <!-- Custom skeleton -->
     <div v-else class="skeleton-custom">
       <slot />
@@ -191,12 +199,7 @@ const typeClass = computed(() => ({
 [data-theme='dark'] .skeleton-button,
 [data-theme='dark'] .skeleton-card,
 [data-theme='dark'] .skeleton-list-item {
-  background: linear-gradient(
-    90deg,
-    #2d2d2d 0%,
-    #3a3a3a 50%,
-    #2d2d2d 100%
-  );
+  background: linear-gradient(90deg, #2d2d2d 0%, #3a3a3a 50%, #2d2d2d 100%);
   background-size: 200% 100%;
 }
 </style>

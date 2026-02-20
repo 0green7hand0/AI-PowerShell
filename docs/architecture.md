@@ -1702,6 +1702,513 @@ kubectl apply -f service.yaml
 
 ## 架构图和模块关系图
 
+### 系统架构图
+
+```mermaid
+graph TB
+    %% 用户界面层
+    subgraph "用户界面层 (Presentation Layer)"
+        WebUI[🌐 Web界面<br/>Vue.js + TypeScript]
+        CLI[💻 命令行界面<br/>Rich CLI]
+        API[🔌 REST API<br/>Flask + SocketIO]
+    end
+    
+    %% 业务逻辑层
+    subgraph "业务逻辑层 (Business Logic Layer)"
+        MainController[🎯 主控制器<br/>PowerShellAssistant]
+        
+        subgraph "核心引擎 (Core Engines)"
+            AIEngine[🤖 AI引擎<br/>AI Engine]
+            SecurityEngine[🔒 安全引擎<br/>Security Engine]
+            ExecutionEngine[⚡ 执行引擎<br/>Execution Engine]
+        end
+        
+        subgraph "支持服务 (Support Services)"
+            ConfigManager[⚙️ 配置管理<br/>Config Manager]
+            LogEngine[📝 日志引擎<br/>Log Engine]
+            StorageEngine[💾 存储引擎<br/>Storage Engine]
+            ContextManager[🧠 上下文管理<br/>Context Manager]
+            UISystem[🎨 UI系统<br/>UI System]
+        end
+    end
+    
+    %% 数据访问层
+    subgraph "数据访问层 (Data Access Layer)"
+        FileStorage[📁 文件存储<br/>JSON/YAML Files]
+        CacheStorage[⚡ 缓存存储<br/>Memory Cache]
+        LogStorage[📋 日志存储<br/>Log Files]
+        ConfigStorage[⚙️ 配置存储<br/>Config Files]
+    end
+    
+    %% 外部服务层
+    subgraph "外部服务层 (External Services)"
+        OllamaService[🦙 Ollama服务<br/>Local AI Models]
+        APIService[🌐 API服务<br/>OpenAI Compatible]
+        PowerShellEngine[⚙️ PowerShell引擎<br/>pwsh/powershell]
+        DockerEngine[🐳 Docker引擎<br/>Sandbox Environment]
+    end
+    
+    %% 连接关系
+    WebUI --> API
+    CLI --> MainController
+    API --> MainController
+    
+    MainController --> AIEngine
+    MainController --> SecurityEngine
+    MainController --> ExecutionEngine
+    MainController --> ConfigManager
+    MainController --> LogEngine
+    MainController --> StorageEngine
+    MainController --> ContextManager
+    MainController --> UISystem
+    
+    AIEngine --> OllamaService
+    AIEngine --> APIService
+    ExecutionEngine --> PowerShellEngine
+    ExecutionEngine --> DockerEngine
+    
+    ConfigManager --> ConfigStorage
+    LogEngine --> LogStorage
+    StorageEngine --> FileStorage
+    StorageEngine --> CacheStorage
+    
+    %% 样式定义
+    classDef presentation fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef business fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef data fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef controller fill:#ffebee,stroke:#d32f2f,stroke-width:3px
+    
+    class WebUI,CLI,API presentation
+    class MainController controller
+    class AIEngine,SecurityEngine,ExecutionEngine,ConfigManager,LogEngine,StorageEngine,ContextManager,UISystem business
+    class FileStorage,CacheStorage,LogStorage,ConfigStorage data
+    class OllamaService,APIService,PowerShellEngine,DockerEngine external
+```
+
+### 类图
+
+```mermaid
+classDiagram
+    %% 主控制器类
+    class PowerShellAssistant {
+        -ai_engine: AIEngine
+        -security_engine: SecurityEngine
+        -execution_engine: ExecutionEngine
+        -config_manager: ConfigManager
+        -log_engine: LogEngine
+        -storage_engine: StorageEngine
+        -context_manager: ContextManager
+        -ui_system: UISystem
+        +__init__(config_path: str)
+        +process_request(text: str) ProcessResult
+        +get_history() List~CommandHistory~
+        +get_templates() List~Template~
+        +update_config(config: Dict) bool
+        +shutdown() void
+    }
+    
+    %% 接口定义
+    class Context {
+        <<interface>>
+        +session_id: str
+        +user_id: str
+        +timestamp: datetime
+        +previous_commands: List~str~
+        +environment_vars: Dict
+        +working_directory: str
+    }
+    
+    class Suggestion {
+        <<dataclass>>
+        +original_input: str
+        +generated_command: str
+        +confidence_score: float
+        +explanation: str
+        +alternatives: List~str~
+        +risk_level: RiskLevel
+        +execution_time: Optional~float~
+    }
+    
+    class ProcessResult {
+        <<dataclass>>
+        +success: bool
+        +suggestion: Suggestion
+        +execution_result: Optional~ExecutionResult~
+        +error_message: Optional~str~
+        +timestamp: datetime
+        +session_id: str
+    }
+    
+    %% AI引擎相关类
+    class AIEngine {
+        -translator: NaturalLanguageTranslator
+        -error_detector: ErrorDetector
+        -config: Dict
+        +__init__(config: Dict)
+        +translate(text: str, context: Context) Suggestion
+        +explain_command(command: str) str
+        +detect_errors(command: str, result: str) List~ErrorInfo~
+        +is_available() bool
+    }
+    
+    class NaturalLanguageTranslator {
+        -rules: Dict~str, Tuple~
+        -command_templates: Dict~str, str~
+        -_ai_provider: Optional~AIProvider~
+        +__init__(config: Dict)
+        +translate(text: str, context: Context) Suggestion
+        +explain_command(command: str) str
+        -_match_rules(text: str) Optional~Tuple~
+        -_generate_alternatives(text: str, command: str) List~str~
+        -_fallback_translation(text: str) Suggestion
+    }
+    
+    class AIProvider {
+        <<abstract>>
+        +generate(text: str, context: Context) Suggestion*
+        +is_available() bool*
+        #_build_prompt(text: str, context: Context) str
+        #_parse_result(result: str, original_input: str) Suggestion
+    }
+    
+    class OllamaProvider {
+        -config: Dict
+        -model_name: str
+        -base_url: str
+        -client: Optional~ollama.Client~
+        +__init__(config: Dict)
+        +generate(text: str, context: Context) Suggestion
+        +is_available() bool
+        -_initialize_client() void
+    }
+    
+    class DirectAPIProvider {
+        -config: Dict
+        -api_url: str
+        -api_key: str
+        -model_name: str
+        -headers: Dict
+        +__init__(config: Dict)
+        +generate(text: str, context: Context) Suggestion
+        +is_available() bool
+    }
+    
+    %% 安全引擎相关类
+    class SecurityEngine {
+        -validator: CommandValidator
+        -policy_engine: PolicyEngine
+        -risk_assessor: RiskAssessor
+        -config: Dict
+        +__init__(config: Dict)
+        +validate_command(command: str, context: Context) SecurityResult
+        +assess_risk(command: str) RiskLevel
+        +check_permissions(command: str) bool
+        +update_policies(policies: Dict) void
+    }
+    
+    class CommandValidator {
+        -whitelist_patterns: List~str~
+        -dangerous_patterns: List~str~
+        -safe_prefixes: List~str~
+        +__init__(config: Dict)
+        +validate(command: str) ValidationResult
+        +is_whitelisted(command: str) bool
+        +is_dangerous(command: str) bool
+        +check_syntax(command: str) bool
+    }
+    
+    %% 执行引擎相关类
+    class ExecutionEngine {
+        -executor: CommandExecutor
+        -result_processor: ResultProcessor
+        -config: Dict
+        +__init__(config: Dict)
+        +execute_command(command: str, context: Context) ExecutionResult
+        +execute_in_sandbox(command: str) ExecutionResult
+        +get_execution_environment() ExecutionEnvironment
+        +cleanup_environment() void
+    }
+    
+    class CommandExecutor {
+        -platform: Platform
+        -powershell_path: str
+        -timeout: int
+        +__init__(config: Dict)
+        +execute(command: str, env: ExecutionEnvironment) RawResult
+        +execute_local(command: str) RawResult
+        +execute_in_docker(command: str) RawResult
+        +kill_process(process_id: int) bool
+    }
+    
+    %% 配置管理相关类
+    class ConfigManager {
+        -config_path: str
+        -config_data: Dict
+        -validators: Dict~str, Callable~
+        +__init__(config_path: str)
+        +load_config() Dict
+        +save_config(config: Dict) bool
+        +get_value(key: str, default: Any) Any
+        +set_value(key: str, value: Any) void
+        +validate_config(config: Dict) ValidationResult
+        +reload_config() void
+    }
+    
+    %% 存储引擎相关类
+    class StorageEngine {
+        -base_path: str
+        -file_manager: FileManager
+        -cache_manager: CacheManager
+        +__init__(config: Dict)
+        +save_history(history: CommandHistory) bool
+        +load_history(limit: int) List~CommandHistory~
+        +save_template(template: Template) bool
+        +load_templates() List~Template~
+        +clear_cache() void
+    }
+    
+    %% 数据模型类
+    class CommandHistory {
+        +id: str
+        +timestamp: datetime
+        +original_input: str
+        +generated_command: str
+        +execution_result: Optional~ExecutionResult~
+        +success: bool
+        +session_id: str
+        +user_id: str
+        +to_dict() Dict
+        +from_dict(data: Dict) CommandHistory
+    }
+    
+    class Template {
+        +id: str
+        +name: str
+        +description: str
+        +category: str
+        +command_template: str
+        +parameters: List~TemplateParameter~
+        +created_at: datetime
+        +updated_at: datetime
+        +author: str
+        +tags: List~str~
+        +validate() bool
+        +render(params: Dict) str
+    }
+    
+    %% 枚举类
+    class RiskLevel {
+        <<enumeration>>
+        LOW
+        MEDIUM
+        HIGH
+        CRITICAL
+    }
+    
+    class SecurityMode {
+        <<enumeration>>
+        STRICT
+        MODERATE
+        PERMISSIVE
+    }
+    
+    %% 关系定义
+    PowerShellAssistant --> AIEngine
+    PowerShellAssistant --> SecurityEngine
+    PowerShellAssistant --> ExecutionEngine
+    PowerShellAssistant --> ConfigManager
+    PowerShellAssistant --> StorageEngine
+    
+    AIEngine --> NaturalLanguageTranslator
+    NaturalLanguageTranslator --> AIProvider
+    AIProvider <|-- OllamaProvider
+    AIProvider <|-- DirectAPIProvider
+    
+    SecurityEngine --> CommandValidator
+    ExecutionEngine --> CommandExecutor
+    StorageEngine --> FileManager
+    StorageEngine --> CacheManager
+```
+
+### 数据流图
+
+#### 0级数据流图 (Context Diagram)
+
+```mermaid
+graph TB
+    %% 外部实体
+    User[👤 用户<br/>User]
+    Admin[👤 管理员<br/>Administrator]
+    AIService[🤖 AI服务<br/>AI Service]
+    PowerShell[⚙️ PowerShell引擎<br/>PowerShell Engine]
+    
+    %% 系统
+    System[🎯 AI PowerShell<br/>智能助手系统<br/>AI PowerShell Assistant]
+    
+    %% 数据流
+    User -->|自然语言输入<br/>Natural Language Input| System
+    System -->|PowerShell命令<br/>PowerShell Commands| User
+    System -->|执行结果<br/>Execution Results| User
+    
+    Admin -->|配置参数<br/>Configuration| System
+    System -->|系统状态<br/>System Status| Admin
+    
+    System -->|翻译请求<br/>Translation Request| AIService
+    AIService -->|生成命令<br/>Generated Commands| System
+    
+    System -->|PowerShell命令<br/>PowerShell Commands| PowerShell
+    PowerShell -->|执行结果<br/>Execution Results| System
+    
+    %% 样式
+    classDef external fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef system fill:#ffebee,stroke:#d32f2f,stroke-width:3px
+    
+    class User,Admin,AIService,PowerShell external
+    class System system
+```
+
+#### 1级数据流图 (Level 1 DFD)
+
+```mermaid
+graph TB
+    %% 外部实体
+    User[👤 用户]
+    Admin[👤 管理员]
+    AIService[🤖 AI服务]
+    PowerShell[⚙️ PowerShell引擎]
+    
+    %% 主要处理过程
+    P1[1.0<br/>🔤 自然语言翻译<br/>Natural Language<br/>Translation]
+    P2[2.0<br/>🔒 安全验证<br/>Security<br/>Validation]
+    P3[3.0<br/>⚡ 命令执行<br/>Command<br/>Execution]
+    P4[4.0<br/>📊 结果处理<br/>Result<br/>Processing]
+    P5[5.0<br/>⚙️ 配置管理<br/>Configuration<br/>Management]
+    P6[6.0<br/>📝 日志记录<br/>Log<br/>Recording]
+    
+    %% 数据存储
+    D1[(D1<br/>📋 历史记录<br/>History)]
+    D2[(D2<br/>📝 模板库<br/>Templates)]
+    D3[(D3<br/>⚙️ 配置文件<br/>Config)]
+    D4[(D4<br/>📊 日志文件<br/>Logs)]
+    D5[(D5<br/>⚡ 缓存<br/>Cache)]
+    
+    %% 用户数据流
+    User -->|1. 自然语言输入| P1
+    P1 -->|2. PowerShell命令| P2
+    P2 -->|3. 验证通过的命令| P3
+    P3 -->|4. 执行结果| P4
+    P4 -->|5. 格式化结果| User
+    
+    %% AI服务数据流
+    P1 -->|翻译请求| AIService
+    AIService -->|生成的命令| P1
+    
+    %% PowerShell数据流
+    P3 -->|PowerShell命令| PowerShell
+    PowerShell -->|原始结果| P3
+    
+    %% 管理员数据流
+    Admin -->|配置更新| P5
+    P5 -->|系统状态| Admin
+    
+    %% 数据存储交互
+    P1 -.->|读取模板| D2
+    P1 -.->|读取缓存| D5
+    P1 -.->|写入缓存| D5
+    
+    P2 -.->|读取安全策略| D3
+    
+    P4 -.->|保存历史| D1
+    P4 -.->|读取历史| D1
+    
+    P5 -.->|读写配置| D3
+    
+    P6 -.->|写入日志| D4
+    P1 -.->|记录翻译日志| P6
+    P2 -.->|记录安全日志| P6
+    P3 -.->|记录执行日志| P6
+    
+    %% 样式
+    classDef external fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef datastore fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    
+    class User,Admin,AIService,PowerShell external
+    class P1,P2,P3,P4,P5,P6 process
+    class D1,D2,D3,D4,D5 datastore
+```
+
+### 用例图
+
+```mermaid
+graph TB
+    %% 参与者定义
+    User[👤 用户<br/>User]
+    Admin[👤 系统管理员<br/>Administrator]
+    AIService[🤖 AI服务<br/>AI Service]
+    PowerShell[⚙️ PowerShell引擎<br/>PowerShell Engine]
+    
+    %% 系统边界
+    subgraph "AI PowerShell 智能助手系统"
+        %% 核心用例
+        UC1((自然语言翻译<br/>Natural Language<br/>Translation))
+        UC2((命令执行<br/>Command<br/>Execution))
+        UC3((历史记录管理<br/>History<br/>Management))
+        UC4((模板管理<br/>Template<br/>Management))
+        UC5((安全验证<br/>Security<br/>Validation))
+        
+        %% 配置管理用例
+        UC6((系统配置<br/>System<br/>Configuration))
+        UC7((AI模型配置<br/>AI Model<br/>Configuration))
+        UC8((安全策略配置<br/>Security Policy<br/>Configuration))
+        
+        %% 监控用例
+        UC9((日志监控<br/>Log<br/>Monitoring))
+        UC10((性能监控<br/>Performance<br/>Monitoring))
+        
+        %% 扩展用例
+        UC11((命令解释<br/>Command<br/>Explanation))
+        UC12((错误诊断<br/>Error<br/>Diagnosis))
+        UC13((沙箱执行<br/>Sandbox<br/>Execution))
+    end
+    
+    %% 关联关系
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC9
+    
+    Admin --> UC6
+    Admin --> UC7
+    Admin --> UC8
+    Admin --> UC10
+    
+    %% 系统间关联
+    UC1 --> AIService
+    UC2 --> PowerShell
+    UC13 --> PowerShell
+    
+    %% 包含关系 (include)
+    UC1 -.->|<<include>>| UC11
+    UC2 -.->|<<include>>| UC5
+    UC2 -.->|<<include>>| UC12
+    
+    %% 扩展关系 (extend)
+    UC13 -.->|<<extend>>| UC2
+    UC12 -.->|<<extend>>| UC1
+    
+    %% 样式定义
+    classDef actor fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef usecase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef system fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    
+    class User,Admin actor
+    class AIService,PowerShell system
+    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9,UC10,UC11,UC12,UC13 usecase
+```
+
 ### 模块依赖关系图
 
 ```

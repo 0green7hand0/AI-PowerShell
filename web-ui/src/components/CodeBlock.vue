@@ -3,13 +3,7 @@
     <!-- Header -->
     <div class="code-header">
       <span class="language-label">{{ language }}</span>
-      <el-button
-        v-if="copyable"
-        text
-        size="small"
-        @click="handleCopy"
-        class="copy-button"
-      >
+      <el-button v-if="copyable" text size="small" class="copy-button" @click="handleCopy">
         <el-icon><DocumentCopy /></el-icon>
         {{ copied ? '已复制' : '复制' }}
       </el-button>
@@ -17,8 +11,14 @@
 
     <!-- Code Content -->
     <div class="code-content">
-      <pre v-if="showLineNumbers" class="line-numbers"><code v-for="(line, index) in lines" :key="index">{{ index + 1 }}</code></pre>
-      <pre class="code-text"><code ref="codeElement" :class="`language-${language}`">{{ code }}</code></pre>
+      <pre v-if="showLineNumbers" class="line-numbers"><code
+v-for="(line, index) in lines"
+                                      :key="index"
+>{{ index + 1 }}</code></pre>
+      <pre class="code-text"><code
+ref="codeElement"
+                                   :class="`language-${language}`"
+      >{{ code }}</code></pre>
     </div>
   </div>
 </template>
@@ -38,10 +38,10 @@ import markdown from 'highlight.js/lib/languages/markdown'
 
 /**
  * CodeBlock - Code display component with syntax highlighting
- * 
+ *
  * Integrates Highlight.js for syntax highlighting and provides
  * copy-to-clipboard functionality.
- * 
+ *
  * Requirements: 2.16, 2.18
  */
 
@@ -84,7 +84,7 @@ const highlightCode = () => {
   if (codeElement.value) {
     // Remove existing highlighting
     codeElement.value.removeAttribute('data-highlighted')
-    
+
     // Apply new highlighting
     hljs.highlightElement(codeElement.value)
   }
@@ -99,7 +99,7 @@ const handleCopy = async () => {
     await navigator.clipboard.writeText(props.code)
     copied.value = true
     ElMessage.success('已复制到剪贴板')
-    
+
     setTimeout(() => {
       copied.value = false
     }, 2000)
@@ -116,9 +116,12 @@ onMounted(() => {
   highlightCode()
 })
 
-watch(() => props.code, () => {
-  highlightCode()
-})
+watch(
+  () => props.code,
+  () => {
+    highlightCode()
+  }
+)
 </script>
 
 <style scoped>

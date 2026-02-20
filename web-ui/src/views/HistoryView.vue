@@ -16,17 +16,11 @@
           <el-icon><Clock /></el-icon>
           历史记录
         </h1>
-        <p class="history-view__subtitle">
-          查看和管理您的命令执行历史
-        </p>
+        <p class="history-view__subtitle">查看和管理您的命令执行历史</p>
       </div>
 
       <div class="history-view__actions">
-        <el-button
-          :icon="Refresh"
-          @click="handleRefresh"
-          :loading="historyStore.isLoading"
-        >
+        <el-button :icon="Refresh" :loading="historyStore.isLoading" @click="handleRefresh">
           刷新
         </el-button>
       </div>
@@ -34,10 +28,7 @@
 
     <!-- Search Bar -->
     <div class="history-view__search">
-      <HistorySearchBar
-        v-model="historyStore.searchQuery"
-        @search="handleSearch"
-      />
+      <HistorySearchBar v-model="historyStore.searchQuery" @search="handleSearch" />
     </div>
 
     <!-- Statistics -->
@@ -106,13 +97,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import {
-  Clock,
-  Refresh,
-  Document,
-  SuccessFilled,
-  CircleCloseFilled
-} from '@element-plus/icons-vue'
+import { Clock, Refresh, Document, SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useHistoryStore } from '../stores/history'
 import type { HistoryItem } from '../stores/history'
@@ -140,14 +125,14 @@ const showDetailDialog = ref(false)
  * Count of successful executions
  */
 const successCount = computed(() => {
-  return historyStore.items.filter(item => item.success).length
+  return historyStore.items.filter((item) => item.success).length
 })
 
 /**
  * Count of failed executions
  */
 const failedCount = computed(() => {
-  return historyStore.items.filter(item => !item.success).length
+  return historyStore.items.filter((item) => !item.success).length
 })
 
 // ============================================================================

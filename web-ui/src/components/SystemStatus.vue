@@ -2,12 +2,7 @@
   <div class="system-status">
     <div class="status-header">
       <h3 class="status-title">系统状态</h3>
-      <el-button
-        :icon="Refresh"
-        :loading="isRefreshing"
-        size="small"
-        @click="handleRefresh"
-      >
+      <el-button :icon="Refresh" :loading="isRefreshing" size="small" @click="handleRefresh">
         刷新
       </el-button>
     </div>

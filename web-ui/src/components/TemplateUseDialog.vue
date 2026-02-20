@@ -10,9 +10,13 @@
       <!-- Template Info -->
       <div class="use-dialog__info">
         <h4 class="use-dialog__section-title">模板信息</h4>
-        <p class="use-dialog__description">{{ template.description }}</p>
+        <p class="use-dialog__description">
+          {{ template.description }}
+        </p>
         <div class="use-dialog__meta">
-          <el-tag type="info" size="small">{{ getCategoryLabel(template.category) }}</el-tag>
+          <el-tag type="info" size="small">
+            {{ getCategoryLabel(template.category) }}
+          </el-tag>
           <span class="use-dialog__param-count">{{ template.parameters.length }} 个参数</span>
         </div>
       </div>
@@ -51,10 +55,7 @@
             />
 
             <!-- Boolean Switch -->
-            <el-switch
-              v-else-if="param.type === 'boolean'"
-              v-model="formData[param.name]"
-            />
+            <el-switch v-else-if="param.type === 'boolean'" v-model="formData[param.name]" />
 
             <!-- Select Dropdown -->
             <el-select
@@ -83,11 +84,7 @@
       <!-- Script Preview -->
       <div v-if="generatedScript" class="use-dialog__preview">
         <h4 class="use-dialog__section-title">脚本预览</h4>
-        <CodeBlock
-          :code="generatedScript"
-          language="powershell"
-          :copyable="true"
-        />
+        <CodeBlock :code="generatedScript" language="powershell" :copyable="true" />
       </div>
 
       <!-- No Parameters Message -->
@@ -99,34 +96,29 @@
     <!-- Actions -->
     <template #footer>
       <div class="use-dialog__footer">
-        <el-button @click="handleCancel" :disabled="isGenerating">
-          取消
-        </el-button>
+        <el-button :disabled="isGenerating" @click="handleCancel"> 取消 </el-button>
         <el-button
           v-if="!generatedScript"
           type="primary"
-          @click="handleGenerate"
           :loading="isGenerating"
           :disabled="isGenerating"
+          @click="handleGenerate"
         >
-          <i v-if="!isGenerating" class="el-icon-document"></i>
+          <i v-if="!isGenerating" class="el-icon-document" />
           {{ isGenerating ? '生成中...' : '生成脚本' }}
         </el-button>
         <template v-else>
-          <el-button
-            @click="handleReset"
-            :disabled="isExecuting"
-          >
-            <i class="el-icon-refresh"></i>
+          <el-button :disabled="isExecuting" @click="handleReset">
+            <i class="el-icon-refresh" />
             重新配置
           </el-button>
           <el-button
             type="success"
-            @click="handleExecute"
             :loading="isExecuting"
             :disabled="isExecuting"
+            @click="handleExecute"
           >
-            <i v-if="!isExecuting" class="el-icon-video-play"></i>
+            <i v-if="!isExecuting" class="el-icon-video-play" />
             {{ isExecuting ? '执行中...' : '执行脚本' }}
           </el-button>
         </template>
@@ -137,16 +129,16 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, reactive } from 'vue'
-import { 
-  ElDialog, 
-  ElForm, 
-  ElFormItem, 
-  ElInput, 
+import {
+  ElDialog,
+  ElForm,
+  ElFormItem,
+  ElInput,
   ElInputNumber,
   ElSwitch,
   ElSelect,
   ElOption,
-  ElButton, 
+  ElButton,
   ElTag,
   type FormInstance,
   type FormRules
@@ -200,7 +192,7 @@ const formRules = computed<FormRules>(() => {
   if (!props.template) return {}
 
   const rules: FormRules = {}
-  props.template.parameters.forEach(param => {
+  props.template.parameters.forEach((param) => {
     if (param.required) {
       rules[param.name] = [
         {
@@ -218,19 +210,25 @@ const formRules = computed<FormRules>(() => {
 // Watchers
 // ============================================================================
 
-watch(() => props.visible, (newValue) => {
-  if (newValue && props.template) {
-    // Initialize form data with default values
-    initializeFormData()
-    generatedScript.value = ''
+watch(
+  () => props.visible,
+  (newValue) => {
+    if (newValue && props.template) {
+      // Initialize form data with default values
+      initializeFormData()
+      generatedScript.value = ''
+    }
   }
-})
+)
 
-watch(() => props.template, (newTemplate) => {
-  if (newTemplate) {
-    initializeFormData()
+watch(
+  () => props.template,
+  (newTemplate) => {
+    if (newTemplate) {
+      initializeFormData()
+    }
   }
-})
+)
 
 // ============================================================================
 // Methods
@@ -243,12 +241,12 @@ const initializeFormData = (): void => {
   if (!props.template) return
 
   // Clear existing data
-  Object.keys(formData).forEach(key => {
+  Object.keys(formData).forEach((key) => {
     delete formData[key]
   })
 
   // Set default values
-  props.template.parameters.forEach(param => {
+  props.template.parameters.forEach((param) => {
     if (param.default !== undefined) {
       formData[param.name] = param.default
     } else if (param.type === 'boolean') {

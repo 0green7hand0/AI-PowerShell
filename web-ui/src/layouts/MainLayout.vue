@@ -2,43 +2,35 @@
   <div class="main-layout" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
     <!-- Mobile Overlay -->
     <transition name="overlay-fade">
-      <div 
-        v-if="!sidebarCollapsed && isMobile" 
-        class="mobile-overlay"
-        @click="toggleSidebar"
-      ></div>
+      <div v-if="!sidebarCollapsed && isMobile" class="mobile-overlay" @click="toggleSidebar" />
     </transition>
 
     <!-- Sidebar -->
-    <Sidebar 
-      :collapsed="sidebarCollapsed"
-      :is-mobile="isMobile"
-      @toggle="toggleSidebar"
-    />
+    <Sidebar :collapsed="sidebarCollapsed" :is-mobile="isMobile" @toggle="toggleSidebar" />
 
     <!-- Main Content Area -->
     <main ref="mainContentRef" class="main-content">
       <!-- Top Bar -->
       <div class="top-bar">
-        <button 
+        <button
           class="sidebar-toggle-btn"
-          @click="toggleSidebar"
           :aria-label="sidebarCollapsed ? '展开侧边栏' : '收起侧边栏'"
+          @click="toggleSidebar"
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            stroke-width="2" 
-            stroke-linecap="round" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </button>
 
@@ -138,7 +130,7 @@ const handleFocusOut = () => {
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
-  
+
   // Listen for input focus events
   document.addEventListener('focusin', handleFocusIn)
   document.addEventListener('focusout', handleFocusOut)
@@ -224,8 +216,9 @@ onUnmounted(() => {
 /* Page transition animations */
 .page-fade-enter-active,
 .page-fade-leave-active {
-  transition: opacity var(--duration-normal) var(--ease-in-out),
-              transform var(--duration-normal) var(--ease-in-out);
+  transition:
+    opacity var(--duration-normal) var(--ease-in-out),
+    transform var(--duration-normal) var(--ease-in-out);
 }
 
 .page-fade-enter-from {

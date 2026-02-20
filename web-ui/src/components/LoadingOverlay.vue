@@ -4,13 +4,7 @@
       <div v-if="visible" class="loading-overlay" @click="handleClick">
         <div class="loading-content" @click.stop>
           <LoadingSpinner :size="size" :text="text" />
-          <button
-            v-if="cancellable"
-            class="cancel-button"
-            @click="handleCancel"
-          >
-            取消
-          </button>
+          <button v-if="cancellable" class="cancel-button" @click="handleCancel">取消</button>
         </div>
       </div>
     </Transition>

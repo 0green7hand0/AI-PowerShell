@@ -106,6 +106,7 @@ class Context:
     command_history: List[str] = field(default_factory=list)  # 命令历史
     timestamp: datetime = field(default_factory=datetime.now)  # 上下文创建时间
     metadata: Dict[str, Any] = field(default_factory=dict)  # 额外元数据
+    feedback: Optional[Dict[str, Any]] = None  # 用户反馈信息
     
     def add_command(self, command: str):
         """添加命令到历史记录"""

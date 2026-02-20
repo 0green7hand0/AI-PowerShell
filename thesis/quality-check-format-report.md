@@ -1,0 +1,337 @@
+# 文档格式规范性检查报告
+生成时间: 2025-11-11 20:47:48
+---
+
+## 检查摘要
+
+- ✓ 成功: 6 项
+- ⚠ 警告: 313 项
+- ✗ 错误: 0 项
+
+## 警告详情
+
+- ⚠ 标题全大写 in appendix.md:3: 附录A 完整配置文件示例
+- ⚠ 标题全大写 in appendix.md:10: AI引擎配置
+- ⚠ 标题全大写 in appendix.md:137: UI配置
+- ⚠ 标题全大写 in appendix.md:244: 附录B 关键代码清单
+- ⚠ 标题全大写 in appendix.md:246: B.1 主控制器核心代码
+- ⚠ 标题全大写 in appendix.md:327: B.2 AI引擎翻译代码
+- ⚠ 标题全大写 in appendix.md:367: B.3 安全引擎验证代码
+- ⚠ 标题全大写 in appendix.md:412: 附录C 测试数据详表
+- ⚠ 标题全大写 in appendix.md:414: C.1 翻译准确率测试数据
+- ⚠ 标题全大写 in appendix.md:437: C.2 性能测试数据
+- ⚠ 标题全大写 in appendix.md:448: C.3 安全测试数据
+- ⚠ 标题全大写 in appendix.md:459: 附录D 用户满意度调查问卷
+- ⚠ 标题全大写 in appendix.md:461: D.1 调查问卷
+- ⚠ 标题全大写 in appendix.md:542: D.2 调查结果统计
+- ⚠ 标题全大写 in appendix.md:598: 附录E 系统安装和使用指南
+- ⚠ 标题全大写 in appendix.md:600: E.1 系统要求
+- ⚠ 标题全大写 in appendix.md:617: E.2 安装步骤
+- ⚠ 标题全大写 in appendix.md:667: E.3 快速开始
+- ⚠ 标题全大写 in appendix.md:701: E.4 常见问题
+- ⚠ 标题全大写 in chapter3_complete.md:316: AI引擎配置
+- ⚠ 标题全大写 in chapter4_complete.md:592: 4.2.2 AI引擎设计
+- ⚠ 标题全大写 in chapter4_complete.md:1740: AI引擎配置
+- ⚠ 标题全大写 in chapter4_content.md:592: 4.2.2 AI引擎设计
+- ⚠ 标题全大写 in chapter4_content.md:1740: AI引擎配置
+- ⚠ 标题全大写 in chapter5_content.md:5: 5.1 AI引擎实现
+- ⚠ 标题全大写 in chapter5_content.md:116: 5.1.2 AI模型集成
+- ⚠ 标题全大写 in chapter5_content.md:1954: AI引擎配置
+- ⚠ 标题全大写 in chapter5_content.md:2990: 5.8.3 AI模型响应慢问题及解决方案
+- ⚠ 标题全大写 in chapter5_content.md:3022: 缓存未命中，调用AI模型
+- ⚠ 标题全大写 in chapter6_content.md:1476: 6.5.3.2 LRU缓存机制
+- ⚠ 标题全大写 in chapter7_content.md:157: 7.2.3 本地AI处理创新
+- ⚠ 标题全大写 in chapter7_content.md:244: 7.3.1 AI模型推理速度问题
+- ⚠ 标题全大写 in table_of_contents.md:22: 1.1.3 AI技术应用趋势 .................................... 3
+- ⚠ 标题全大写 in table_of_contents.md:49: 2.2.1 NLP基本概念与发展 ................................. 24
+- ⚠ 标题全大写 in table_of_contents.md:50: 2.2.2 大语言模型（LLM）原理 ............................. 26
+- ⚠ 标题全大写 in table_of_contents.md:51: 2.2.3 本地AI模型部署 .................................... 29
+- ⚠ 标题全大写 in table_of_contents.md:108: 4.2.2 AI引擎设计 ........................................ 98
+- ⚠ 标题全大写 in table_of_contents.md:120: 4.4.3 API设计规范 ....................................... 121
+- ⚠ 标题全大写 in table_of_contents.md:132: 5.1 AI引擎实现 .......................................... 131
+- ⚠ 标题全大写 in table_of_contents.md:134: 5.1.2 AI模型集成 ........................................ 134
+- ⚠ 标题全大写 in table_of_contents.md:167: 5.8.3 AI模型响应慢问题 .................................. 183
+- ⚠ 标题全大写 in table_of_contents.md:225: 附录A 完整配置文件示例 .................................. 235
+- ⚠ 标题全大写 in table_of_contents.md:227: 附录B 关键代码清单 ...................................... 240
+- ⚠ 标题全大写 in table_of_contents.md:229: 附录C 测试数据详表 ...................................... 245
+- ⚠ 标题全大写 in table_of_contents.md:231: 附录D 用户满意度调查问卷 ................................ 250
+- ⚠ 标题全大写 in table_of_contents.md:233: 附录E 系统安装和使用指南 ................................ 253
+- ⚠ 标题全大写 in thesis.md:151: 1.1.3 AI技术应用趋势
+- ⚠ 标题全大写 in thesis.md:708: 获取CPU使用率最高的5个进程
+- ⚠ 标题全大写 in thesis.md:711: 查找大于100MB的文件
+- ⚠ 标题全大写 in thesis.md:866: DNS查询
+- ⚠ 标题全大写 in thesis.md:965: 2.2.1 NLP基本概念与发展
+- ⚠ 标题全大写 in thesis.md:1019: 2.2.2 大语言模型（LLM）原理
+- ⚠ 标题全大写 in thesis.md:1145: 2.2.3 本地AI模型部署
+- ⚠ 标题全大写 in thesis.md:1199: 通过API调用
+- ⚠ 标题全大写 in thesis.md:1731: 模块A发布事件
+- ⚠ 标题全大写 in thesis.md:1734: 模块B订阅事件
+- ⚠ 标题全大写 in thesis.md:3261: 2. 使用UTF-8作为默认编码
+- ⚠ 标题全大写 in design-doc.md:2071: 5.2.2 命令行接口 (CLI)
+- ⚠ 标题全大写 in design-doc.md:2140: AI引擎配置
+- ⚠ 标题全大写 in design-doc.md:2225: 5.3 API文档
+- ⚠ 标题全大写 in design-doc.md:3193: 7.2.2 AI模型优化
+- ⚠ 标题全大写 in design-doc.md:3530: 7.3.2 CPU管理
+- ⚠ 标题全大写 in design-doc.md:3971: AI引擎配置
+- ⚠ 标题全大写 in design-doc.md:4035: AI配置
+- ⚠ 标题全大写 in design-doc.md:4480: A. 术语表
+- ⚠ 标题全大写 in design-doc.md:4493: B. 参考资料
+- ⚠ 标题全大写 in design-doc.md:4501: C. 版本历史
+- ⚠ 标题全大写 in user-manual.md:650: JSON格式
+- ⚠ 标题全大写 in user-manual.md:653: CSV格式
+- ⚠ 标题全大写 in user-manual.md:710: 2.3.1 AI引擎配置
+- ⚠ 标题全大写 in user-manual.md:1319: 3.3.4 DNS诊断
+- ⚠ 标题全大写 in user-manual.md:1549: AI引擎配置
+- ⚠ 标题全大写 in user-manual.md:1583: UI配置
+- ⚠ 标题全大写 in user-manual.md:1594: 4.2.1 AI引擎配置
+- ⚠ 标题全大写 in user-manual.md:1853: 4.2.6 UI配置
+- ⚠ 标题全大写 in user-manual.md:2745: 测试AI服务连接
+- ⚠ 表格有空单元格 in chapter3_complete.md:770
+- ⚠ 表格有空单元格 in chapter3_complete.md:770
+- ⚠ 表格有空单元格 in chapter3_complete.md:770
+- ⚠ 表格有空单元格 in chapter3_complete.md:770
+- ⚠ 表格有空单元格 in chapter3_complete.md:770
+- ⚠ 表格有空单元格 in chapter6_content.md:31
+- ⚠ 表格有空单元格 in chapter6_content.md:35
+- ⚠ 表格有空单元格 in chapter6_content.md:39
+- ⚠ 表格有空单元格 in chapter6_content.md:42
+- ⚠ 表格有空单元格 in chapter6_content.md:45
+- ⚠ 表格有空单元格 in chapter6_content.md:779
+- ⚠ 表格有空单元格 in chapter6_content.md:780
+- ⚠ 表格有空单元格 in chapter6_content.md:781
+- ⚠ 表格有空单元格 in chapter6_content.md:782
+- ⚠ 表格有空单元格 in chapter6_content.md:783
+- ⚠ 表格有空单元格 in chapter6_content.md:784
+- ⚠ 表格有空单元格 in chapter6_content.md:785
+- ⚠ 表格有空单元格 in chapter6_content.md:786
+- ⚠ 表格有空单元格 in chapter6_content.md:787
+- ⚠ 表格有空单元格 in chapter6_content.md:788
+- ⚠ 表格有空单元格 in chapter6_content.md:789
+- ⚠ 表格有空单元格 in chapter6_content.md:790
+- ⚠ 代码行过长 (103字符) in appendix.md:646
+- ⚠ 代码块未指定语言 in chapter3_complete.md:766
+- ⚠ 代码块未指定语言 in chapter4_complete.md:15
+- ⚠ 代码块未指定语言 in chapter4_complete.md:178
+- ⚠ 代码块未指定语言 in chapter4_complete.md:236
+- ⚠ 代码块未指定语言 in chapter4_complete.md:257
+- ⚠ 代码块未指定语言 in chapter4_complete.md:279
+- ⚠ 代码块未指定语言 in chapter4_complete.md:334
+- ⚠ 代码块未指定语言 in chapter4_complete.md:379
+- ⚠ 代码块未指定语言 in chapter4_complete.md:468
+- ⚠ 代码块未指定语言 in chapter4_complete.md:552
+- ⚠ 代码块未指定语言 in chapter4_complete.md:590
+- ⚠ 代码块未指定语言 in chapter4_complete.md:625
+- ⚠ 代码块未指定语言 in chapter4_complete.md:669
+- ⚠ 代码块未指定语言 in chapter4_complete.md:694
+- ⚠ 代码块未指定语言 in chapter4_complete.md:718
+- ⚠ 代码块未指定语言 in chapter4_complete.md:765
+- ⚠ 代码块未指定语言 in chapter4_complete.md:787
+- ⚠ 代码块未指定语言 in chapter4_complete.md:834
+- ⚠ 代码块未指定语言 in chapter4_complete.md:871
+- ⚠ 代码块未指定语言 in chapter4_complete.md:928
+- ⚠ 代码块未指定语言 in chapter4_complete.md:999
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1034
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1065
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1120
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1206
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1237
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1249
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1272
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1296
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1325
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1361
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1414
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1427
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1450
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1473
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1540
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1601
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1636
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1690
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1735
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1797
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1857
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1905
+- ⚠ 代码块未指定语言 in chapter4_complete.md:1953
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2015
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2112
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2143
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2177
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2302
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2375
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2392
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2431
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2473
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2490
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2564
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2643
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2692
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2813
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2828
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2856
+- ⚠ 代码块未指定语言 in chapter4_complete.md:2892
+- ⚠ 代码块未指定语言 in chapter4_content.md:15
+- ⚠ 代码块未指定语言 in chapter4_content.md:178
+- ⚠ 代码块未指定语言 in chapter4_content.md:236
+- ⚠ 代码块未指定语言 in chapter4_content.md:257
+- ⚠ 代码块未指定语言 in chapter4_content.md:279
+- ⚠ 代码块未指定语言 in chapter4_content.md:334
+- ⚠ 代码块未指定语言 in chapter4_content.md:379
+- ⚠ 代码块未指定语言 in chapter4_content.md:468
+- ⚠ 代码块未指定语言 in chapter4_content.md:552
+- ⚠ 代码块未指定语言 in chapter4_content.md:590
+- ⚠ 代码块未指定语言 in chapter4_content.md:625
+- ⚠ 代码块未指定语言 in chapter4_content.md:669
+- ⚠ 代码块未指定语言 in chapter4_content.md:694
+- ⚠ 代码块未指定语言 in chapter4_content.md:718
+- ⚠ 代码块未指定语言 in chapter4_content.md:765
+- ⚠ 代码块未指定语言 in chapter4_content.md:787
+- ⚠ 代码块未指定语言 in chapter4_content.md:834
+- ⚠ 代码块未指定语言 in chapter4_content.md:871
+- ⚠ 代码块未指定语言 in chapter4_content.md:928
+- ⚠ 代码块未指定语言 in chapter4_content.md:999
+- ⚠ 代码块未指定语言 in chapter4_content.md:1034
+- ⚠ 代码块未指定语言 in chapter4_content.md:1065
+- ⚠ 代码块未指定语言 in chapter4_content.md:1120
+- ⚠ 代码块未指定语言 in chapter4_content.md:1206
+- ⚠ 代码块未指定语言 in chapter4_content.md:1237
+- ⚠ 代码块未指定语言 in chapter4_content.md:1249
+- ⚠ 代码块未指定语言 in chapter4_content.md:1272
+- ⚠ 代码块未指定语言 in chapter4_content.md:1296
+- ⚠ 代码块未指定语言 in chapter4_content.md:1325
+- ⚠ 代码块未指定语言 in chapter4_content.md:1361
+- ⚠ 代码块未指定语言 in chapter4_content.md:1414
+- ⚠ 代码块未指定语言 in chapter4_content.md:1427
+- ⚠ 代码块未指定语言 in chapter4_content.md:1450
+- ⚠ 代码块未指定语言 in chapter4_content.md:1473
+- ⚠ 代码块未指定语言 in chapter4_content.md:1540
+- ⚠ 代码块未指定语言 in chapter4_content.md:1601
+- ⚠ 代码块未指定语言 in chapter4_content.md:1636
+- ⚠ 代码块未指定语言 in chapter4_content.md:1690
+- ⚠ 代码块未指定语言 in chapter4_content.md:1735
+- ⚠ 代码块未指定语言 in chapter4_part3.md:22
+- ⚠ 代码块未指定语言 in chapter4_part3.md:263
+- ⚠ 代码行过长 (106字符) in chapter5_content.md:253
+- ⚠ 代码行过长 (125字符) in chapter5_content.md:1795
+- ⚠ 代码块未指定语言 in chapter5_content.md:2944
+- ⚠ 代码块未指定语言 in thesis.md:1027
+- ⚠ 代码块未指定语言 in thesis.md:1053
+- ⚠ 代码块未指定语言 in thesis.md:1090
+- ⚠ 代码块未指定语言 in thesis.md:1096
+- ⚠ 代码块未指定语言 in thesis.md:1305
+- ⚠ 代码块未指定语言 in thesis.md:1321
+- ⚠ 代码块未指定语言 in thesis.md:1336
+- ⚠ 代码块未指定语言 in thesis.md:1360
+- ⚠ 代码块未指定语言 in thesis.md:1382
+- ⚠ 代码块未指定语言 in thesis.md:1401
+- ⚠ 代码块未指定语言 in design-doc.md:197
+- ⚠ 代码块未指定语言 in design-doc.md:359
+- ⚠ 代码块未指定语言 in design-doc.md:404
+- ⚠ 代码块未指定语言 in design-doc.md:558
+- ⚠ 代码块未指定语言 in design-doc.md:587
+- ⚠ 代码块未指定语言 in design-doc.md:648
+- ⚠ 代码块未指定语言 in design-doc.md:677
+- ⚠ 代码块未指定语言 in design-doc.md:770
+- ⚠ 代码块未指定语言 in design-doc.md:844
+- ⚠ 代码块未指定语言 in design-doc.md:919
+- ⚠ 代码块未指定语言 in design-doc.md:997
+- ⚠ 代码块未指定语言 in design-doc.md:1522
+- ⚠ 代码块未指定语言 in design-doc.md:1587
+- ⚠ 代码块未指定语言 in design-doc.md:2106
+- ⚠ 代码块未指定语言 in design-doc.md:2125
+- ⚠ 代码块未指定语言 in design-doc.md:2416
+- ⚠ 代码块未指定语言 in design-doc.md:3798
+- ⚠ 代码块未指定语言 in design-doc.md:3819
+- ⚠ 代码块未指定语言 in design-doc.md:3846
+- ⚠ 代码块未指定语言 in design-doc.md:3883
+- ⚠ 代码块未指定语言 in design-doc.md:3891
+- ⚠ 代码块未指定语言 in design-doc.md:3899
+- ⚠ 代码块未指定语言 in design-doc.md:3922
+- ⚠ 代码块未指定语言 in design-doc.md:3929
+- ⚠ 代码块未指定语言 in design-doc.md:3957
+- ⚠ 代码行过长 (113字符) in design-doc.md:4115
+- ⚠ 代码块未指定语言 in design-doc.md:4313
+- ⚠ 代码行过长 (103字符) in developer-guide.md:95
+- ⚠ 代码行过长 (102字符) in developer-guide.md:324
+- ⚠ 代码块未指定语言 in developer-guide.md:499
+- ⚠ 代码块未指定语言 in developer-guide.md:825
+- ⚠ 代码块未指定语言 in developer-guide.md:1473
+- ⚠ 代码块未指定语言 in developer-guide.md:1610
+- ⚠ 代码块未指定语言 in developer-guide.md:1850
+- ⚠ 代码块未指定语言 in developer-guide.md:1877
+- ⚠ 代码块未指定语言 in developer-guide.md:1885
+- ⚠ 代码块未指定语言 in developer-guide.md:2062
+- ⚠ 代码块未指定语言 in developer-guide.md:2103
+- ⚠ 代码块未指定语言 in developer-guide.md:2123
+- ⚠ 代码块未指定语言 in developer-guide.md:2173
+- ⚠ 代码块未指定语言 in developer-guide.md:2277
+- ⚠ 代码块未指定语言 in developer-guide.md:2310
+- ⚠ 代码块未指定语言 in developer-guide.md:2388
+- ⚠ 代码块未指定语言 in developer-guide.md:2534
+- ⚠ 代码块未指定语言 in developer-guide.md:2587
+- ⚠ 代码块未指定语言 in developer-guide.md:2609
+- ⚠ 代码块未指定语言 in developer-guide.md:2668
+- ⚠ 代码块未指定语言 in developer-guide.md:2769
+- ⚠ 代码块未指定语言 in developer-guide.md:2844
+- ⚠ 代码块未指定语言 in developer-guide.md:2874
+- ⚠ 代码块未指定语言 in developer-guide.md:2896
+- ⚠ 代码块未指定语言 in developer-guide.md:2924
+- ⚠ 代码块未指定语言 in developer-guide.md:2939
+- ⚠ 代码块未指定语言 in developer-guide.md:2981
+- ⚠ 代码块未指定语言 in developer-guide.md:2993
+- ⚠ 代码块未指定语言 in developer-guide.md:3015
+- ⚠ 代码块未指定语言 in developer-guide.md:3029
+- ⚠ 代码块未指定语言 in developer-guide.md:3071
+- ⚠ 代码块未指定语言 in developer-guide.md:3088
+- ⚠ 代码块未指定语言 in developer-guide.md:3097
+- ⚠ 代码块未指定语言 in developer-guide.md:3139
+- ⚠ 代码块未指定语言 in developer-guide.md:3155
+- ⚠ 代码块未指定语言 in developer-guide.md:3173
+- ⚠ 代码块未指定语言 in developer-guide.md:3189
+- ⚠ 代码块未指定语言 in developer-guide.md:3207
+- ⚠ 代码块未指定语言 in developer-guide.md:3217
+- ⚠ 代码块未指定语言 in developer-guide.md:3238
+- ⚠ 代码块未指定语言 in developer-guide.md:3248
+- ⚠ 代码块未指定语言 in developer-guide.md:3265
+- ⚠ 代码块未指定语言 in developer-guide.md:3284
+- ⚠ 代码块未指定语言 in developer-guide.md:3315
+- ⚠ 代码块未指定语言 in developer-guide.md:3341
+- ⚠ 代码块未指定语言 in developer-guide.md:3354
+- ⚠ 代码块未指定语言 in developer-guide.md:3367
+- ⚠ 代码块未指定语言 in developer-guide.md:3400
+- ⚠ 代码块未指定语言 in developer-guide.md:3409
+- ⚠ 代码块未指定语言 in developer-guide.md:3451
+- ⚠ 代码块未指定语言 in developer-guide.md:3472
+- ⚠ 代码块未指定语言 in developer-guide.md:3515
+- ⚠ 代码块未指定语言 in developer-guide.md:3530
+- ⚠ 代码块未指定语言 in developer-guide.md:3594
+- ⚠ 代码块未指定语言 in developer-guide.md:3611
+- ⚠ 代码块未指定语言 in developer-guide.md:3629
+- ⚠ 代码块未指定语言 in developer-guide.md:3647
+- ⚠ 代码块未指定语言 in developer-guide.md:3659
+- ⚠ 代码块未指定语言 in developer-guide.md:3673
+- ⚠ 代码块未指定语言 in developer-guide.md:3690
+- ⚠ 代码块未指定语言 in developer-guide.md:3704
+- ⚠ 代码块未指定语言 in developer-guide.md:3717
+- ⚠ 代码块未指定语言 in developer-guide.md:3737
+- ⚠ 代码块未指定语言 in developer-guide.md:3749
+- ⚠ 代码块未指定语言 in developer-guide.md:3789
+- ⚠ 代码块未指定语言 in developer-guide.md:3801
+- ⚠ 代码块未指定语言 in developer-guide.md:3844
+- ⚠ 代码块未指定语言 in developer-guide.md:3875
+- ⚠ 代码块未指定语言 in developer-guide.md:3881
+- ⚠ 代码块未指定语言 in developer-guide.md:3907
+- ⚠ 代码块未指定语言 in developer-guide.md:3913
+- ⚠ 代码块未指定语言 in developer-guide.md:3942
+
+## 检查结果
+
+- ✓ 检查了 1305 个标题
+-   - H1: 448, H2: 132, H3: 231
+- ✓ 检查了 0 个图标题
+- ✓ 检查了 0 个表标题
+- ✓ 检查了 558 个代码块
+-   - 语言分布: {'yaml': 19, 'python': 241, 'powershell': 25, 'bash': 49, '未指定': 209, 'json': 5, 'markdown': 6, 'jsonl': 1, 'sql': 2, 'mermaid': 1}
+
+---
+*此报告由自动化脚本生成*

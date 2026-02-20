@@ -19,21 +19,13 @@
       @clear="handleClear"
     >
       <template #append>
-        <el-button :icon="Search" @click="handleSearch">
-          搜索
-        </el-button>
+        <el-button :icon="Search" @click="handleSearch"> 搜索 </el-button>
       </template>
     </el-input>
 
     <!-- Active Search Indicator -->
     <div v-if="modelValue" class="history-search-bar__active">
-      <el-tag
-        closable
-        type="info"
-        @close="handleClear"
-      >
-        搜索: {{ modelValue }}
-      </el-tag>
+      <el-tag closable type="info" @close="handleClear"> 搜索: {{ modelValue }} </el-tag>
     </div>
   </div>
 </template>
@@ -73,9 +65,12 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 // Watchers
 // ============================================================================
 
-watch(() => props.modelValue, (newValue) => {
-  searchInput.value = newValue
-})
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    searchInput.value = newValue
+  }
+)
 
 // ============================================================================
 // Methods

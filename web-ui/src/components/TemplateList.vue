@@ -9,31 +9,25 @@
     <!-- Empty State -->
     <div v-else-if="templates.length === 0" class="template-list__empty">
       <div class="template-list__empty-icon">
-        <i class="el-icon-document-copy"></i>
+        <i class="el-icon-document-copy" />
       </div>
       <h3>{{ emptyTitle }}</h3>
       <p>{{ emptyMessage }}</p>
       <el-button v-if="showCreateButton" type="primary" @click="handleCreate">
-        <i class="el-icon-plus"></i>
+        <i class="el-icon-plus" />
         创建第一个模板
       </el-button>
     </div>
 
     <!-- Template Groups -->
     <div v-else class="template-list__content">
-      <div
-        v-for="group in groupedTemplates"
-        :key="group.category"
-        class="template-list__group"
-      >
+      <div v-for="group in groupedTemplates" :key="group.category" class="template-list__group">
         <!-- Group Header -->
         <div class="template-list__group-header">
           <h3 class="template-list__group-title">
             {{ getCategoryLabel(group.category) }}
           </h3>
-          <span class="template-list__group-count">
-            {{ group.templates.length }} 个模板
-          </span>
+          <span class="template-list__group-count"> {{ group.templates.length }} 个模板 </span>
         </div>
 
         <!-- Template Grid -->

@@ -26,9 +26,7 @@
           @change="handleChange"
         />
         <template #extra>
-          <span class="form-item-help">
-            启用后，只有白名单中的命令才能执行。更安全但限制更多
-          </span>
+          <span class="form-item-help"> 启用后，只有白名单中的命令才能执行。更安全但限制更多 </span>
         </template>
       </el-form-item>
 
@@ -41,18 +39,12 @@
           @change="handleChange"
         />
         <template #extra>
-          <span class="form-item-help">
-            执行高风险命令前需要用户确认
-          </span>
+          <span class="form-item-help"> 执行高风险命令前需要用户确认 </span>
         </template>
       </el-form-item>
 
       <!-- Allowed Commands (shown when whitelist mode is enabled) -->
-      <el-form-item
-        v-if="formData.whitelistMode"
-        label="允许的命令"
-        prop="allowedCommands"
-      >
+      <el-form-item v-if="formData.whitelistMode" label="允许的命令" prop="allowedCommands">
         <el-select
           v-model="formData.allowedCommands"
           multiple
@@ -60,20 +52,13 @@
           allow-create
           default-first-option
           placeholder="输入命令名称并按回车添加"
-          @change="handleChange"
           class="full-width"
+          @change="handleChange"
         >
-          <el-option
-            v-for="cmd in commonCommands"
-            :key="cmd"
-            :label="cmd"
-            :value="cmd"
-          />
+          <el-option v-for="cmd in commonCommands" :key="cmd" :label="cmd" :value="cmd" />
         </el-select>
         <template #extra>
-          <span class="form-item-help">
-            白名单模式下允许执行的命令列表。可以输入自定义命令
-          </span>
+          <span class="form-item-help"> 白名单模式下允许执行的命令列表。可以输入自定义命令 </span>
         </template>
       </el-form-item>
 
@@ -85,30 +70,25 @@
             :key="index"
             closable
             type="danger"
-            @close="handleRemovePattern(index)"
             class="pattern-tag"
+            @close="handleRemovePattern(index)"
           >
             {{ pattern }}
           </el-tag>
           <el-input
             v-model="newPattern"
             placeholder="输入危险模式并按回车添加"
-            @keyup.enter="handleAddPattern"
             class="pattern-input"
             size="small"
+            @keyup.enter="handleAddPattern"
           >
             <template #append>
-              <el-button
-                :icon="Plus"
-                @click="handleAddPattern"
-              />
+              <el-button :icon="Plus" @click="handleAddPattern" />
             </template>
           </el-input>
         </div>
         <template #extra>
-          <span class="form-item-help">
-            包含这些模式的命令将被标记为高风险。支持正则表达式
-          </span>
+          <span class="form-item-help"> 包含这些模式的命令将被标记为高风险。支持正则表达式 </span>
         </template>
       </el-form-item>
 
@@ -119,17 +99,15 @@
             v-for="pattern in commonDangerousPatterns"
             :key="pattern"
             type="info"
-            @click="handleAddCommonPattern(pattern)"
             class="common-pattern-tag"
+            @click="handleAddCommonPattern(pattern)"
           >
             <el-icon><Plus /></el-icon>
             {{ pattern }}
           </el-tag>
         </div>
         <template #extra>
-          <span class="form-item-help">
-            点击添加常见的危险模式到列表中
-          </span>
+          <span class="form-item-help"> 点击添加常见的危险模式到列表中 </span>
         </template>
       </el-form-item>
 
@@ -140,9 +118,7 @@
         show-icon
         class="security-settings-form__info"
       >
-        <template #title>
-          当前安全级别：{{ getSecurityLevelText() }}
-        </template>
+        <template #title> 当前安全级别：{{ getSecurityLevelText() }} </template>
         <template #default>
           <div class="security-level-description">
             {{ getSecurityLevelDescription() }}
@@ -158,9 +134,7 @@
         show-icon
         class="security-settings-form__warning"
       >
-        <template #title>
-          安全警告
-        </template>
+        <template #title> 安全警告 </template>
         <template #default>
           您已禁用所有安全保护措施。这可能导致危险命令被执行而无需确认。建议至少启用"需要确认"选项。
         </template>
@@ -232,12 +206,8 @@ const commonDangerousPatterns = [
 // ============================================================================
 
 const rules: FormRules = {
-  whitelistMode: [
-    { required: true, message: '请设置白名单模式', trigger: 'change' }
-  ],
-  requireConfirmation: [
-    { required: true, message: '请设置确认要求', trigger: 'change' }
-  ],
+  whitelistMode: [{ required: true, message: '请设置白名单模式', trigger: 'change' }],
+  requireConfirmation: [{ required: true, message: '请设置确认要求', trigger: 'change' }],
   dangerousPatterns: [
     {
       type: 'array',
@@ -336,7 +306,7 @@ const getSecurityLevelDescription = (): string => {
  */
 const handleAddPattern = () => {
   const pattern = newPattern.value.trim()
-  
+
   if (!pattern) {
     return
   }
@@ -394,7 +364,7 @@ const handleChange = () => {
  */
 const validate = async (): Promise<boolean> => {
   if (!formRef.value) return false
-  
+
   try {
     await formRef.value.validate()
     return true

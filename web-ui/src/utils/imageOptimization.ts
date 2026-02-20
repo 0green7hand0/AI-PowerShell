@@ -16,11 +16,7 @@ export function getOptimizedImageAttrs(
   alt: string,
   options: ImageLoadOptions = {}
 ): Record<string, string> {
-  const {
-    loading = 'lazy',
-    decoding = 'async',
-    fetchPriority = 'auto'
-  } = options
+  const { loading = 'lazy', decoding = 'async', fetchPriority = 'auto' } = options
 
   return {
     src,
@@ -96,10 +92,7 @@ export function supportsWebP(): Promise<boolean> {
 /**
  * Get optimized image format
  */
-export async function getOptimizedImageSrc(
-  src: string,
-  preferWebP = true
-): Promise<string> {
+export async function getOptimizedImageSrc(src: string, preferWebP = true): Promise<string> {
   if (!preferWebP) return src
 
   const isWebPSupported = await supportsWebP()

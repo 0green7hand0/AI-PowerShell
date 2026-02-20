@@ -3,7 +3,7 @@
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from datetime import datetime
 from enum import Enum
 
@@ -22,7 +22,7 @@ class TemplateParameter:
     """模板参数"""
     name: str
     type: str  # string, integer, boolean
-    default: any
+    default: Any
     description: str
     required: bool = False
 
@@ -53,7 +53,7 @@ class Intent:
     """用户意图"""
     action: str  # 操作类型：rename, organize, monitor, backup, cleanup
     target: str  # 目标对象：files, system, disk
-    parameters: Dict[str, any] = field(default_factory=dict)
+    parameters: Dict[str, Any] = field(default_factory=dict)
     confidence: float = 0.0
     raw_input: str = ""
     
@@ -80,7 +80,7 @@ class GeneratedScript:
     template_name: str
     content: str
     file_path: str
-    parameters: Dict[str, any]
+    parameters: Dict[str, Any]
     user_request: str
     generated_at: datetime = field(default_factory=datetime.now)
     

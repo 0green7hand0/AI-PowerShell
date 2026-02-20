@@ -1,11 +1,16 @@
 /**
  * API Verification Script
- * 
+ *
  * This script verifies that the API service layer is correctly implemented
  * and can be imported without errors.
  */
 
-import { commandApi, requiresConfirmation, getSecurityLevelColor, getSecurityLevelText } from './command'
+import {
+  commandApi,
+  requiresConfirmation,
+  getSecurityLevelColor,
+  getSecurityLevelText
+} from './command'
 import type { TranslateRequest, ExecuteRequest, SecurityInfo } from './command'
 import apiClient from './client'
 
@@ -46,14 +51,14 @@ console.log('  - requiresConfirmation(safe):', !requiresConfirmation(safeSecurit
 // Test security level colors
 const colors = ['safe', 'low', 'medium', 'high', 'critical'] as const
 console.log('\n✓ Testing security level colors...')
-colors.forEach(level => {
+colors.forEach((level) => {
   const color = getSecurityLevelColor(level)
   console.log(`  - ${level}: ${color}`)
 })
 
 // Test security level texts
 console.log('\n✓ Testing security level texts...')
-colors.forEach(level => {
+colors.forEach((level) => {
   const text = getSecurityLevelText(level)
   console.log(`  - ${level}: ${text}`)
 })

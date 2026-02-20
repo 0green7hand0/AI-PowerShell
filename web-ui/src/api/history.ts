@@ -1,9 +1,9 @@
 /**
  * History API Service
- * 
+ *
  * Provides methods for managing command history including
  * fetching, searching, and deleting history records.
- * 
+ *
  * Requirements: 1.4, 3.1-3.7
  */
 
@@ -71,19 +71,19 @@ export interface DeleteHistoryResponse {
 
 /**
  * History API service
- * 
+ *
  * Provides methods for history management
  */
 export const historyApi = {
   /**
    * Get history list with pagination and search
-   * 
+   *
    * @param params - Query parameters (page, limit, search)
    * @returns Promise resolving to history list response
    * @throws Error if request fails
-   * 
+   *
    * Requirements: 3.1, 3.6, 3.7
-   * 
+   *
    * @example
    * ```typescript
    * const result = await historyApi.getHistory({
@@ -96,7 +96,7 @@ export const historyApi = {
    */
   getHistory: async (params?: HistoryQueryParams): Promise<HistoryListResponse> => {
     try {
-      const response = await apiClient.get('/history', { params }) as HistoryListResponse
+      const response = (await apiClient.get('/history', { params })) as HistoryListResponse
       return response
     } catch (error) {
       // Error is already handled by axios interceptor
@@ -106,13 +106,13 @@ export const historyApi = {
 
   /**
    * Get detailed information for a specific history item
-   * 
+   *
    * @param id - History item ID
    * @returns Promise resolving to history detail response
    * @throws Error if request fails or item not found
-   * 
+   *
    * Requirements: 3.3
-   * 
+   *
    * @example
    * ```typescript
    * const result = await historyApi.getHistoryDetail('hist_123')
@@ -121,7 +121,7 @@ export const historyApi = {
    */
   getHistoryDetail: async (id: string): Promise<HistoryDetailResponse> => {
     try {
-      const response = await apiClient.get(`/history/${id}`) as HistoryDetailResponse
+      const response = (await apiClient.get(`/history/${id}`)) as HistoryDetailResponse
       return response
     } catch (error) {
       throw error
@@ -130,13 +130,13 @@ export const historyApi = {
 
   /**
    * Delete a history item
-   * 
+   *
    * @param id - History item ID
    * @returns Promise resolving to delete response
    * @throws Error if request fails or item not found
-   * 
+   *
    * Requirements: 3.4, 3.5
-   * 
+   *
    * @example
    * ```typescript
    * await historyApi.deleteHistory('hist_123')
@@ -144,7 +144,7 @@ export const historyApi = {
    */
   deleteHistory: async (id: string): Promise<DeleteHistoryResponse> => {
     try {
-      const response = await apiClient.delete(`/history/${id}`) as DeleteHistoryResponse
+      const response = (await apiClient.delete(`/history/${id}`)) as DeleteHistoryResponse
       return response
     } catch (error) {
       throw error

@@ -16,13 +16,9 @@
       <!-- Basic Info -->
       <div class="form-section">
         <h4 class="form-section__title">基本信息</h4>
-        
+
         <el-form-item label="模板名称" prop="name" required>
-          <el-input
-            v-model="formData.name"
-            placeholder="例如：备份脚本"
-            clearable
-          />
+          <el-input v-model="formData.name" placeholder="例如：备份脚本" clearable />
         </el-form-item>
 
         <el-form-item label="描述" prop="description" required>
@@ -38,11 +34,7 @@
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="分类" prop="category" required>
-              <el-select
-                v-model="formData.category"
-                placeholder="选择分类"
-                style="width: 100%"
-              >
+              <el-select v-model="formData.category" placeholder="选择分类" style="width: 100%">
                 <el-option
                   v-for="cat in categories"
                   :key="cat.value"
@@ -61,8 +53,7 @@
                 allow-create
                 placeholder="输入关键词后按回车"
                 style="width: 100%"
-              >
-              </el-select>
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -72,17 +63,43 @@
       <div class="form-section">
         <h4 class="form-section__title">脚本内容</h4>
         <p class="form-section__help">
-          使用 <code v-text="'{{参数名}}'"></code> 作为参数占位符，例如：<code v-text="'{{sourcePath}}'"></code>
-        </p>
-        
-        <el-form-item prop="scriptContent" required>
-          <el-input
-            v-model="formData.scriptContent"
-            type="textarea"
-            :rows="10"
-            placeholder="# PowerShell 脚本内容&#10;Copy-Item -Path {{sourcePath}} -Destination {{targetPath}}"
-            class="script-editor"
+          使用 <code v-text="'{{参数名}}'" /> 作为参数占位符，例如：<code
+            v-text="'{{sourcePath}}'"
           />
+        </p>
+
+        <el-form-item prop="scriptContent" required>
+          <div class="code-editor-container">
+            <div class="code-editor-toolbar">
+              <span class="language-label">PowerShell</span>
+              <div class="toolbar-actions">
+                <el-button size="small" @click="insertSnippet('copy-item')" title="复制文件">
+                  复制文件
+                </el-button>
+                <el-button size="small" @click="insertSnippet('get-service')" title="获取服务">
+                  服务管理
+                </el-button>
+                <el-button size="small" @click="insertSnippet('new-item')" title="创建项目">
+                  创建项目
+                </el-button>
+              </div>
+            </div>
+            <div class="code-editor-wrapper">
+              <div class="line-numbers" ref="lineNumbersRef">
+                <div v-for="i in lineCount" :key="i" class="line-number">{{ i }}</div>
+              </div>
+              <el-input
+                v-model="formData.scriptContent"
+                type="textarea"
+                :rows="10"
+                placeholder="# PowerShell 脚本内容&#10;Copy-Item -Path {{sourcePath}} -Destination {{targetPath}}"
+                class="code-editor"
+                @input="updateLineNumbers"
+                @scroll="syncScroll"
+              />
+              <pre v-if="formData.scriptContent" class="code-highlight" ref="highlightRef">{{ formData.scriptContent }}</pre>
+            </div>
+          </div>
         </el-form-item>
       </div>
 
@@ -90,12 +107,8 @@
       <div class="form-section">
         <div class="form-section__header">
           <h4 class="form-section__title">参数定义</h4>
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleAddParameter"
-          >
-            <i class="el-icon-plus"></i>
+          <el-button type="primary" size="small" @click="handleAddParameter">
+            <i class="el-icon-plus" />
             添加参数
           </el-button>
         </div>
@@ -105,20 +118,11 @@
         </div>
 
         <div v-else class="parameters-list">
-          <div
-            v-for="(param, index) in formData.parameters"
-            :key="index"
-            class="parameter-item"
-          >
+          <div v-for="(param, index) in formData.parameters" :key="index" class="parameter-item">
             <div class="parameter-item__header">
               <span class="parameter-item__index">参数 {{ index + 1 }}</span>
-              <el-button
-                type="danger"
-                size="small"
-                text
-                @click="handleRemoveParameter(index)"
-              >
-                <i class="el-icon-delete"></i>
+              <el-button type="danger" size="small" text @click="handleRemoveParameter(index)">
+                <i class="el-icon-delete" />
                 删除
               </el-button>
             </div>
@@ -130,10 +134,7 @@
                   :rules="[{ required: true, message: '请输入参数名称', trigger: 'blur' }]"
                   label="参数名称"
                 >
-                  <el-input
-                    v-model="param.name"
-                    placeholder="例如：sourcePath"
-                  />
+                  <el-input v-model="param.name" placeholder="例如：sourcePath" />
                 </el-form-item>
               </el-col>
 
@@ -143,11 +144,7 @@
                   :rules="[{ required: true, message: '请选择参数类型', trigger: 'change' }]"
                   label="参数类型"
                 >
-                  <el-select
-                    v-model="param.type"
-                    placeholder="选择类型"
-                    style="width: 100%"
-                  >
+                  <el-select v-model="param.type" placeholder="选择类型" style="width: 100%">
                     <el-option label="字符串" value="string" />
                     <el-option label="数字" value="number" />
                     <el-option label="布尔值" value="boolean" />
@@ -164,10 +161,7 @@
             </el-row>
 
             <el-form-item label="描述">
-              <el-input
-                v-model="param.description"
-                placeholder="参数的说明文字"
-              />
+              <el-input v-model="param.description" placeholder="参数的说明文字" />
             </el-form-item>
 
             <el-row :gutter="16">
@@ -184,22 +178,14 @@
                     placeholder="默认值（可选）"
                     style="width: 100%"
                   />
-                  <el-switch
-                    v-else-if="param.type === 'boolean'"
-                    v-model="param.default"
-                  />
+                  <el-switch v-else-if="param.type === 'boolean'" v-model="param.default" />
                   <el-select
                     v-else-if="param.type === 'select'"
                     v-model="param.default"
                     placeholder="选择默认值"
                     style="width: 100%"
                   >
-                    <el-option
-                      v-for="opt in param.options"
-                      :key="opt"
-                      :label="opt"
-                      :value="opt"
-                    />
+                    <el-option v-for="opt in param.options" :key="opt" :label="opt" :value="opt" />
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -213,8 +199,7 @@
                     allow-create
                     placeholder="输入选项后按回车"
                     style="width: 100%"
-                  >
-                  </el-select>
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -226,17 +211,10 @@
     <!-- Actions -->
     <template #footer>
       <div class="form-dialog__footer">
-        <el-button @click="handleCancel" :disabled="isSaving">
-          取消
-        </el-button>
-        <el-button
-          type="primary"
-          @click="handleSubmit"
-          :loading="isSaving"
-          :disabled="isSaving"
-        >
-          <i v-if="!isSaving" class="el-icon-check"></i>
-          {{ isSaving ? '保存中...' : (isEditMode ? '保存修改' : '创建模板') }}
+        <el-button :disabled="isSaving" @click="handleCancel"> 取消 </el-button>
+        <el-button type="primary" :loading="isSaving" :disabled="isSaving" @click="handleSubmit">
+          <i v-if="!isSaving" class="el-icon-check" />
+          {{ isSaving ? '保存中...' : isEditMode ? '保存修改' : '创建模板' }}
         </el-button>
       </div>
     </template>
@@ -244,7 +222,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, reactive } from 'vue'
+import { ref, computed, watch, reactive, onMounted, nextTick } from 'vue'
 import {
   ElDialog,
   ElForm,
@@ -260,7 +238,13 @@ import {
   type FormInstance,
   type FormRules
 } from 'element-plus'
+import hljs from 'highlight.js/lib/core'
+import powershell from 'highlight.js/lib/languages/powershell'
+import 'highlight.js/styles/github-dark.css'
 import type { Template, TemplateParameter, CreateTemplateRequest } from '../api/template'
+
+// Register PowerShell language
+hljs.registerLanguage('powershell', powershell)
 
 // ============================================================================
 // Props & Emits
@@ -290,6 +274,8 @@ const emit = defineEmits<Emits>()
 // ============================================================================
 
 const formRef = ref<FormInstance>()
+const lineNumbersRef = ref<HTMLElement | null>(null)
+const highlightRef = ref<HTMLElement | null>(null)
 
 const formData = reactive<CreateTemplateRequest>({
   name: '',
@@ -299,6 +285,98 @@ const formData = reactive<CreateTemplateRequest>({
   parameters: [],
   keywords: []
 })
+
+// Code editor computed properties
+const lineCount = computed(() => {
+  if (!formData.scriptContent) return 1
+  return formData.scriptContent.split('\n').length
+})
+
+// Code snippets
+const snippets = {
+  'copy-item': `# 复制文件示例
+Copy-Item -Path "{{sourcePath}}" -Destination "{{targetPath}}" -Force -Recurse
+`,
+  'get-service': `# 服务管理示例
+# 获取服务状态
+Get-Service -Name "{{serviceName}}"
+
+# 启动服务
+Start-Service -Name "{{serviceName}}"
+
+# 停止服务
+Stop-Service -Name "{{serviceName}}"
+`,
+  'new-item': `# 创建项目示例
+# 创建目录
+New-Item -Path "{{directoryPath}}" -ItemType Directory -Force
+
+# 创建文件
+New-Item -Path "{{filePath}}" -ItemType File -Value "{{fileContent}}"
+`
+}
+
+// Update line numbers when content changes
+const updateLineNumbers = () => {
+  nextTick(() => {
+    highlightCode()
+  })
+}
+
+// Sync scroll between textarea and line numbers
+const syncScroll = (event: Event) => {
+  const textarea = event.target as HTMLElement
+  if (lineNumbersRef.value && highlightRef.value) {
+    lineNumbersRef.value.scrollTop = textarea.scrollTop
+    highlightRef.value.scrollTop = textarea.scrollTop
+  }
+}
+
+// Highlight code using highlight.js
+const highlightCode = () => {
+  if (highlightRef.value && formData.scriptContent) {
+    const highlighted = hljs.highlight(formData.scriptContent, { language: 'powershell' }).value
+    highlightRef.value.innerHTML = highlighted
+  }
+}
+
+// Insert code snippet
+const insertSnippet = (type: keyof typeof snippets) => {
+  const snippet = snippets[type]
+  formData.scriptContent += snippet
+  nextTick(() => {
+    updateLineNumbers()
+  })
+}
+
+// Initialize code editor
+onMounted(() => {
+  nextTick(() => {
+    updateLineNumbers()
+  })
+})
+
+// Watch for script content changes
+watch(
+  () => formData.scriptContent,
+  () => {
+    nextTick(() => {
+      highlightCode()
+    })
+  }
+)
+
+// Watch for template changes
+watch(
+  () => props.template,
+  (newTemplate) => {
+    if (newTemplate) {
+      nextTick(() => {
+        updateLineNumbers()
+      })
+    }
+  }
+)
 
 const categories = [
   { label: '自动化', value: 'automation' },
@@ -331,9 +409,7 @@ const formRules: FormRules = {
     { required: true, message: '请输入描述', trigger: 'blur' },
     { min: 10, max: 500, message: '长度在 10 到 500 个字符', trigger: 'blur' }
   ],
-  category: [
-    { required: true, message: '请选择分类', trigger: 'change' }
-  ],
+  category: [{ required: true, message: '请选择分类', trigger: 'change' }],
   scriptContent: [
     { required: true, message: '请输入脚本内容', trigger: 'blur' },
     { min: 10, message: '脚本内容至少 10 个字符', trigger: 'blur' }
@@ -344,17 +420,20 @@ const formRules: FormRules = {
 // Watchers
 // ============================================================================
 
-watch(() => props.visible, (newValue) => {
-  if (newValue) {
-    if (props.template) {
-      // Edit mode: populate form with template data
-      loadTemplateData(props.template)
-    } else {
-      // Create mode: reset form
-      resetForm()
+watch(
+  () => props.visible,
+  (newValue) => {
+    if (newValue) {
+      if (props.template) {
+        // Edit mode: populate form with template data
+        loadTemplateData(props.template)
+      } else {
+        // Create mode: reset form
+        resetForm()
+      }
     }
   }
-})
+)
 
 // ============================================================================
 // Methods
@@ -382,7 +461,7 @@ const resetForm = (): void => {
   formData.scriptContent = ''
   formData.parameters = []
   formData.keywords = []
-  
+
   formRef.value?.clearValidate()
 }
 
@@ -415,33 +494,33 @@ const handleSubmit = async (): Promise<void> => {
 
   try {
     await formRef.value.validate()
-    
+
     // Clean up parameters (remove empty defaults and options)
     const cleanedData: CreateTemplateRequest = {
       ...formData,
-      parameters: formData.parameters.map(param => {
+      parameters: formData.parameters.map((param) => {
         const cleaned: TemplateParameter = {
           name: param.name,
           type: param.type,
           required: param.required
         }
-        
+
         if (param.description) {
           cleaned.description = param.description
         }
-        
+
         if (param.default !== undefined && param.default !== '') {
           cleaned.default = param.default
         }
-        
+
         if (param.type === 'select' && param.options && param.options.length > 0) {
           cleaned.options = param.options
         }
-        
+
         return cleaned
       })
     }
-    
+
     emit('submit', cleanedData)
   } catch (error) {
     console.error('Form validation failed:', error)
@@ -522,9 +601,187 @@ const handleClose = (): void => {
   margin: 0;
 }
 
-.script-editor :deep(textarea) {
+.code-editor-container {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: #1e1e1e;
+  width: 100%;
+}
+
+.code-editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background-color: #252526;
+  border-bottom: 1px solid #3e3e42;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.code-editor-wrapper {
+  position: relative;
+  display: flex;
+  min-height: 300px;
+  max-height: 500px;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.language-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: #d4d4d4;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.toolbar-actions .el-button {
+  background-color: #0e639c;
+  border-color: #1177bb;
+  color: white;
+  font-size: var(--text-xs);
+  padding: 4px 8px;
+  min-width: auto;
+}
+
+.toolbar-actions .el-button:hover {
+  background-color: #1177bb;
+  border-color: #1177bb;
+}
+
+.code-editor-wrapper {
+  position: relative;
+  display: flex;
+  min-height: 300px;
+  max-height: 500px;
+  height: 100%;
+}
+
+.line-numbers {
+  flex-shrink: 0;
+  width: 50px;
+  padding: var(--space-2) 0;
+  background-color: #1e1e1e;
+  border-right: 1px solid #3e3e42;
+  text-align: center;
+  overflow: hidden;
+  user-select: none;
+  height: 100%;
+}
+
+.line-number {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
+  line-height: 1.5;
+  color: #858585;
+  padding: 0 var(--space-2);
+}
+
+.code-editor {
+  flex: 1;
+  background-color: transparent;
+  color: transparent;
+  caret-color: #d4d4d4;
+  resize: vertical;
+  min-height: 300px;
+  max-height: 500px;
+  z-index: 2;
+  height: 100%;
+  margin: 0;
+}
+
+.code-editor :deep(.el-textarea) {
+  height: 100%;
+  margin: 0;
+}
+
+.code-editor :deep(textarea) {
+  background-color: transparent !important;
+  color: transparent !important;
+  caret-color: #d4d4d4 !important;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+  font-size: var(--text-sm) !important;
+  line-height: 1.5 !important;
+  padding: var(--space-2) !important;
+  border: none !important;
+  resize: vertical;
+  z-index: 2;
+  position: relative;
+  height: 100% !important;
+  min-height: 300px !important;
+  max-height: 500px !important;
+  box-sizing: border-box !important;
+}
+
+.code-editor :deep(.el-textarea__inner) {
+  height: 100% !important;
+  min-height: 300px !important;
+  max-height: 500px !important;
+  box-sizing: border-box !important;
+}
+
+.code-editor :deep(textarea):focus {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.code-highlight {
+  position: absolute;
+  top: 0;
+  left: 50px;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: var(--space-2);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.code-highlight code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .code-editor-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .toolbar-actions .el-button {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .line-numbers {
+    width: 40px;
+  }
+  
+  .code-highlight {
+    left: 40px;
+  }
 }
 
 /* Parameters List */

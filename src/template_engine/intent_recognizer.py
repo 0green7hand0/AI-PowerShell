@@ -5,7 +5,7 @@
 """
 
 import re
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Callable, Any
 
 from .models import Intent
 
@@ -75,7 +75,7 @@ class IntentRecognizer:
             ]
         }
     
-    def _build_parameter_extractors(self) -> Dict[str, callable]:
+    def _build_parameter_extractors(self) -> Dict[str, Callable[[str], Optional[Any]]]:
         """构建参数提取器"""
         return {
             'file_type': self._extract_file_type,
@@ -157,7 +157,7 @@ class IntentRecognizer:
         text: str,
         action: str,
         target: str
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """提取参数"""
         parameters = {}
         

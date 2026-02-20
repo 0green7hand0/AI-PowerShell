@@ -14,10 +14,10 @@ import type { SecurityLevel } from '../api/command'
 
 /**
  * SecurityBadge - Security level indicator component
- * 
+ *
  * Displays security level with color-coded badge and icon.
  * Supports different sizes.
- * 
+ *
  * Requirements: 2.11
  */
 
@@ -145,23 +145,23 @@ const levelText = computed(() => {
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .security-safe {
+[data-theme='dark'] .security-safe {
   background-color: rgba(16, 185, 129, 0.15);
 }
 
-[data-theme="dark"] .security-low {
+[data-theme='dark'] .security-low {
   background-color: rgba(59, 130, 246, 0.15);
 }
 
-[data-theme="dark"] .security-medium {
+[data-theme='dark'] .security-medium {
   background-color: rgba(245, 158, 11, 0.15);
 }
 
-[data-theme="dark"] .security-high {
+[data-theme='dark'] .security-high {
   background-color: rgba(239, 68, 68, 0.15);
 }
 
-[data-theme="dark"] .security-critical {
+[data-theme='dark'] .security-critical {
   background-color: rgba(220, 38, 38, 0.2);
 }
 </style>

@@ -21,6 +21,18 @@ def get_assistant():
     return get_cmd_assistant()
 
 
+def camel_to_snake(name):
+    """
+    Convert camelCase string to snake_case
+    
+    @param name: camelCase string
+    @return: snake_case string
+    """
+    import re
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
 @config_bp.route('', methods=['GET'])
 def get_config():
     """
@@ -47,21 +59,22 @@ def get_config():
                     'maxTokens': config.ai.max_tokens  # Convert to camelCase
                 },
                 'security': {
-                    'whitelist_mode': config.security.whitelist_mode == 'strict',
-                    'require_confirmation': config.security.require_confirmation,
-                    'dangerous_patterns': []  # Not directly exposed in config
+                    'whitelistMode': config.security.whitelist_mode == 'strict',  # Convert to camelCase
+                    'requireConfirmation': config.security.require_confirmation,  # Convert to camelCase
+                    'dangerousPatterns': []  # Convert to camelCase
                 },
                 'execution': {
                     'timeout': config.execution.timeout,
-                    'platform': config.execution.platform,
+                    'shellType': config.execution.platform,  # Rename to shellType for frontend
                     'encoding': config.execution.encoding,
-                    'powershell_path': config.execution.powershell_path,
-                    'auto_detect_powershell': config.execution.auto_detect_powershell
+                    'workingDirectory': config.execution.powershell_path,  # Rename to workingDirectory for frontend
+                    'autoDetectPowershell': config.execution.auto_detect_powershell  # Convert to camelCase
                 },
                 'general': {
                     'language': 'zh-CN',  # Default
                     'theme': 'light',  # Default
-                    'log_level': config.logging.level
+                    'logLevel': config.logging.level,  # Convert to camelCase
+                    'autoSave': True  # Default
                 }
             }
         }
@@ -122,41 +135,86 @@ def update_config():
             ai_config = data['ai']
             if 'provider' in ai_config:
                 updates['ai.provider'] = ai_config['provider']
+            # Support both camelCase and snake_case for model name
             if 'model_name' in ai_config:
                 updates['ai.model_name'] = ai_config['model_name']
+            elif 'modelName' in ai_config:
+                updates['ai.model_name'] = ai_config['modelName']
             if 'temperature' in ai_config:
                 updates['ai.temperature'] = ai_config['temperature']
+            # Support both camelCase and snake_case for max tokens
             if 'max_tokens' in ai_config:
                 updates['ai.max_tokens'] = ai_config['max_tokens']
+            elif 'maxTokens' in ai_config:
+                updates['ai.max_tokens'] = ai_config['maxTokens']
         
         if 'security' in data:
             sec_config = data['security']
+            # Support both camelCase and snake_case for whitelist mode
             if 'whitelist_mode' in sec_config:
                 updates['security.whitelist_mode'] = 'strict' if sec_config['whitelist_mode'] else 'permissive'
+            elif 'whitelistMode' in sec_config:
+                updates['security.whitelist_mode'] = 'strict' if sec_config['whitelistMode'] else 'permissive'
+            # Support both camelCase and snake_case for require confirmation
             if 'require_confirmation' in sec_config:
                 updates['security.require_confirmation'] = sec_config['require_confirmation']
+            elif 'requireConfirmation' in sec_config:
+                updates['security.require_confirmation'] = sec_config['requireConfirmation']
         
         if 'execution' in data:
             exec_config = data['execution']
             if 'timeout' in exec_config:
                 updates['execution.timeout'] = exec_config['timeout']
+            # Support both camelCase and snake_case for platform (shellType in frontend)
             if 'platform' in exec_config:
                 updates['execution.platform'] = exec_config['platform']
+            elif 'shellType' in exec_config:
+                updates['execution.platform'] = exec_config['shellType']
             if 'encoding' in exec_config:
                 updates['execution.encoding'] = exec_config['encoding']
+            # Support both camelCase and snake_case for powershell path
             if 'powershell_path' in exec_config:
                 updates['execution.powershell_path'] = exec_config['powershell_path']
+            elif 'powershellPath' in exec_config:
+                updates['execution.powershell_path'] = exec_config['powershellPath']
+            # Support both camelCase and snake_case for auto detect powershell
             if 'auto_detect_powershell' in exec_config:
                 updates['execution.auto_detect_powershell'] = exec_config['auto_detect_powershell']
+            elif 'autoDetectPowershell' in exec_config:
+                updates['execution.auto_detect_powershell'] = exec_config['autoDetectPowershell']
         
         if 'general' in data:
             gen_config = data['general']
+            # Support both camelCase and snake_case for language
+            if 'language' in gen_config:
+                # Language is not directly in config, but we can handle it if needed
+                pass
+            # Support both camelCase and snake_case for theme
+            if 'theme' in gen_config:
+                # Theme is not directly in config, but we can handle it if needed
+                pass
+            # Support both camelCase and snake_case for log level
             if 'log_level' in gen_config:
                 updates['logging.level'] = gen_config['log_level']
+            elif 'logLevel' in gen_config:
+                updates['logging.level'] = gen_config['logLevel']
+        
+        # Convert dot-notation keys to nested dictionary
+        nested_updates = {}
+        for key, value in updates.items():
+            parts = key.split('.')
+            current = nested_updates
+            for part in parts[:-1]:
+                if part not in current:
+                    current[part] = {}
+                current = current[part]
+            current[parts[-1]] = value
         
         # Apply updates using config manager
-        for key, value in updates.items():
-            assistant.config_manager.update_config(key, value)
+        assistant.config_manager.update_config(nested_updates)
+        
+        # Save updated config
+        assistant.config_manager.save_config(assistant.config_manager.get_config())
         
         # Reload config
         assistant.config = assistant.config_manager.load_config()
@@ -186,6 +244,71 @@ def update_config():
             'success': False,
             'error': {
                 'message': f'Failed to update configuration: {str(e)}',
+                'code': 500
+            }
+        }), 500
+
+
+@config_bp.route('/reset', methods=['POST'])
+@csrf_protect
+def reset_config():
+    """
+    Reset configuration to default values
+    
+    POST /api/config/reset
+    Response: Default AppConfig
+    """
+    try:
+        # Get assistant instance
+        assistant = get_assistant()
+        
+        # Reset config using config manager
+        assistant.config_manager.reset_config()
+        
+        # Reload config
+        assistant.config = assistant.config_manager.load_config()
+        
+        # Format response (convert snake_case to camelCase for frontend)
+        response = {
+            'success': True,
+            'data': {
+                'ai': {
+                    'provider': assistant.config.ai.provider,
+                    'modelName': assistant.config.ai.model_name,  # Convert to camelCase
+                    'temperature': assistant.config.ai.temperature,
+                    'maxTokens': assistant.config.ai.max_tokens  # Convert to camelCase
+                },
+                'security': {
+                    'whitelistMode': assistant.config.security.whitelist_mode == 'strict',  # Convert to camelCase
+                    'requireConfirmation': assistant.config.security.require_confirmation,  # Convert to camelCase
+                    'dangerousPatterns': []  # Convert to camelCase
+                },
+                'execution': {
+                    'timeout': assistant.config.execution.timeout,
+                    'shellType': assistant.config.execution.platform,  # Rename to shellType for frontend
+                    'encoding': assistant.config.execution.encoding,
+                    'workingDirectory': assistant.config.execution.powershell_path,  # Rename to workingDirectory for frontend
+                    'autoDetectPowershell': assistant.config.execution.auto_detect_powershell  # Convert to camelCase
+                },
+                'general': {
+                    'language': 'zh-CN',  # Default
+                    'theme': 'light',  # Default
+                    'logLevel': assistant.config.logging.level,  # Convert to camelCase
+                    'autoSave': True  # Default
+                }
+            },
+            'message': 'Configuration reset to default values'
+        }
+        
+        current_app.logger.info("Configuration reset to defaults")
+        return jsonify(response), 200
+        
+    except Exception as e:
+        current_app.logger.error(f"Error resetting config: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': {
+                'message': f'Failed to reset configuration: {str(e)}',
                 'code': 500
             }
         }), 500

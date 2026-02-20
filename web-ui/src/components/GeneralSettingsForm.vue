@@ -19,11 +19,7 @@
     >
       <!-- Language -->
       <el-form-item label="界面语言" prop="language">
-        <el-select
-          v-model="formData.language"
-          placeholder="选择界面语言"
-          @change="handleChange"
-        >
+        <el-select v-model="formData.language" placeholder="选择界面语言" @change="handleChange">
           <el-option label="简体中文" value="zh-CN">
             <div class="language-option">
               <span class="language-option__flag">🇨🇳</span>
@@ -50,18 +46,13 @@
           </el-option>
         </el-select>
         <template #extra>
-          <span class="form-item-help">
-            更改界面显示语言。需要刷新页面生效
-          </span>
+          <span class="form-item-help"> 更改界面显示语言。需要刷新页面生效 </span>
         </template>
       </el-form-item>
 
       <!-- Theme -->
       <el-form-item label="主题" prop="theme">
-        <el-radio-group
-          v-model="formData.theme"
-          @change="handleThemeChange"
-        >
+        <el-radio-group v-model="formData.theme" @change="handleThemeChange">
           <el-radio-button label="light">
             <el-icon><Sunny /></el-icon>
             浅色
@@ -72,9 +63,7 @@
           </el-radio-button>
         </el-radio-group>
         <template #extra>
-          <span class="form-item-help">
-            选择界面主题。更改后立即生效
-          </span>
+          <span class="form-item-help"> 选择界面主题。更改后立即生效 </span>
         </template>
       </el-form-item>
 
@@ -87,14 +76,14 @@
             @click="selectTheme('light')"
           >
             <div class="theme-preview__header theme-preview__header--light">
-              <div class="theme-preview__dot"></div>
-              <div class="theme-preview__dot"></div>
-              <div class="theme-preview__dot"></div>
+              <div class="theme-preview__dot" />
+              <div class="theme-preview__dot" />
+              <div class="theme-preview__dot" />
             </div>
             <div class="theme-preview__body theme-preview__body--light">
-              <div class="theme-preview__line"></div>
-              <div class="theme-preview__line"></div>
-              <div class="theme-preview__line theme-preview__line--short"></div>
+              <div class="theme-preview__line" />
+              <div class="theme-preview__line" />
+              <div class="theme-preview__line theme-preview__line--short" />
             </div>
             <div class="theme-preview__label">浅色主题</div>
           </div>
@@ -105,14 +94,14 @@
             @click="selectTheme('dark')"
           >
             <div class="theme-preview__header theme-preview__header--dark">
-              <div class="theme-preview__dot"></div>
-              <div class="theme-preview__dot"></div>
-              <div class="theme-preview__dot"></div>
+              <div class="theme-preview__dot" />
+              <div class="theme-preview__dot" />
+              <div class="theme-preview__dot" />
             </div>
             <div class="theme-preview__body theme-preview__body--dark">
-              <div class="theme-preview__line"></div>
-              <div class="theme-preview__line"></div>
-              <div class="theme-preview__line theme-preview__line--short"></div>
+              <div class="theme-preview__line" />
+              <div class="theme-preview__line" />
+              <div class="theme-preview__line theme-preview__line--short" />
             </div>
             <div class="theme-preview__label">深色主题</div>
           </div>
@@ -121,32 +110,28 @@
 
       <!-- Log Level -->
       <el-form-item label="日志级别" prop="logLevel">
-        <el-select
-          v-model="formData.logLevel"
-          placeholder="选择日志级别"
-          @change="handleChange"
-        >
+        <el-select v-model="formData.logLevel" placeholder="选择日志级别" @change="handleChange">
           <el-option label="DEBUG - 调试" value="DEBUG">
             <div class="log-level-option">
-              <el-tag type="info" size="small">DEBUG</el-tag>
+              <el-tag type="info" size="small"> DEBUG </el-tag>
               <span class="log-level-option__desc">显示所有日志，包括调试信息</span>
             </div>
           </el-option>
           <el-option label="INFO - 信息" value="INFO">
             <div class="log-level-option">
-              <el-tag type="success" size="small">INFO</el-tag>
+              <el-tag type="success" size="small"> INFO </el-tag>
               <span class="log-level-option__desc">显示一般信息和更高级别的日志</span>
             </div>
           </el-option>
           <el-option label="WARNING - 警告" value="WARNING">
             <div class="log-level-option">
-              <el-tag type="warning" size="small">WARNING</el-tag>
+              <el-tag type="warning" size="small"> WARNING </el-tag>
               <span class="log-level-option__desc">只显示警告和错误日志</span>
             </div>
           </el-option>
           <el-option label="ERROR - 错误" value="ERROR">
             <div class="log-level-option">
-              <el-tag type="danger" size="small">ERROR</el-tag>
+              <el-tag type="danger" size="small"> ERROR </el-tag>
               <span class="log-level-option__desc">只显示错误日志</span>
             </div>
           </el-option>
@@ -167,22 +152,13 @@
           @change="handleChange"
         />
         <template #extra>
-          <span class="form-item-help">
-            启用后，配置更改将自动保存，无需手动点击保存按钮
-          </span>
+          <span class="form-item-help"> 启用后，配置更改将自动保存，无需手动点击保存按钮 </span>
         </template>
       </el-form-item>
 
       <!-- Additional Settings Info -->
-      <el-alert
-        type="info"
-        :closable="false"
-        show-icon
-        class="general-settings-form__info"
-      >
-        <template #title>
-          其他设置
-        </template>
+      <el-alert type="info" :closable="false" show-icon class="general-settings-form__info">
+        <template #title> 其他设置 </template>
         <template #default>
           <ul class="info-list">
             <li>
@@ -194,12 +170,8 @@
                 <li><kbd>Esc</kbd> - 关闭对话框</li>
               </ul>
             </li>
-            <li>
-              <strong>数据存储：</strong> 所有数据存储在本地，不会上传到服务器
-            </li>
-            <li>
-              <strong>隐私保护：</strong> 命令历史和配置仅保存在您的设备上
-            </li>
+            <li><strong>数据存储：</strong> 所有数据存储在本地，不会上传到服务器</li>
+            <li><strong>隐私保护：</strong> 命令历史和配置仅保存在您的设备上</li>
           </ul>
         </template>
       </el-alert>
@@ -212,9 +184,7 @@
         show-icon
         class="general-settings-form__warning"
       >
-        <template #title>
-          性能提示
-        </template>
+        <template #title> 性能提示 </template>
         <template #default>
           DEBUG 日志级别会记录大量信息，可能影响性能。建议仅在开发或调试时使用。
         </template>
@@ -255,18 +225,10 @@ const formData = ref<GeneralConfig>({ ...props.modelValue })
 // ============================================================================
 
 const rules: FormRules = {
-  language: [
-    { required: true, message: '请选择界面语言', trigger: 'change' }
-  ],
-  theme: [
-    { required: true, message: '请选择主题', trigger: 'change' }
-  ],
-  logLevel: [
-    { required: true, message: '请选择日志级别', trigger: 'change' }
-  ],
-  autoSave: [
-    { required: true, message: '请设置自动保存', trigger: 'change' }
-  ]
+  language: [{ required: true, message: '请选择界面语言', trigger: 'change' }],
+  theme: [{ required: true, message: '请选择主题', trigger: 'change' }],
+  logLevel: [{ required: true, message: '请选择日志级别', trigger: 'change' }],
+  autoSave: [{ required: true, message: '请设置自动保存', trigger: 'change' }]
 }
 
 // ============================================================================
@@ -292,7 +254,7 @@ const handleThemeChange = (theme: 'light' | 'dark') => {
   } else {
     document.documentElement.classList.remove('dark')
   }
-  
+
   handleChange()
   ElMessage.success(`已切换到${theme === 'light' ? '浅色' : '深色'}主题`)
 }
@@ -310,7 +272,7 @@ const handleChange = () => {
  */
 const validate = async (): Promise<boolean> => {
   if (!formRef.value) return false
-  
+
   try {
     await formRef.value.validate()
     return true

@@ -1,14 +1,14 @@
 /**
  * Logs Store
- * 
- * Manages system logs state, fetching, filtering, and WebSocket connection
- * 
+ *
+ * Manages system logs state, fetching, and filtering
+ *
  * Requirements: 5.1, 5.4
  */
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { logsApi, LogEntry, LogLevel, LogsWebSocketManager } from '../api/logs'
+import { logsApi, LogEntry, LogLevel } from '../api/logs'
 import { ElMessage } from 'element-plus'
 
 /**
@@ -28,7 +28,6 @@ export const useLogsStore = defineStore('logs', () => {
 
   const logs = ref<LogEntry[]>([])
   const isLoading = ref(false)
-  const isConnected = ref(false)
   const filterLevel = ref<LogLevel | 'ALL'>('ALL')
   const searchQuery = ref('')
   const autoScroll = ref(true)
@@ -38,9 +37,6 @@ export const useLogsStore = defineStore('logs', () => {
     execution: 'offline',
     lastCheck: null
   })
-
-  // WebSocket manager instance
-  let wsManager: LogsWebSocketManager | null = null
 
   // ============================================================================
   // Computed
@@ -54,15 +50,15 @@ export const useLogsStore = defineStore('logs', () => {
 
     // Filter by level
     if (filterLevel.value !== 'ALL') {
-      result = result.filter(log => log.level === filterLevel.value)
+      result = result.filter((log) => log.level === filterLevel.value)
     }
 
     // Filter by search query
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
-      result = result.filter(log => 
-        log.message.toLowerCase().includes(query) ||
-        log.source.toLowerCase().includes(query)
+      result = result.filter(
+        (log) =>
+          log.message.toLowerCase().includes(query) || log.source.toLowerCase().includes(query)
       )
     }
 
@@ -82,7 +78,7 @@ export const useLogsStore = defineStore('logs', () => {
       ALL: logs.value.length
     }
 
-    logs.value.forEach(log => {
+    logs.value.forEach((log) => {
       counts[log.level]++
     })
 
@@ -96,7 +92,7 @@ export const useLogsStore = defineStore('logs', () => {
   /**
    * Fetch logs from the API
    * Requirements: 5.1
-   * 
+   *
    * @param params - Optional query parameters
    */
   const fetchLogs = async (params?: { level?: LogLevel; limit?: number }): Promise<void> => {
@@ -105,7 +101,7 @@ export const useLogsStore = defineStore('logs', () => {
     try {
       const response = await logsApi.getLogs({
         level: params?.level || '',
-        limit: params?.limit || 100
+        limit: params?.limit || 1000
       })
 
       if (response.success) {
@@ -124,22 +120,17 @@ export const useLogsStore = defineStore('logs', () => {
   /**
    * Filter logs by level
    * Requirements: 5.4
-   * 
+   *
    * @param level - Log level to filter by
    */
   const setFilterLevel = (level: LogLevel | 'ALL'): void => {
     filterLevel.value = level
-
-    // Update WebSocket subscription if connected
-    if (wsManager?.isConnected()) {
-      wsManager.updateSubscription(level)
-    }
   }
 
   /**
    * Set search query for filtering logs
    * Requirements: 5.4
-   * 
+   *
    * @param query - Search query string
    */
   const setSearchQuery = (query: string): void => {
@@ -155,8 +146,8 @@ export const useLogsStore = defineStore('logs', () => {
   }
 
   /**
-   * Add a new log entry (from WebSocket or manual)
-   * 
+   * Add a new log entry (manual addition)
+   *
    * @param log - Log entry to add
    */
   const addLog = (log: LogEntry): void => {
@@ -177,54 +168,6 @@ export const useLogsStore = defineStore('logs', () => {
   }
 
   /**
-   * Connect to WebSocket for real-time logs
-   * Requirements: 5.2
-   */
-  const connectWebSocket = async (): Promise<void> => {
-    if (wsManager?.isConnected()) {
-      console.log('WebSocket already connected')
-      return
-    }
-
-    try {
-      wsManager = new LogsWebSocketManager()
-
-      await wsManager.connect({
-        level: filterLevel.value,
-        onConnect: () => {
-          isConnected.value = true
-          ElMessage.success('已连接到实时日志流')
-        },
-        onDisconnect: () => {
-          isConnected.value = false
-          ElMessage.warning('实时日志流已断开')
-        },
-        onLog: (log: LogEntry) => {
-          addLog(log)
-        },
-        onError: (error: Error) => {
-          console.error('WebSocket error:', error)
-          ElMessage.error('实时日志连接失败')
-        }
-      })
-    } catch (error: any) {
-      console.error('Failed to connect WebSocket:', error)
-      ElMessage.error('无法连接到实时日志流')
-    }
-  }
-
-  /**
-   * Disconnect from WebSocket
-   */
-  const disconnectWebSocket = (): void => {
-    if (wsManager) {
-      wsManager.disconnect()
-      wsManager = null
-      isConnected.value = false
-    }
-  }
-
-  /**
    * Toggle auto-scroll behavior
    */
   const toggleAutoScroll = (): void => {
@@ -238,7 +181,9 @@ export const useLogsStore = defineStore('logs', () => {
   const checkSystemStatus = async (): Promise<void> => {
     try {
       // Call health check endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/health`)
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/health`
+      )
       const data = await response.json()
 
       if (data.success && data.components) {
@@ -249,7 +194,7 @@ export const useLogsStore = defineStore('logs', () => {
           if (status === 'offline') return 'offline'
           return 'error'
         }
-        
+
         systemStatus.value = {
           ai: mapStatus(data.components.ai),
           security: mapStatus(data.components.security),
@@ -267,7 +212,7 @@ export const useLogsStore = defineStore('logs', () => {
       }
     } catch (error) {
       console.error('Failed to check system status:', error)
-      
+
       // Set all to error state
       systemStatus.value = {
         ai: 'error',
@@ -282,7 +227,7 @@ export const useLogsStore = defineStore('logs', () => {
    * Refresh logs (fetch latest)
    */
   const refreshLogs = async (): Promise<void> => {
-    await fetchLogs({ limit: 100 })
+    await fetchLogs({ limit: 1000 })
     ElMessage.success('日志已刷新')
   }
 
@@ -294,7 +239,6 @@ export const useLogsStore = defineStore('logs', () => {
     // State
     logs,
     isLoading,
-    isConnected,
     filterLevel,
     searchQuery,
     autoScroll,
@@ -311,8 +255,6 @@ export const useLogsStore = defineStore('logs', () => {
     clearFilters,
     addLog,
     clearLogs,
-    connectWebSocket,
-    disconnectWebSocket,
     toggleAutoScroll,
     checkSystemStatus,
     refreshLogs

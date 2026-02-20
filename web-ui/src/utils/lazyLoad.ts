@@ -15,10 +15,7 @@ interface LazyLoadOptions {
 /**
  * Create a lazy-loaded component with loading and error handling
  */
-export function lazyLoadComponent(
-  loader: () => Promise<any>,
-  options: LazyLoadOptions = {}
-) {
+export function lazyLoadComponent(loader: () => Promise<any>, options: LazyLoadOptions = {}) {
   const {
     delay = 200,
     timeout = 30000,
@@ -47,7 +44,7 @@ export function preloadComponent(loader: () => Promise<any>) {
  * Preload multiple components
  */
 export function preloadComponents(loaders: Array<() => Promise<any>>) {
-  return Promise.all(loaders.map(loader => loader()))
+  return Promise.all(loaders.map((loader) => loader()))
 }
 
 /**

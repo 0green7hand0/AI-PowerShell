@@ -49,31 +49,15 @@
     <!-- Actions -->
     <div class="history-card__actions">
       <el-tooltip content="查看详情" placement="top">
-        <el-button
-          size="small"
-          :icon="View"
-          circle
-          @click="handleView"
-        />
+        <el-button size="small" :icon="View" circle @click="handleView" />
       </el-tooltip>
 
       <el-tooltip content="重新执行" placement="top">
-        <el-button
-          size="small"
-          :icon="Refresh"
-          circle
-          @click="handleReExecute"
-        />
+        <el-button size="small" :icon="Refresh" circle @click="handleReExecute" />
       </el-tooltip>
 
       <el-tooltip content="删除" placement="top">
-        <el-button
-          size="small"
-          :icon="Delete"
-          circle
-          type="danger"
-          @click="handleDelete"
-        />
+        <el-button size="small" :icon="Delete" circle type="danger" @click="handleDelete" />
       </el-tooltip>
     </div>
   </div>
@@ -81,11 +65,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { 
-  SuccessFilled, 
-  CircleCloseFilled, 
-  Clock, 
-  Timer, 
+import {
+  SuccessFilled,
+  CircleCloseFilled,
+  Clock,
+  Timer,
   WarningFilled,
   View,
   Refresh,
@@ -134,15 +118,11 @@ const handleView = () => {
 
 const handleReExecute = async () => {
   try {
-    await ElMessageBox.confirm(
-      '确定要重新执行此命令吗？',
-      '确认',
-      {
-        confirmButtonText: '执行',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要重新执行此命令吗？', '确认', {
+      confirmButtonText: '执行',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
     emit('reExecute', props.item)
   } catch {
     // User cancelled
@@ -151,15 +131,11 @@ const handleReExecute = async () => {
 
 const handleDelete = async () => {
   try {
-    await ElMessageBox.confirm(
-      '确定要删除此历史记录吗？此操作不可恢复。',
-      '确认删除',
-      {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要删除此历史记录吗？此操作不可恢复。', '确认删除', {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
     emit('delete', props.item.id)
   } catch {
     // User cancelled

@@ -27,6 +27,33 @@ export interface Message {
   }
 }
 
+/**
+ * Error handling helper
+ */
+const handleError = (error: unknown, message: string, action?: () => void) => {
+  console.error(`Failed to ${message}:`, error)
+
+  if (action) {
+    action()
+  }
+
+  ElMessage.error(`${message}失败`)
+}
+
+/**
+ * Success message helper
+ */
+const handleSuccess = (message: string) => {
+  ElMessage.success(message)
+}
+
+/**
+ * Warning message helper
+ */
+const handleWarning = (message: string) => {
+  ElMessage.warning(message)
+}
+
 export const useChatStore = defineStore('chat', () => {
   // State
   const messages = ref<Message[]>([])
@@ -45,12 +72,29 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   /**
+   * Add error message
+   */
+  const addErrorMessage = (content: string) => {
+    addMessage({
+      type: 'system',
+      content
+    })
+  }
+
+  /**
+   * Remove message by content
+   */
+  const removeMessageByContent = (content: string) => {
+    messages.value = messages.value.filter((m) => m.content !== content)
+  }
+
+  /**
    * Send a message and translate it to a PowerShell command
    * Requirements: 2.5, 2.6
    */
   const sendMessage = async (input: string): Promise<void> => {
     if (!input.trim()) {
-      ElMessage.warning('请输入内容')
+      handleWarning('请输入内容')
       return
     }
 
@@ -69,10 +113,14 @@ export const useChatStore = defineStore('chat', () => {
         input,
         context: {
           sessionId: sessionId.value,
-          history: messages.value.slice(-5).map(m => ({
-            type: m.type,
-            content: m.content
-          }))
+          history: messages.value
+            .filter((m) => m.type === 'user' && m.command)
+            .slice(-5)
+            .map((m) => ({
+              input: m.content,
+              command: m.command?.command || '',
+              timestamp: m.timestamp.toISOString()
+            }))
         }
       })
 
@@ -93,20 +141,14 @@ export const useChatStore = defineStore('chat', () => {
           }
         })
 
-        ElMessage.success('命令翻译成功')
+        handleSuccess('命令翻译成功')
       } else {
         throw new Error('翻译失败')
       }
     } catch (error: any) {
-      console.error('Failed to translate command:', error)
-      
-      // Add error message
-      addMessage({
-        type: 'system',
-        content: `翻译失败: ${error.message || '未知错误'}`
+      handleError(error, '翻译', () => {
+        addErrorMessage(`翻译失败: ${error.message || '未知错误'}`)
       })
-
-      ElMessage.error('命令翻译失败')
     } finally {
       isLoading.value = false
     }
@@ -118,7 +160,7 @@ export const useChatStore = defineStore('chat', () => {
    */
   const executeCommand = async (command: string, messageId?: string): Promise<void> => {
     if (!command.trim()) {
-      ElMessage.warning('命令不能为空')
+      handleWarning('命令不能为空')
       return
     }
 
@@ -126,10 +168,10 @@ export const useChatStore = defineStore('chat', () => {
     isExecuting.value = true
 
     // Add system message indicating execution started
-    const executingMessageId = crypto.randomUUID()
+    const executingMessage = '正在执行命令...'
     addMessage({
       type: 'system',
-      content: '正在执行命令...'
+      content: executingMessage
     })
 
     try {
@@ -141,14 +183,14 @@ export const useChatStore = defineStore('chat', () => {
       })
 
       // Remove the "executing" message
-      messages.value = messages.value.filter(m => m.content !== '正在执行命令...')
+      removeMessageByContent(executingMessage)
 
       if (response.success) {
         const success = response.data.returnCode === 0 && !response.data.error
 
         // Update the message with command result if messageId provided
         if (messageId) {
-          const message = messages.value.find(m => m.id === messageId)
+          const message = messages.value.find((m) => m.id === messageId)
           if (message) {
             message.result = {
               output: response.data.output || '',
@@ -172,26 +214,18 @@ export const useChatStore = defineStore('chat', () => {
         }
 
         if (success) {
-          ElMessage.success('命令执行成功')
+          handleSuccess('命令执行成功')
         } else {
-          ElMessage.warning('命令执行完成，但有错误')
+          handleWarning('命令执行完成，但有错误')
         }
       } else {
         throw new Error('执行失败')
       }
     } catch (error: any) {
-      console.error('Failed to execute command:', error)
-
-      // Remove the "executing" message
-      messages.value = messages.value.filter(m => m.content !== '正在执行命令...')
-
-      // Add error message
-      addMessage({
-        type: 'system',
-        content: `执行失败: ${error.message || '未知错误'}`
+      handleError(error, '执行', () => {
+        removeMessageByContent(executingMessage)
+        addErrorMessage(`执行失败: ${error.message || '未知错误'}`)
       })
-
-      ElMessage.error('命令执行失败')
     } finally {
       isExecuting.value = false
     }
@@ -214,7 +248,7 @@ export const useChatStore = defineStore('chat', () => {
         // Convert history items to messages
         const historyMessages: Message[] = []
 
-        response.data.items.reverse().forEach(item => {
+        response.data.items.reverse().forEach((item) => {
           // Add user input message
           historyMessages.push({
             id: crypto.randomUUID(),
@@ -241,7 +275,7 @@ export const useChatStore = defineStore('chat', () => {
             },
             result: {
               output: item.output || '',
-              error: item.error,
+              error: item.error || null,
               executionTime: item.executionTime,
               success: item.success
             }
@@ -251,11 +285,10 @@ export const useChatStore = defineStore('chat', () => {
         // Prepend history messages to current messages
         messages.value = [...historyMessages, ...messages.value]
 
-        ElMessage.success(`已加载 ${response.data.items.length} 条历史记录`)
+        handleSuccess(`已加载 ${response.data.items.length} 条历史记录`)
       }
     } catch (error: any) {
-      console.error('Failed to load history:', error)
-      ElMessage.error('加载历史记录失败')
+      handleError(error, '加载历史记录')
     } finally {
       isLoading.value = false
     }
@@ -268,7 +301,88 @@ export const useChatStore = defineStore('chat', () => {
     messages.value = []
     sessionId.value = crypto.randomUUID()
     currentInput.value = ''
-    ElMessage.info('对话已清空')
+    handleSuccess('对话已清空')
+  }
+
+  /**
+   * Regenerate command based on user feedback
+   * Requirements: AI command improvement
+   */
+  const regenerateCommand = async (messageId: string): Promise<void> => {
+    const message = messages.value.find((m) => m.id === messageId)
+    if (!message || !message.command) {
+      handleWarning('找不到要重新生成的命令')
+      return
+    }
+
+    // Find the user input that generated this command
+    const userMessageIndex = messages.value.findIndex((m) => m.id === messageId)
+    const userMessage = messages.value[userMessageIndex - 1]
+    
+    if (!userMessage || userMessage.type !== 'user') {
+      handleWarning('找不到对应的用户输入')
+      return
+    }
+
+    // Set loading state
+    isLoading.value = true
+
+    // Add system message indicating regeneration
+    addMessage({
+      type: 'system',
+      content: '正在根据反馈重新生成命令...'
+    })
+
+    try {
+      // Call translate API with feedback context
+      const response = await commandApi.translate({
+        input: userMessage.content,
+        context: {
+          sessionId: sessionId.value,
+          history: messages.value
+            .filter((m) => m.type === 'user' && m.command)
+            .slice(-5)
+            .map((m) => ({
+              input: m.content,
+              command: m.command?.command || '',
+              timestamp: m.timestamp.toISOString()
+            }))
+        },
+        feedback: {
+          previousCommand: message.command.command,
+          feedback: 'incorrect',
+          explanation: '用户认为生成的命令不正确，请重新生成更准确的命令'
+        }
+      })
+
+      // Remove the "regenerating" message
+      removeMessageByContent('正在根据反馈重新生成命令...')
+
+      if (response.success) {
+        // Update the existing message with new command
+        message.command = {
+          command: response.data.command,
+          confidence: response.data.confidence,
+          explanation: response.data.explanation,
+          security: {
+            level: response.data.security.level as any,
+            warnings: response.data.security.warnings,
+            requiresConfirmation: response.data.security.requiresConfirmation
+          }
+        }
+        message.content = response.data.explanation || '命令已重新生成'
+
+        handleSuccess('命令已重新生成')
+      } else {
+        throw new Error('重新生成失败')
+      }
+    } catch (error: any) {
+      handleError(error, '重新生成', () => {
+        addErrorMessage(`重新生成失败: ${error.message || '未知错误'}`)
+      })
+    } finally {
+      isLoading.value = false
+    }
   }
 
   return {
@@ -284,6 +398,7 @@ export const useChatStore = defineStore('chat', () => {
     executeCommand,
     loadHistory,
     clearChat,
+    regenerateCommand,
     addMessage
   }
 })

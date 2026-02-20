@@ -40,9 +40,7 @@
           />
         </div>
         <template #extra>
-          <span class="form-item-help">
-            命令执行的最大等待时间。超时后命令将被终止
-          </span>
+          <span class="form-item-help"> 命令执行的最大等待时间。超时后命令将被终止 </span>
         </template>
       </el-form-item>
 
@@ -87,11 +85,7 @@
 
       <!-- Encoding -->
       <el-form-item label="字符编码" prop="encoding">
-        <el-select
-          v-model="formData.encoding"
-          placeholder="选择字符编码"
-          @change="handleChange"
-        >
+        <el-select v-model="formData.encoding" placeholder="选择字符编码" @change="handleChange">
           <el-option label="UTF-8" value="utf-8" />
           <el-option label="UTF-16" value="utf-16" />
           <el-option label="GBK (简体中文)" value="gbk" />
@@ -101,9 +95,7 @@
           <el-option label="ISO-8859-1" value="iso-8859-1" />
         </el-select>
         <template #extra>
-          <span class="form-item-help">
-            命令输出的字符编码。中文 Windows 系统建议使用 GBK
-          </span>
+          <span class="form-item-help"> 命令输出的字符编码。中文 Windows 系统建议使用 GBK </span>
         </template>
       </el-form-item>
 
@@ -119,22 +111,13 @@
           </template>
         </el-input>
         <template #extra>
-          <span class="form-item-help">
-            可选。命令执行的默认工作目录。留空则使用当前目录
-          </span>
+          <span class="form-item-help"> 可选。命令执行的默认工作目录。留空则使用当前目录 </span>
         </template>
       </el-form-item>
 
       <!-- Platform Detection -->
-      <el-alert
-        type="info"
-        :closable="false"
-        show-icon
-        class="execution-settings-form__info"
-      >
-        <template #title>
-          系统信息
-        </template>
+      <el-alert type="info" :closable="false" show-icon class="execution-settings-form__info">
+        <template #title> 系统信息 </template>
         <template #default>
           <div class="system-info">
             <div class="system-info__item">
@@ -153,8 +136,8 @@
           <el-button
             type="primary"
             size="small"
-            @click="applyRecommended"
             class="apply-recommended-btn"
+            @click="applyRecommended"
           >
             应用推荐配置
           </el-button>
@@ -162,15 +145,8 @@
       </el-alert>
 
       <!-- Performance Tips -->
-      <el-alert
-        type="success"
-        :closable="false"
-        show-icon
-        class="execution-settings-form__tips"
-      >
-        <template #title>
-          性能建议
-        </template>
+      <el-alert type="success" :closable="false" show-icon class="execution-settings-form__tips">
+        <template #title> 性能建议 </template>
         <template #default>
           <ul class="tips-list">
             <li>对于快速命令，使用较短的超时时间（10-30秒）</li>
@@ -220,15 +196,9 @@ const rules: FormRules = {
     { required: true, message: '请设置超时时间', trigger: 'change' },
     { type: 'number', min: 5, max: 300, message: '超时时间应在 5-300 秒之间', trigger: 'change' }
   ],
-  shellType: [
-    { required: true, message: '请选择 Shell 类型', trigger: 'change' }
-  ],
-  encoding: [
-    { required: true, message: '请选择字符编码', trigger: 'change' }
-  ],
-  workingDirectory: [
-    { max: 500, message: '工作目录路径不能超过 500 个字符', trigger: 'blur' }
-  ]
+  shellType: [{ required: true, message: '请选择 Shell 类型', trigger: 'change' }],
+  encoding: [{ required: true, message: '请选择字符编码', trigger: 'change' }],
+  workingDirectory: [{ max: 500, message: '工作目录路径不能超过 500 个字符', trigger: 'blur' }]
 }
 
 // ============================================================================
@@ -262,7 +232,7 @@ const recommendedShell = computed(() => {
 const recommendedEncoding = computed(() => {
   const platform = detectedPlatform.value
   const lang = navigator.language.toLowerCase()
-  
+
   if (platform === 'Windows' && lang.includes('zh')) {
     return 'gbk'
   }
@@ -288,7 +258,7 @@ const formatTimeoutTooltip = (value: number): string => {
  */
 const applyRecommended = () => {
   const platform = detectedPlatform.value
-  
+
   if (platform === 'Windows') {
     formData.value.shellType = 'pwsh'
     formData.value.encoding = navigator.language.toLowerCase().includes('zh') ? 'gbk' : 'utf-8'
@@ -296,7 +266,7 @@ const applyRecommended = () => {
     formData.value.shellType = 'bash'
     formData.value.encoding = 'utf-8'
   }
-  
+
   handleChange()
   ElMessage.success('已应用推荐配置')
 }
@@ -314,7 +284,7 @@ const handleChange = () => {
  */
 const validate = async (): Promise<boolean> => {
   if (!formRef.value) return false
-  
+
   try {
     await formRef.value.validate()
     return true

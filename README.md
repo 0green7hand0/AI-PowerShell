@@ -13,9 +13,9 @@
 ## 📚 快速导航
 
 - [🚀 快速开始](#快速开始)
-- [📖 完整文档索引](DOCUMENTATION.md) - 所有文档导航门户
-- [📖 中文文档](%E4%B8%AD%E6%96%87%E9%A1%B9%E7%9B%AE%E8%AF%B4%E6%98%8E.md)
-- [📋 快速开始指南](%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.md)
+- [📖 文档索引](docs/文档索引.md) - 快速查找所有文档
+- [📖 完整文档门户](DOCUMENTATION.md) - 按角色推荐阅读路径
+- [📖 中文使用指南](docs/中文使用指南.md) - 中文快速上手
 - [📁 项目结构](#项目结构)
 - [🔧 安装说明](#安装)
 - [📚 文档中心](docs/README.md)
@@ -114,7 +114,29 @@ pip install -r requirements.txt
 
 ### 基本使用
 
-**启动助手**
+**快速启动（推荐）**
+
+使用自动检测脚本启动项目，会自动检查所有依赖和服务：
+
+```bash
+# Windows PowerShell
+.\start.ps1
+
+# Windows CMD
+start.bat
+
+# Linux/macOS
+./start.sh
+```
+
+启动脚本会自动：
+- ✓ 检查 Python 环境
+- ✓ 检查 Node.js 环境（Web UI）
+- ✓ 检查 Ollama AI 服务状态
+- ✓ 检查已安装的 AI 模型
+- ✓ 提供启动模式选择（CLI/Web/Both）
+
+**手动启动**
 ```bash
 # 运行主程序
 python src/main.py
@@ -157,7 +179,7 @@ python src/main.py template import template.zip
 ```
 
 详细使用说明请参考：
-- [快速开始指南](%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.md) - 5分钟快速上手
+- [中文使用指南](docs/中文使用指南.md) - 中文快速上手和完整说明
 - [用户指南](docs/user-guide.md) - 综合用户使用手册（UI系统、进度管理、安全机制）
 - [模板系统指南](docs/template-guide.md) - 完整的模板系统使用指南（快速入门、深入指南、CLI参考）
 - [故障排除指南](docs/troubleshooting.md) - 常见问题和解决方案
@@ -168,8 +190,7 @@ python src/main.py template import template.zip
 
 ### 📖 入门层 - 快速上手
 - **[完整文档门户](DOCUMENTATION.md)** - 文档导航中心，按角色推荐阅读路径
-- **[快速开始指南](%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.md)** - 5分钟快速上手
-- **[中文项目说明](%E4%B8%AD%E6%96%87%E9%A1%B9%E7%9B%AE%E8%AF%B4%E6%98%8E.md)** - 详细的中文项目介绍
+- **[中文使用指南](docs/中文使用指南.md)** - 中文快速上手和使用说明
 - **[文档中心](docs/README.md)** - 所有文档的分类导航
 
 ### 📚 深入层 - 详细指南
@@ -314,6 +335,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 支持
 
+- **文档索引**: [docs/文档索引.md](docs/文档索引.md) - 快速查找所有文档
 - **文档门户**: [DOCUMENTATION.md](DOCUMENTATION.md) - 完整文档导航
 - **文档中心**: [docs/README.md](docs/README.md) - 按类别浏览文档
 - **故障排除**: [docs/troubleshooting.md](docs/troubleshooting.md) - 常见问题解决

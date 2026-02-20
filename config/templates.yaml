@@ -192,9 +192,45 @@ templates:
         - "清理30天前的临时文件"
         - "清空回收站释放空间"
         - "清理系统垃圾文件"
+  
+  # 系统监控类模板
+  system_monitoring:
+    process_manager:
+      name: "进程管理工具"
+      file: "templates/process_management/process_manager.ps1"
+      description: "查看、筛选、终止进程，监控资源占用"
+      keywords:
+        - "进程"
+        - "process"
+        - "任务管理器"
+        - "CPU"
+        - "内存"
+        - "终止"
+        - "kill"
+      parameters:
+        ACTION:
+          type: "string"
+          default: "list"
+          description: "操作类型（list/find/kill/monitor）"
+        PROCESS_NAME:
+          type: "string"
+          default: ""
+          description: "进程名称（用于查找和终止）"
+        TOP_COUNT:
+          type: "integer"
+          default: 10
+          description: "显示前N个进程"
+        SORT_BY:
+          type: "string"
+          default: "cpu"
+          description: "排序字段（cpu/memory/name）"
+      examples:
+        - "显示CPU占用最高的10个进程"
+        - "查找chrome进程"
+        - "终止notepad进程"
 
-# 模板匹配规则
-matching_rules:
+# 模板匹配配置
+template_matching:
   # 关键词权重
   keyword_weights:
     exact_match: 10      # 完全匹配
@@ -266,3 +302,155 @@ script_saving:
   
   # 最大保存数量（0表示不限制）
   max_saved_scripts: 100
+        - "监控高资源占用进程"
+  
+  # 网络诊断类模板
+  network_diagnostics:
+    network_check:
+      name: "网络连接诊断"
+      file: "templates/network_diagnostics/network_check.ps1"
+      description: "检查网络连接、DNS解析、端口状态、路由追踪"
+      keywords:
+        - "网络"
+        - "ping"
+        - "连接"
+        - "DNS"
+        - "端口"
+        - "延迟"
+        - "network"
+      parameters:
+        TARGET_HOST:
+          type: "string"
+          default: "www.baidu.com"
+          description: "目标主机地址"
+        PING_COUNT:
+          type: "integer"
+          default: 4
+          description: "Ping次数"
+        TIMEOUT:
+          type: "integer"
+          default: 5
+          description: "超时时间（秒）"
+        CHECK_DNS:
+          type: "boolean"
+          default: true
+          description: "检查DNS解析"
+        CHECK_PORTS:
+          type: "boolean"
+          default: false
+          description: "检查端口连接"
+        PORTS:
+          type: "string"
+          default: "80,443"
+          description: "要检查的端口（逗号分隔）"
+        TRACE_ROUTE:
+          type: "boolean"
+          default: false
+          description: "执行路由追踪"
+      examples:
+        - "测试到百度的网络连接"
+        - "检查DNS解析和80、443端口"
+        - "诊断网络连接问题，包含路由追踪"
+  
+  # 日志分析类模板
+  log_analysis:
+    log_analyzer:
+      name: "日志分析工具"
+      file: "templates/log_analysis/log_analyzer.ps1"
+      description: "分析日志文件，提取错误、警告、统计信息"
+      keywords:
+        - "日志"
+        - "log"
+        - "分析"
+        - "错误"
+        - "警告"
+        - "统计"
+      parameters:
+        LOG_FILE:
+          type: "string"
+          default: "logs/assistant.log"
+          description: "日志文件路径"
+        LOG_LEVEL:
+          type: "string"
+          default: "ERROR"
+          description: "日志级别（ERROR/WARNING/INFO/DEBUG/ALL）"
+        TAIL_LINES:
+          type: "integer"
+          default: 1000
+          description: "读取最后N行（0表示全部）"
+        SEARCH_PATTERN:
+          type: "string"
+          default: ""
+          description: "搜索模式（正则表达式）"
+        SHOW_STATS:
+          type: "boolean"
+          default: true
+          description: "显示统计信息"
+        EXPORT_RESULTS:
+          type: "boolean"
+          default: false
+          description: "导出结果到文件"
+        OUTPUT_FILE:
+          type: "string"
+          default: ""
+          description: "输出文件路径"
+      examples:
+        - "分析日志文件，提取所有错误"
+        - "统计日志中的错误和警告数量"
+        - "搜索包含特定关键词的日志"
+  
+  # 定时任务类模板
+  scheduled_tasks:
+    task_scheduler:
+      name: "定时任务管理"
+      file: "templates/scheduled_tasks/task_scheduler.ps1"
+      description: "创建、查看、删除Windows计划任务"
+      keywords:
+        - "定时"
+        - "计划任务"
+        - "scheduled"
+        - "task"
+        - "自动化"
+        - "定时执行"
+      parameters:
+        ACTION:
+          type: "string"
+          default: "list"
+          description: "操作类型（create/list/info/delete/enable/disable）"
+        TASK_NAME:
+          type: "string"
+          default: ""
+          description: "任务名称"
+        SCRIPT_PATH:
+          type: "string"
+          default: ""
+          description: "要执行的脚本路径"
+        SCHEDULE_TYPE:
+          type: "string"
+          default: "daily"
+          description: "计划类型（daily/weekly/hourly/interval/startup/logon）"
+        START_TIME:
+          type: "string"
+          default: "09:00"
+          description: "开始时间（HH:mm）"
+        INTERVAL:
+          type: "string"
+          default: "30"
+          description: "间隔时间（分钟）"
+        DAYS_OF_WEEK:
+          type: "string"
+          default: "Monday,Wednesday,Friday"
+          description: "星期几（用于weekly）"
+        RUN_AS_ADMIN:
+          type: "boolean"
+          default: false
+          description: "以管理员权限运行"
+        DESCRIPTION:
+          type: "string"
+          default: "由AI PowerShell创建的任务"
+          description: "任务描述"
+      examples:
+        - "列出所有计划任务"
+        - "创建每天9点执行的备份任务"
+        - "创建每周一三五执行的清理任务"
+        - "删除指定的计划任务"

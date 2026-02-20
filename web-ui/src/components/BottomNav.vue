@@ -7,7 +7,7 @@
       class="bottom-nav__item"
       :class="{ active: isActive(item.route) }"
     >
-      <div class="bottom-nav__icon" v-html="item.icon"></div>
+      <div class="bottom-nav__icon" v-html="item.icon" />
       <span class="bottom-nav__label">{{ item.label }}</span>
     </router-link>
   </nav>
@@ -19,7 +19,7 @@ import { useRoute } from 'vue-router'
 
 /**
  * BottomNav - Mobile bottom navigation bar
- * 
+ *
  * Provides quick access to main sections on mobile devices
  * Requirements: 6.4
  */

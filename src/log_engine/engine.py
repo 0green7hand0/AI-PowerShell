@@ -19,6 +19,61 @@ from ..config.models import LoggingConfig
 correlation_id_var: ContextVar[Optional[str]] = ContextVar('correlation_id', default=None)
 
 
+class ColoredStreamHandler(logging.StreamHandler):
+    """
+    带颜色的流处理器（PowerShell风格）
+    
+    为不同级别的日志添加不同颜色，保持与启动脚本风格一致
+    """
+    
+    # PowerShell风格的颜色映射
+    COLORS = {
+        logging.DEBUG: '\033[96m',      # 青色
+        logging.INFO: '\033[92m',       # 绿色
+        logging.WARNING: '\033[93m',    # 黄色
+        logging.ERROR: '\033[91m',      # 红色
+        logging.CRITICAL: '\033[95m'    # 紫色
+    }
+    
+    # PowerShell风格的前缀
+    PREFIXES = {
+        logging.DEBUG: '[DBG] ',
+        logging.INFO: '[INF] ',
+        logging.WARNING: '[WRN] ',
+        logging.ERROR: '[ERR] ',
+        logging.CRITICAL: '[CRT] '
+    }
+    
+    # 重置颜色
+    RESET = '\033[0m'
+    
+    def emit(self, record: logging.LogRecord) -> None:
+        """
+        发送日志记录，添加颜色
+        
+        Args:
+            record: 日志记录
+        """
+        try:
+            # 获取颜色和前缀
+            color = self.COLORS.get(record.levelno, self.RESET)
+            prefix = self.PREFIXES.get(record.levelno, '')
+            
+            # 格式化消息
+            msg = self.format(record)
+            
+            # 添加颜色和前缀
+            colored_msg = f"{color}{prefix}{msg}{self.RESET}"
+            
+            # 写入流
+            stream = self.stream
+            stream.write(colored_msg)
+            stream.write(self.terminator)
+            self.flush()
+        except Exception:
+            self.handleError(record)
+
+
 class LogEngine:
     """
     日志引擎主类
@@ -62,14 +117,14 @@ class LogEngine:
             datefmt='%Y-%m-%d %H:%M:%S'
         )
         
-        # 添加控制台处理器
+        # 添加控制台处理器（带颜色）
         if self.config.console_output:
-            console_handler = logging.StreamHandler()
+            console_handler = ColoredStreamHandler()
             console_handler.setLevel(getattr(logging, self.config.level))
             console_handler.setFormatter(formatter)
             logger.addHandler(console_handler)
         
-        # 添加文件处理器
+        # 添加文件处理器（无颜色，纯文本）
         if self.config.file:
             log_file = Path(self.config.file)
             log_file.parent.mkdir(parents=True, exist_ok=True)

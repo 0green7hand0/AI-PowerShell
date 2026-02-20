@@ -1,9 +1,9 @@
 /**
  * Template API Service
- * 
+ *
  * Provides methods for managing PowerShell script templates including
  * fetching, creating, updating, deleting, and generating scripts.
- * 
+ *
  * Requirements: 1.4, 4.1-4.9
  */
 
@@ -132,19 +132,19 @@ export interface GenerateScriptResponse {
 
 /**
  * Template API service
- * 
+ *
  * Provides methods for template management
  */
 export const templateApi = {
   /**
    * Get template list with optional filtering
-   * 
+   *
    * @param params - Query parameters (category, search)
    * @returns Promise resolving to template list response
    * @throws Error if request fails
-   * 
+   *
    * Requirements: 4.1, 4.2
-   * 
+   *
    * @example
    * ```typescript
    * const result = await templateApi.getTemplates({
@@ -156,7 +156,7 @@ export const templateApi = {
    */
   getTemplates: async (params?: TemplateQueryParams): Promise<TemplateListResponse> => {
     try {
-      const response = await apiClient.get('/templates', { params }) as TemplateListResponse
+      const response = (await apiClient.get('/templates', { params })) as TemplateListResponse
       return response
     } catch (error) {
       throw error
@@ -165,13 +165,13 @@ export const templateApi = {
 
   /**
    * Get detailed information for a specific template
-   * 
+   *
    * @param id - Template ID
    * @returns Promise resolving to template detail response
    * @throws Error if request fails or template not found
-   * 
+   *
    * Requirements: 4.3
-   * 
+   *
    * @example
    * ```typescript
    * const result = await templateApi.getTemplateDetail('tmpl_123')
@@ -180,7 +180,7 @@ export const templateApi = {
    */
   getTemplateDetail: async (id: string): Promise<TemplateDetailResponse> => {
     try {
-      const response = await apiClient.get(`/templates/${id}`) as TemplateDetailResponse
+      const response = (await apiClient.get(`/templates/${id}`)) as TemplateDetailResponse
       return response
     } catch (error) {
       throw error
@@ -189,13 +189,13 @@ export const templateApi = {
 
   /**
    * Create a new template
-   * 
+   *
    * @param data - Template creation data
    * @returns Promise resolving to created template response
    * @throws Error if request fails or validation fails
-   * 
+   *
    * Requirements: 4.7, 4.8
-   * 
+   *
    * @example
    * ```typescript
    * const result = await templateApi.createTemplate({
@@ -212,7 +212,7 @@ export const templateApi = {
    */
   createTemplate: async (data: CreateTemplateRequest): Promise<TemplateResponse> => {
     try {
-      const response = await apiClient.post('/templates', data) as TemplateResponse
+      const response = (await apiClient.post('/templates', data)) as TemplateResponse
       return response
     } catch (error) {
       throw error
@@ -221,14 +221,14 @@ export const templateApi = {
 
   /**
    * Update an existing template
-   * 
+   *
    * @param id - Template ID
    * @param data - Template update data
    * @returns Promise resolving to updated template response
    * @throws Error if request fails or template not found
-   * 
+   *
    * Requirements: 4.7, 4.8
-   * 
+   *
    * @example
    * ```typescript
    * const result = await templateApi.updateTemplate('tmpl_123', {
@@ -238,7 +238,7 @@ export const templateApi = {
    */
   updateTemplate: async (id: string, data: UpdateTemplateRequest): Promise<TemplateResponse> => {
     try {
-      const response = await apiClient.put(`/templates/${id}`, data) as TemplateResponse
+      const response = (await apiClient.put(`/templates/${id}`, data)) as TemplateResponse
       return response
     } catch (error) {
       throw error
@@ -247,13 +247,13 @@ export const templateApi = {
 
   /**
    * Delete a template
-   * 
+   *
    * @param id - Template ID
    * @returns Promise resolving to delete response
    * @throws Error if request fails or template not found
-   * 
+   *
    * Requirements: 4.9
-   * 
+   *
    * @example
    * ```typescript
    * await templateApi.deleteTemplate('tmpl_123')
@@ -261,7 +261,7 @@ export const templateApi = {
    */
   deleteTemplate: async (id: string): Promise<DeleteTemplateResponse> => {
     try {
-      const response = await apiClient.delete(`/templates/${id}`) as DeleteTemplateResponse
+      const response = (await apiClient.delete(`/templates/${id}`)) as DeleteTemplateResponse
       return response
     } catch (error) {
       throw error
@@ -270,14 +270,14 @@ export const templateApi = {
 
   /**
    * Generate script from template with provided parameters
-   * 
+   *
    * @param id - Template ID
    * @param data - Parameters for script generation
    * @returns Promise resolving to generated script response
    * @throws Error if request fails or validation fails
-   * 
+   *
    * Requirements: 4.4, 4.5, 4.6
-   * 
+   *
    * @example
    * ```typescript
    * const result = await templateApi.generateScript('tmpl_123', {
@@ -289,9 +289,15 @@ export const templateApi = {
    * console.log(result.data.script)
    * ```
    */
-  generateScript: async (id: string, data: GenerateScriptRequest): Promise<GenerateScriptResponse> => {
+  generateScript: async (
+    id: string,
+    data: GenerateScriptRequest
+  ): Promise<GenerateScriptResponse> => {
     try {
-      const response = await apiClient.post(`/templates/${id}/generate`, data) as GenerateScriptResponse
+      const response = (await apiClient.post(
+        `/templates/${id}/generate`,
+        data
+      )) as GenerateScriptResponse
       return response
     } catch (error) {
       throw error

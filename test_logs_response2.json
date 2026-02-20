@@ -1,0 +1,129 @@
+﻿{
+  "data": {
+    "logs": [
+      {
+        "level": "WARNING",
+        "message": "Slow request: GET /api/logs took 1.324s",
+        "source": "app",
+        "timestamp": "2026-02-19 14:54:13,456"
+      },
+      {
+        "level": "INFO",
+        "message": "127.0.0.1 - - [19/Feb/2026 14:54:13] \"GET /api/logs?limit=20 HTTP/1.1\" 200 -",
+        "source": "werkzeug",
+        "timestamp": "2026-02-19 14:54:13,457"
+      },
+      {
+        "level": "INFO",
+        "message": "Starting test log generation...",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,732"
+      },
+      {
+        "level": "INFO",
+        "message": "Test info log 1",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,732"
+      },
+      {
+        "level": "INFO",
+        "message": "Test info log 2",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,732"
+      },
+      {
+        "level": "INFO",
+        "message": "Test info log 3",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,732"
+      },
+      {
+        "level": "INFO",
+        "message": "Test info log 4",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,732"
+      },
+      {
+        "level": "INFO",
+        "message": "Test info log 5",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,732"
+      },
+      {
+        "level": "WARNING",
+        "message": "Test warning log 1",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "WARNING",
+        "message": "Test warning log 2",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "WARNING",
+        "message": "Test warning log 3",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "ERROR",
+        "message": "Test error log 1: Simulated error condition",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "ERROR",
+        "message": "Test error log 2: Simulated error condition",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "ERROR",
+        "message": "Test error log 3: Simulated error condition",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "ERROR",
+        "message": "Test error log 4: Simulated error condition",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "CRITICAL",
+        "message": "Test critical log 1: System critical failure",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "CRITICAL",
+        "message": "Test critical log 2: System critical failure",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,733"
+      },
+      {
+        "level": "INFO",
+        "message": "Test log generation completed",
+        "source": "test_logs",
+        "timestamp": "2026-02-19 14:54:58,734"
+      },
+      {
+        "level": "INFO",
+        "message": "Reading log file from: D:\\MCP_PowerShell_T\\logs/assistant.log",
+        "source": "app",
+        "timestamp": "2026-02-19 14:55:21,364"
+      },
+      {
+        "level": "INFO",
+        "message": "Log file exists: True",
+        "source": "app",
+        "timestamp": "2026-02-19 14:55:21,364"
+      }
+    ],
+    "total": 20
+  },
+  "success": true
+}
+

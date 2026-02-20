@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="template-card"
     :class="{ 'template-card--hover': !disabled }"
     @click="handleCardClick"
@@ -7,25 +7,29 @@
     <!-- Header -->
     <div class="template-card__header">
       <div class="template-card__icon">
-        <i :class="getCategoryIcon(template.category)"></i>
+        <i :class="getCategoryIcon(template.category)" />
       </div>
       <div class="template-card__title-section">
-        <h3 class="template-card__title">{{ template.name }}</h3>
+        <h3 class="template-card__title">
+          {{ template.name }}
+        </h3>
         <span class="template-card__category">{{ getCategoryLabel(template.category) }}</span>
       </div>
     </div>
 
     <!-- Description -->
-    <p class="template-card__description">{{ template.description }}</p>
+    <p class="template-card__description">
+      {{ template.description }}
+    </p>
 
     <!-- Metadata -->
     <div class="template-card__metadata">
       <div class="template-card__meta-item">
-        <i class="el-icon-document"></i>
+        <i class="el-icon-document" />
         <span>{{ template.parameters.length }} 个参数</span>
       </div>
       <div v-if="template.keywords.length > 0" class="template-card__meta-item">
-        <i class="el-icon-price-tag"></i>
+        <i class="el-icon-price-tag" />
         <span>{{ template.keywords.slice(0, 2).join(', ') }}</span>
       </div>
     </div>
@@ -41,52 +45,30 @@
       >
         {{ keyword }}
       </el-tag>
-      <el-tag
-        v-if="template.keywords.length > 3"
-        size="small"
-        type="info"
-        effect="plain"
-      >
+      <el-tag v-if="template.keywords.length > 3" size="small" type="info" effect="plain">
         +{{ template.keywords.length - 3 }}
       </el-tag>
     </div>
 
     <!-- Actions -->
     <div class="template-card__actions">
-      <el-button
-        type="primary"
-        size="small"
-        @click.stop="handleUse"
-        :disabled="disabled"
-      >
-        <i class="el-icon-video-play"></i>
+      <el-button type="primary" size="small" :disabled="disabled" @click.stop="handleUse">
+        <i class="el-icon-video-play" />
         使用
       </el-button>
-      <el-button
-        size="small"
-        @click.stop="handleEdit"
-        :disabled="disabled"
-      >
-        <i class="el-icon-edit"></i>
+      <el-button size="small" :disabled="disabled" @click.stop="handleEdit">
+        <i class="el-icon-edit" />
         编辑
       </el-button>
-      <el-button
-        size="small"
-        type="danger"
-        plain
-        @click.stop="handleDelete"
-        :disabled="disabled"
-      >
-        <i class="el-icon-delete"></i>
+      <el-button size="small" type="danger" plain :disabled="disabled" @click.stop="handleDelete">
+        <i class="el-icon-delete" />
         删除
       </el-button>
     </div>
 
     <!-- Updated timestamp -->
     <div class="template-card__footer">
-      <span class="template-card__timestamp">
-        更新于 {{ formatDate(template.updatedAt) }}
-      </span>
+      <span class="template-card__timestamp"> 更新于 {{ formatDate(template.updatedAt) }} </span>
     </div>
   </div>
 </template>

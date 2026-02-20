@@ -46,13 +46,7 @@
         <div class="history-detail__code-block">
           <div class="history-detail__code-header">
             <span>PowerShell</span>
-            <el-button
-              size="small"
-              :icon="CopyDocument"
-              @click="copyCommand"
-            >
-              复制
-            </el-button>
+            <el-button size="small" :icon="CopyDocument" @click="copyCommand"> 复制 </el-button>
           </div>
           <pre><code>{{ item.command }}</code></pre>
         </div>
@@ -67,13 +61,7 @@
         <div class="history-detail__code-block">
           <div class="history-detail__code-header">
             <span>Output</span>
-            <el-button
-              size="small"
-              :icon="CopyDocument"
-              @click="copyOutput"
-            >
-              复制
-            </el-button>
+            <el-button size="small" :icon="CopyDocument" @click="copyOutput"> 复制 </el-button>
           </div>
           <pre><code>{{ item.output }}</code></pre>
         </div>
@@ -122,14 +110,8 @@
     <!-- Footer Actions -->
     <template #footer>
       <div class="history-detail__footer">
-        <el-button @click="handleClose">关闭</el-button>
-        <el-button
-          type="primary"
-          :icon="Refresh"
-          @click="handleReExecute"
-        >
-          重新执行
-        </el-button>
+        <el-button @click="handleClose"> 关闭 </el-button>
+        <el-button type="primary" :icon="Refresh" @click="handleReExecute"> 重新执行 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -184,9 +166,7 @@ const statusIcon = computed(() => {
 })
 
 const bannerClass = computed(() => {
-  return props.item?.success
-    ? 'history-detail__banner--success'
-    : 'history-detail__banner--error'
+  return props.item?.success ? 'history-detail__banner--success' : 'history-detail__banner--error'
 })
 
 // ============================================================================
@@ -219,15 +199,11 @@ const handleReExecute = async () => {
   if (!props.item) return
 
   try {
-    await ElMessageBox.confirm(
-      '确定要重新执行此命令吗？',
-      '确认',
-      {
-        confirmButtonText: '执行',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    await ElMessageBox.confirm('确定要重新执行此命令吗？', '确认', {
+      confirmButtonText: '执行',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
     emit('reExecute', props.item)
     handleClose()
   } catch {

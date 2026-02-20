@@ -1,54 +1,69 @@
 <template>
-  <div class="log-list" ref="logListRef">
-    <div v-if="logs.length === 0" class="empty-state">
-      <el-empty description="暂无日志" />
-    </div>
+  <div class="log-list-container">
+    <div ref="logListRef" class="log-list">
+      <div v-if="logs.length === 0" class="empty-state">
+        <el-empty description="暂无日志" />
+      </div>
 
-    <div v-else class="log-items">
-      <div
-        v-for="log in logs"
-        :key="`${log.timestamp}-${log.message}`"
-        class="log-item"
-        :class="`log-level-${log.level.toLowerCase()}`"
-      >
-        <div class="log-icon">
-          <el-icon :class="`icon-${log.level.toLowerCase()}`">
-            <component :is="getLogIcon(log.level)" />
-          </el-icon>
-        </div>
-
-        <div class="log-content">
-          <div class="log-header">
-            <span class="log-level" :class="`level-${log.level.toLowerCase()}`">
-              {{ log.level }}
-            </span>
-            <span class="log-source">{{ log.source }}</span>
-            <span class="log-timestamp">{{ formatTimestamp(log.timestamp) }}</span>
+      <div v-else class="log-items">
+        <div
+          v-for="log in paginatedLogs"
+          :key="`${log.timestamp}-${log.message}`"
+          class="log-item"
+          :class="`log-level-${log.level.toLowerCase()}`"
+        >
+          <div class="log-icon">
+            <el-icon :class="`icon-${log.level.toLowerCase()}`">
+              <component :is="getLogIcon(log.level)" />
+            </el-icon>
           </div>
 
-          <div class="log-message">
-            {{ log.message }}
+          <div class="log-content">
+            <div class="log-header">
+              <span class="log-level" :class="`level-${log.level.toLowerCase()}`">
+                {{ log.level }}
+              </span>
+              <span class="log-source">{{ log.source }}</span>
+              <span class="log-timestamp">{{ formatTimestamp(log.timestamp) }}</span>
+            </div>
+
+            <div class="log-message">
+              {{ log.message }}
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Scroll to bottom button -->
+      <transition name="fade">
+        <el-button
+          v-if="showScrollButton"
+          class="scroll-to-bottom"
+          :icon="Bottom"
+          circle
+          type="primary"
+          @click="scrollToBottom"
+        />
+      </transition>
     </div>
 
-    <!-- Scroll to bottom button -->
-    <transition name="fade">
-      <el-button
-        v-if="showScrollButton"
-        class="scroll-to-bottom"
-        :icon="Bottom"
-        circle
-        type="primary"
-        @click="scrollToBottom"
+    <!-- Pagination -->
+    <div v-if="logs.length > 0" class="log-pagination">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="logs.length"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
-    </transition>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, watch, nextTick, onMounted, onUnmounted, computed } from 'vue'
 import { Bottom } from '@element-plus/icons-vue'
 import type { LogEntry, LogLevel } from '../api/logs'
 import { formatLogTimestamp } from '../api/logs'
@@ -74,6 +89,10 @@ const logListRef = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
 const isUserScrolling = ref(false)
 
+// Pagination state
+const currentPage = ref(1)
+const pageSize = ref(20)
+
 /**
  * Get icon component for log level
  */
@@ -96,6 +115,34 @@ const formatTimestamp = (timestamp: string): string => {
 }
 
 /**
+ * Paginated logs computed property
+ */
+const paginatedLogs = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return props.logs.slice(start, end)
+})
+
+/**
+ * Handle page size change
+ */
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
+  currentPage.value = 1 // Reset to first page when changing page size
+}
+
+/**
+ * Handle current page change
+ */
+const handleCurrentChange = (page: number) => {
+  currentPage.value = page
+  // Scroll to top when changing page
+  if (logListRef.value) {
+    logListRef.value.scrollTop = 0
+  }
+}
+
+/**
  * Scroll to bottom of log list
  */
 const scrollToBottom = () => {
@@ -110,10 +157,10 @@ const scrollToBottom = () => {
  */
 const isNearBottom = (): boolean => {
   if (!logListRef.value) return false
-  
+
   const { scrollTop, scrollHeight, clientHeight } = logListRef.value
   const threshold = 100 // pixels from bottom
-  
+
   return scrollHeight - scrollTop - clientHeight < threshold
 }
 
@@ -122,10 +169,10 @@ const isNearBottom = (): boolean => {
  */
 const handleScroll = () => {
   if (!logListRef.value) return
-  
+
   const nearBottom = isNearBottom()
   showScrollButton.value = !nearBottom
-  
+
   // If user scrolls away from bottom, disable auto-scroll temporarily
   if (!nearBottom) {
     isUserScrolling.value = true
@@ -137,24 +184,30 @@ const handleScroll = () => {
 /**
  * Watch for new logs and auto-scroll if enabled
  */
-watch(() => props.logs.length, async () => {
-  if (props.autoScroll && !isUserScrolling.value) {
-    await nextTick()
-    scrollToBottom()
-  } else if (!isNearBottom()) {
-    showScrollButton.value = true
+watch(
+  () => props.logs.length,
+  async () => {
+    if (props.autoScroll && !isUserScrolling.value) {
+      await nextTick()
+      scrollToBottom()
+    } else if (!isNearBottom()) {
+      showScrollButton.value = true
+    }
   }
-})
+)
 
 /**
  * Watch for autoScroll prop changes
  */
-watch(() => props.autoScroll, (newValue) => {
-  if (newValue) {
-    isUserScrolling.value = false
-    scrollToBottom()
+watch(
+  () => props.autoScroll,
+  (newValue) => {
+    if (newValue) {
+      isUserScrolling.value = false
+      scrollToBottom()
+    }
   }
-})
+)
 
 /**
  * Setup scroll listener
@@ -163,7 +216,7 @@ onMounted(() => {
   if (logListRef.value) {
     logListRef.value.addEventListener('scroll', handleScroll)
   }
-  
+
   // Initial scroll to bottom
   if (props.autoScroll) {
     nextTick(() => scrollToBottom())
@@ -181,9 +234,17 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.log-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+}
+
 .log-list {
   position: relative;
-  height: 100%;
+  flex: 1;
+  min-height: 300px;
   overflow-y: auto;
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
@@ -346,6 +407,17 @@ onUnmounted(() => {
   z-index: 10;
 }
 
+/* Pagination */
+.log-pagination {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-2);
+}
+
 /* Animations */
 @keyframes slideIn {
   from {
@@ -397,6 +469,14 @@ onUnmounted(() => {
 
   .log-timestamp {
     margin-left: 0;
+  }
+
+  .log-pagination {
+    padding: var(--space-2);
+  }
+
+  .log-list {
+    padding: var(--space-2);
   }
 }
 </style>

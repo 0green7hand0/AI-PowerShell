@@ -45,8 +45,12 @@ ehthumbs.db
 Thumbs.db
 
 # Logs
-logs/
-*.log
+logs/*.log
+!logs/.gitkeep
+
+# 测试日志（明确排除）
+logs/*_test.log
+logs/test.log
 
 # AI Models
 models/
@@ -69,14 +73,40 @@ coverage.xml
 # Temporary files
 tmp/
 temp/
-test_data/
 *.tmp
+.ai_powershell_*
+
+# 测试数据（保留 sessions 和 history.json）
+test_data/*/
+!test_data/sessions/
+!test_data/history.json
+
+# 模板历史记录
+templates/.history/
+
+# Git 临时文件
+*.swp
+*.swo
+*~
+.*.swp
 
 # Test files
 test_main_manual.py
+
+# MyPy cache
+.mypy_cache/
+
+# Documentation backups
+docs_backup_*/
+
+# Mock directories
+MagicMock/
 
 # Kiro IDE
 .kiro/
 
 # Docker volumes
 docker-volumes/
+
+# Web UI 后端日志
+web-ui/backend/logs/*.log

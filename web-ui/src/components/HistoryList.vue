@@ -27,14 +27,12 @@
 
     <!-- History Groups -->
     <div v-else class="history-list__groups">
-      <div
-        v-for="group in groupedItems"
-        :key="group.label"
-        class="history-list__group"
-      >
+      <div v-for="group in groupedItems" :key="group.label" class="history-list__group">
         <!-- Group Header -->
         <div class="history-list__group-header">
-          <h3 class="history-list__group-title">{{ group.label }}</h3>
+          <h3 class="history-list__group-title">
+            {{ group.label }}
+          </h3>
           <span class="history-list__group-count">{{ group.items.length }} 条</span>
         </div>
 
@@ -53,13 +51,7 @@
 
       <!-- Load More -->
       <div v-if="hasMore" class="history-list__load-more">
-        <el-button
-          v-if="!isLoading"
-          type="primary"
-          plain
-          :icon="ArrowDown"
-          @click="handleLoadMore"
-        >
+        <el-button v-if="!isLoading" type="primary" plain :icon="ArrowDown" @click="handleLoadMore">
           加载更多
         </el-button>
         <el-skeleton v-else :rows="3" animated />

@@ -2,12 +2,7 @@
   <div class="message-list">
     <!-- Load More Button (for scrolling to load history) -->
     <div v-if="messages.length > 0" class="load-more-container">
-      <el-button 
-        text 
-        size="small" 
-        @click="$emit('load-more')"
-        :loading="isLoading"
-      >
+      <el-button text size="small" :loading="isLoading" @click="$emit('load-more')">
         加载更多历史消息
       </el-button>
     </div>
@@ -37,9 +32,9 @@
       <div class="loading-content">
         <div class="loading-text">AI 正在思考...</div>
         <div class="loading-dots">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span />
+          <span />
+          <span />
         </div>
       </div>
     </div>
@@ -53,10 +48,10 @@ import LoadingSpinner from './LoadingSpinner.vue'
 
 /**
  * MessageList - Displays chat messages with animations
- * 
+ *
  * Renders user messages and AI responses with different styles.
  * Supports auto-scrolling and loading more history.
- * 
+ *
  * Requirements: 2.1, 2.17
  */
 
@@ -176,7 +171,8 @@ defineEmits<{
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }

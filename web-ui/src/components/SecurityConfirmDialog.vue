@@ -3,22 +3,58 @@
     <div class="dialog-container">
       <div class="dialog-header">
         <div class="dialog-icon" :class="`risk-${riskLevel}`">
-          <svg v-if="riskLevel === 'high' || riskLevel === 'critical'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          <svg
+            v-if="riskLevel === 'high' || riskLevel === 'critical'"
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+            />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          <svg
+            v-else
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
         </div>
-        <h2 class="dialog-title">{{ title }}</h2>
-        <button class="close-btn" @click="handleCancel" aria-label="关闭">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+        <h2 class="dialog-title">
+          {{ title }}
+        </h2>
+        <button class="close-btn" aria-label="关闭" @click="handleCancel">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
       </div>
@@ -45,9 +81,19 @@
         </div>
 
         <div v-if="requiresElevation" class="elevation-notice">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
           <span>此命令需要管理员权限</span>
         </div>
@@ -68,9 +114,7 @@
       </div>
 
       <div class="dialog-footer">
-        <button class="btn btn-secondary" @click="handleCancel">
-          取消
-        </button>
+        <button class="btn btn-secondary" @click="handleCancel">取消</button>
         <button
           class="btn btn-danger"
           :disabled="requireConfirmation && userInput !== confirmText"
@@ -84,78 +128,78 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
 interface Props {
-  show: boolean;
-  command: string;
-  riskLevel: 'safe' | 'low' | 'medium' | 'high' | 'critical';
-  warnings?: string[];
-  requiresElevation?: boolean;
-  requireConfirmation?: boolean;
+  show: boolean
+  command: string
+  riskLevel: 'safe' | 'low' | 'medium' | 'high' | 'critical'
+  warnings?: string[]
+  requiresElevation?: boolean
+  requireConfirmation?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   warnings: () => [],
   requiresElevation: false,
   requireConfirmation: false
-});
+})
 
 const emit = defineEmits<{
-  confirm: [];
-  cancel: [];
-}>();
+  confirm: []
+  cancel: []
+}>()
 
-const userInput = ref('');
-const confirmText = 'EXECUTE';
+const userInput = ref('')
+const confirmText = 'EXECUTE'
 
 const title = computed(() => {
   switch (props.riskLevel) {
     case 'critical':
-      return '危险命令警告';
+      return '危险命令警告'
     case 'high':
-      return '高风险命令警告';
+      return '高风险命令警告'
     case 'medium':
-      return '中等风险命令';
+      return '中等风险命令'
     default:
-      return '命令确认';
+      return '命令确认'
   }
-});
+})
 
 const message = computed(() => {
   switch (props.riskLevel) {
     case 'critical':
-      return '您即将执行一个极度危险的命令，可能会造成严重的系统损坏或数据丢失。请仔细确认后再继续。';
+      return '您即将执行一个极度危险的命令，可能会造成严重的系统损坏或数据丢失。请仔细确认后再继续。'
     case 'high':
-      return '您即将执行一个高风险命令，可能会对系统造成重大影响。请确保您了解此命令的作用。';
+      return '您即将执行一个高风险命令，可能会对系统造成重大影响。请确保您了解此命令的作用。'
     case 'medium':
-      return '此命令可能会对系统产生一定影响，请确认后再执行。';
+      return '此命令可能会对系统产生一定影响，请确认后再执行。'
     default:
-      return '请确认是否执行此命令。';
+      return '请确认是否执行此命令。'
   }
-});
+})
 
 const confirmButtonText = computed(() => {
   switch (props.riskLevel) {
     case 'critical':
     case 'high':
-      return '我了解风险，继续执行';
+      return '我了解风险，继续执行'
     default:
-      return '确认执行';
+      return '确认执行'
   }
-});
+})
 
 function handleConfirm() {
   if (props.requireConfirmation && userInput.value !== confirmText) {
-    return;
+    return
   }
-  userInput.value = '';
-  emit('confirm');
+  userInput.value = ''
+  emit('confirm')
 }
 
 function handleCancel() {
-  userInput.value = '';
-  emit('cancel');
+  userInput.value = ''
+  emit('cancel')
 }
 </script>
 

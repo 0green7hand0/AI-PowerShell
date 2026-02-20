@@ -5,7 +5,12 @@ import pytest
 from pathlib import Path
 import tempfile
 import os
-from src.cleanup.file_analyzer import FileAnalyzer, FileAnalysisResult
+import sys
+
+# Add scripts to path for cleanup module
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'scripts'))
+
+from cleanup.file_analyzer import FileAnalyzer, FileAnalysisResult
 
 
 class TestFileAnalysisResult:

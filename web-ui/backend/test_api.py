@@ -77,7 +77,7 @@ def test_templates_endpoint():
         
         if response.status_code == 200:
             assert data['success'] == True
-            print(f"✓ Templates retrieved: {len(data['data']['templates'])} templates")
+            print(f"✓ Templates retrieved: {len(data['data']['items'])} templates")
         else:
             print(f"⚠ Templates returned error")
 

@@ -6,7 +6,14 @@ import './style.css'
 import './styles/highlight-themes.css'
 import App from './App.vue'
 import router from './router'
-import { measurePerformance, observeLCP, observeFID, observeCLS, preconnect } from './utils/performance'
+import {
+  measurePerformance,
+  observeLCP,
+  observeFID,
+  observeCLS,
+  preconnect
+} from './utils/performance'
+import { logErrorToService, setupGlobalErrorHandlers } from './utils/errorHandling'
 
 // Preconnect to API server for faster requests
 if (import.meta.env.VITE_API_BASE_URL) {
@@ -21,7 +28,7 @@ app.config.errorHandler = (err, instance, info) => {
   console.error('Global error:', err)
   console.error('Error info:', info)
   console.error('Component instance:', instance)
-  
+
   // Log error to external service in production
   if (import.meta.env.PROD) {
     // TODO: Send to error tracking service (e.g., Sentry)
@@ -31,55 +38,14 @@ app.config.errorHandler = (err, instance, info) => {
 
 // Global warning handler (development only)
 if (import.meta.env.DEV) {
-  app.config.warnHandler = (msg, instance, trace) => {
+  app.config.warnHandler = (msg, _instance, trace) => {
     console.warn('Vue warning:', msg)
     console.warn('Trace:', trace)
   }
 }
 
-// Handle unhandled promise rejections
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason)
-  
-  if (import.meta.env.PROD) {
-    logErrorToService(event.reason, 'unhandledrejection')
-  }
-  
-  // Prevent default browser error handling
-  event.preventDefault()
-})
-
-// Handle global errors
-window.addEventListener('error', (event) => {
-  console.error('Global error event:', event.error)
-  
-  if (import.meta.env.PROD) {
-    logErrorToService(event.error, 'error')
-  }
-})
-
-// Error logging function
-function logErrorToService(error: any, context: string) {
-  // This is a placeholder for error tracking service integration
-  // In production, you would send this to Sentry, LogRocket, etc.
-  const errorData = {
-    message: error?.message || String(error),
-    stack: error?.stack,
-    context,
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    url: window.location.href
-  }
-  
-  console.log('Error logged:', errorData)
-  
-  // Example: Send to backend API
-  // fetch('/api/logs/error', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(errorData)
-  // }).catch(console.error)
-}
+// Setup global error handlers
+setupGlobalErrorHandlers()
 
 app.use(pinia)
 app.use(router)

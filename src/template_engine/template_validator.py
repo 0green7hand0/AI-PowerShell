@@ -8,7 +8,7 @@ import re
 import subprocess
 import tempfile
 import os
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Any
 from pathlib import Path
 
 from .models import Template, TemplateParameter
@@ -259,7 +259,7 @@ try {{
         self,
         param_name: str,
         param_type: str,
-        default_value: any
+        default_value: Any
     ) -> ValidationResult:
         """
         验证参数默认值与类型的匹配性
@@ -465,7 +465,7 @@ try {{
         
         return result
     
-    def generate_test_parameters(self, template: Template) -> Dict[str, any]:
+    def generate_test_parameters(self, template: Template) -> Dict[str, Any]:
         """
         为模板的每个参数生成测试值
         
@@ -511,7 +511,7 @@ try {{
     def preview_generated_script(
         self,
         template: Template,
-        parameters: Dict[str, any] = None
+        parameters: Dict[str, Any] = None
     ) -> str:
         """
         显示使用给定参数生成的脚本预览
@@ -559,8 +559,8 @@ try {{
     def test_template(
         self,
         template: Template,
-        parameters: Dict[str, any] = None
-    ) -> Dict[str, any]:
+        parameters: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         使用示例参数测试模板
         

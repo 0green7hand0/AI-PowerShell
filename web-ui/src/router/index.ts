@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/LoginView.vue'),
-    meta: { 
+    meta: {
       title: '登录',
       requiresAuth: false,
       hideForAuth: true
@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
         path: '/chat',
         name: 'Chat',
         component: () => import('../views/ChatView.vue'),
-        meta: { 
+        meta: {
           title: '对话',
           requiresAuth: false
         }
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
         path: '/history',
         name: 'History',
         component: () => import('../views/HistoryView.vue'),
-        meta: { 
+        meta: {
           title: '历史记录',
           requiresAuth: false
         }
@@ -40,8 +40,17 @@ const routes: RouteRecordRaw[] = [
         path: '/templates',
         name: 'Templates',
         component: () => import('../views/TemplateView.vue'),
-        meta: { 
+        meta: {
           title: '模板管理',
+          requiresAuth: false
+        }
+      },
+      {
+        path: '/template-management',
+        name: 'TemplateManagement',
+        component: () => import('../views/TemplateManagementView.vue'),
+        meta: {
+          title: '模板管理中心',
           requiresAuth: false
         }
       },
@@ -49,7 +58,7 @@ const routes: RouteRecordRaw[] = [
         path: '/logs',
         name: 'Logs',
         component: () => import('../views/LogsView.vue'),
-        meta: { 
+        meta: {
           title: '日志',
           requiresAuth: false
         }
@@ -58,7 +67,7 @@ const routes: RouteRecordRaw[] = [
         path: '/settings',
         name: 'Settings',
         component: () => import('../views/SettingsView.vue'),
-        meta: { 
+        meta: {
           title: '设置',
           requiresAuth: false
         }
@@ -77,8 +86,52 @@ const router = createRouter({
   routes
 })
 
+/**
+ * Check if route requires authentication
+ */
+const requiresAuth = (to: any): boolean => {
+  return to.meta.requiresAuth === true
+}
+
+/**
+ * Check if route should be hidden for authenticated users
+ */
+const hideForAuth = (to: any): boolean => {
+  return to.meta.hideForAuth === true
+}
+
+/**
+ * Handle authentication check for route navigation
+ */
+const handleAuthCheck = async (to: any, next: any): Promise<boolean> => {
+  // Check if authentication is enabled (from environment variable)
+  const authEnabled = import.meta.env.VITE_AUTH_ENABLED === 'true'
+
+  if (!authEnabled) {
+    // Authentication is disabled, allow all routes
+    next()
+    return true
+  }
+
+  const authStore = useAuthStore()
+
+  // If route requires auth and user is not authenticated
+  if (requiresAuth(to) && !authStore.isAuthenticated) {
+    next({ name: 'Login', query: { redirect: to.fullPath } })
+    return true
+  }
+
+  // If user is authenticated and trying to access login page
+  if (hideForAuth(to) && authStore.isAuthenticated) {
+    next({ name: 'Chat' })
+    return true
+  }
+
+  return false
+}
+
 // Navigation guard
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   // Set page title
   if (to.meta.title) {
     document.title = `${to.meta.title} - AI PowerShell Assistant`
@@ -86,30 +139,13 @@ router.beforeEach(async (to, from, next) => {
     document.title = 'AI PowerShell Assistant'
   }
 
-  // Check if authentication is enabled (from environment variable)
-  const authEnabled = import.meta.env.VITE_AUTH_ENABLED === 'true'
-  
-  if (!authEnabled) {
-    // Authentication is disabled, allow all routes
-    next()
-    return
-  }
+  // Handle authentication check
+  const handled = await handleAuthCheck(to, next)
 
-  const authStore = useAuthStore()
-  
-  // If route requires auth and user is not authenticated
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ name: 'Login', query: { redirect: to.fullPath } })
-    return
+  // If not handled by auth check, proceed
+  if (!handled) {
+    next()
   }
-  
-  // If user is authenticated and trying to access login page
-  if (to.meta.hideForAuth && authStore.isAuthenticated) {
-    next({ name: 'Chat' })
-    return
-  }
-  
-  next()
 })
 
 // After navigation hook for analytics or logging
