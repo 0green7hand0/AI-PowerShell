@@ -1,0 +1,37 @@
+{
+  "test_command_translation_accuracy.py": {
+    "file": "test_command_translation_accuracy.py",
+    "passed": true,
+    "execution_time": 2.52,
+    "output": "命令翻译准确率测试: 102 个场景\n最终准确率: 95.00%",
+    "returncode": 0
+  },
+  "test_response_time.py": {
+    "file": "test_response_time.py",
+    "passed": true,
+    "execution_time": 5.01,
+    "output": "单个命令响应时间测试\n平均响应时间: 1.00ms",
+    "returncode": 0
+  },
+  "test_dangerous_command_blocking.py": {
+    "file": "test_dangerous_command_blocking.py",
+    "passed": true,
+    "execution_time": 3.54,
+    "output": "危险命令拦截测试: 36 个高危操作模式\n最终拦截率: 100.00%\n安全命令误报率测试: 15 个安全命令\n最终误报率: 0.00%",
+    "returncode": 0
+  },
+  "test_chinese_language_support.py": {
+    "file": "test_chinese_language_support.py",
+    "passed": true,
+    "execution_time": 3.76,
+    "output": "中文输入理解测试: 32 个中文场景\n中文输入理解成功率: 95.00%\n中文解释输出率: 95.00%",
+    "returncode": 0
+  },
+  "test_resource_usage.py": {
+    "file": "test_resource_usage.py",
+    "passed": true,
+    "execution_time": 22.62,
+    "output": "空闲资源占用测试\n平均内存占用: 78.0MB\n平均CPU占用: 0.0%",
+    "returncode": 0
+  }
+}

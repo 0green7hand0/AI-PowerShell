@@ -1,0 +1,26 @@
+{
+  "session_id": "7f2106c1-245f-4d57-8233-ea8f8f67dca1",
+  "user_id": null,
+  "status": "active",
+  "start_time": "2026-02-20T13:41:07.768154",
+  "last_activity": "2026-02-20T13:41:07.768154",
+  "end_time": null,
+  "working_directory": ".",
+  "environment_vars": {},
+  "command_history": [
+    {
+      "command_id": "c070afbe-470a-42d7-b785-6eb50042b057",
+      "user_input": "删除所有文件",
+      "translated_command": "Remove-Item",
+      "status": "failed",
+      "output": "",
+      "error": "Remove-Item : 无法处理命令，因为一个或多个强制参数丢失:  Path。\n所在位置 行:1 字符: 1\n+ Remove-Item\n+ ~~~~~~~~~~~\n    + CategoryInfo          : InvalidArgument: (:) [Remove-Item] \n   ，ParameterBindingException\n    + FullyQualifiedErrorId : MissingMandatoryParameter,Microsof \n   t.PowerShell.Commands.RemoveItemCommand\n \n",
+      "return_code": 1,
+      "execution_time": 0.4069404602050781,
+      "confidence_score": 0.9,
+      "timestamp": "2026-02-20T13:41:07.768154",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

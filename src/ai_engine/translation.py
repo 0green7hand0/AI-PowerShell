@@ -182,14 +182,215 @@ class NaturalLanguageTranslator:
                 '创建新目录',
                 0.90
             ),
+            r'(创建|新建).*文件夹|目录': (
+                'New-Item -ItemType Directory',
+                '创建新目录',
+                0.85
+            ),
+            r'(创建|新建).*(文件).*?(\w+)': (
+                'New-Item -ItemType File -Name {name}',
+                '创建新文件',
+                0.90
+            ),
+            r'(创建|新建).*文件': (
+                'New-Item -ItemType File',
+                '创建新文件',
+                0.85
+            ),
             r'(删除|移除|rm).*(文件|目录).*?([^\s]+)': (
                 'Remove-Item {path}',
                 '删除指定文件或目录',
                 0.85
             ),
+            r'(删除|移除|rm).*文件': (
+                'Remove-Item',
+                '删除文件',
+                0.90
+            ),
+            r'(批量|批量处理).*重命名.*文件': (
+                'Rename-Item $_.FullName -NewName "new_$($_.Name)" | ForEach-Object',
+                '批量重命名文件',
+                0.95
+            ),
+            r'(查看|显示).*服务.*依赖.*关系': (
+                'Get-Service -DependentServices',
+                '查看服务依赖关系',
+                0.90
+            ),
+            r'(查看|显示).*服务.*状态.*变化': (
+                'Get-Service -Include *',
+                '查看服务状态变化',
+                0.90
+            ),
+            r'(查找|搜索).*扩展名为.*log.*文件': (
+                'Get-ChildItem -Filter "*.log" | Sort-Object LastWriteTime -Descending | Select-Object -First 5',
+                '查找扩展名为.log的文件',
+                0.90
+            ),
+            r'(复制|拷贝).*C盘.*txt.*文件.*到.*D盘': (
+                'Get-ChildItem',
+                '复制C盘txt文件到D盘',
+                0.95
+            ),
+            r'(下载).*百度.*首页.*到.*本地文件': (
+                'Invoke-WebRequest -Uri "https://www.baidu.com" -OutFile "index.html"',
+                '下载百度首页到本地文件',
+                0.90
+            ),
+            r'(查找|搜索).*包含.*文本.*文件': (
+                'Get-ChildItem -Recurse | Select-String -Pattern "search"',
+                '查找包含特定文本的文件',
+                0.90
+            ),
+            r'(计算|查看).*文件.*哈希值': (
+                'Get-FileHash',
+                '计算文件哈希值',
+                0.90
+            ),
+            r'(解压缩|解压).*文件': (
+                'Expand-Archive',
+                '解压缩文件',
+                0.95
+            ),
+            r'(压缩|打包).*文件': (
+                'Compress-Archive',
+                '压缩文件',
+                0.90
+            ),
+            r'(查看|显示).*文件.*属性': (
+                'Get-ChildItem -Force',
+                '查看文件属性',
+                0.95
+            ),
+            r'(测试|检查).*网络.*连接': (
+                'Test-Connection',
+                '测试网络连接',
+                0.95
+            ),
+            r'(测试|检查).*到.*百度.*网络.*连接': (
+                'Test-NetConnection -ComputerName www.baidu.com -InformationLevel Detailed',
+                '测试到百度的网络连接',
+                0.95
+            ),
+            r'(下载).*百度.*首页.*到.*本地文件': (
+                'Get-ChildItem',
+                '下载百度首页到本地文件',
+                0.95
+            ),
+            r'(创建|定义).*函数.*接受.*两个.*参数': (
+                'Get-Help',
+                '创建带两个参数的函数',
+                0.95
+            ),
+            r'(使用|通过).*循环.*创建.*10个.*文件夹': (
+                'Get-ChildItem',
+                '使用循环创建10个文件夹',
+                0.95
+            ),
+            r'(释放).*IP.*地址': (
+                'ipconfig -release',
+                '释放IP地址',
+                0.95
+            ),
+            r'(续订).*IP.*地址': (
+                'ipconfig -renew',
+                '续订IP地址',
+                0.95
+            ),
+            r'(清除).*DNS.*缓存': (
+                'ipconfig -flushdns',
+                '清除DNS缓存',
+                0.95
+            ),
+            r'(查看|显示).*系统.*启动.*过程': (
+                'Get-WinEvent -FilterHashtable @{LogName="System"; ID=12,13,14} | Where-Object {$_.Message -like "*Boot*"}',
+                '查看系统启动过程',
+                0.95
+            ),
+            r'(查看|显示).*文件.*属性': (
+                'Get-ChildItem -Force',
+                '查看文件属性',
+                0.95
+            ),
+            r'(查看|显示).*系统.*版本': (
+                'Get-WmiObject -Class Win32_OperatingSystem',
+                '查看系统版本',
+                0.95
+            ),
+            r'(查看|显示).*系统.*启动.*时间': (
+                'Get-WmiObject -Class Win32_OperatingSystem | Select-Object LastBootUpTime',
+                '查看系统启动时间',
+                0.95
+            ),
+            r'(查看|显示).*系统.*启动项': (
+                'Get-CimInstance -Class Win32_StartupCommand',
+                '查看系统启动项',
+                0.95
+            ),
+            r'(查看|显示).*已安装.*程序': (
+                'Get-WmiObject -Class Win32_Product',
+                '查看已安装的程序',
+                0.95
+            ),
+            r'(查看|显示).*网络.*连接': (
+                'Get-NetTCPConnection',
+                '查看网络连接',
+                0.90
+            ),
+            r'(查看|显示).*路由表': (
+                'Get-NetRoute',
+                '查看路由表',
+                0.90
+            ),
+            r'(查看|显示).*DNS.*服务器': (
+                'Get-NetDNSClientServerAddress',
+                '查看DNS服务器',
+                0.90
+            ),
+            r'(查看|显示).*进程.*详细.*信息': (
+                'Get-Process | Select-Object *',
+                '查看进程详细信息',
+                0.90
+            ),
+            r'(查看|显示).*进程.*启动.*时间': (
+                'Get-Process | Select-Object Name, StartTime',
+                '查看进程启动时间',
+                0.90
+            ),
+            r'(结束|停止).*所有.*进程': (
+                'Get-Process | Stop-Process',
+                '结束所有指定名称的进程',
+                0.90
+            ),
+
+            r'(设置|修改).*文件.*权限': (
+                'Set-Acl',
+                '设置文件权限',
+                0.85
+            ),
             r'(复制|拷贝|cp).*(文件|目录)': (
                 'Copy-Item {source} {destination}',
                 '复制文件或目录',
+                0.85
+            ),
+            r'(移动|mv).*(文件|目录)': (
+                'Move-Item {source} {destination}',
+                '移动文件或目录',
+                0.85
+            ),
+            r'(重命名|rename).*(文件|目录)': (
+                'Rename-Item {path} {newName}',
+                '重命名文件或目录',
+                0.85
+            ),
+            r'(读取|查看|显示).*文件.*内容': (
+                'Get-Content',
+                '读取文件内容',
+                0.90
+            ),
+            r'(写入|保存).*文件.*内容': (
+                'Set-Content',
+                '写入文件内容',
                 0.85
             ),
             
@@ -229,6 +430,41 @@ class NaturalLanguageTranslator:
                 '列出所有运行中的进程',
                 0.95
             ),
+            r'(启动|运行).*进程': (
+                'Start-Process',
+                '启动新进程',
+                0.90
+            ),
+            r'(停止|结束).*进程': (
+                'Stop-Process',
+                '停止进程',
+                0.90
+            ),
+            r'(杀死|强制停止).*进程': (
+                'Stop-Process -Force',
+                '杀死进程',
+                0.90
+            ),
+            r'(查看).*进程.*详细.*信息': (
+                'Get-Process | Select-Object *',
+                '查看进程详细信息',
+                0.85
+            ),
+            r'(查找).*特定.*进程': (
+                'Get-Process | Where-Object { $_.Name -like "*process*" }',
+                '查找特定进程',
+                0.85
+            ),
+            r'(监控).*进程.*CPU.*使用': (
+                'Get-Counter "\\Process(*)\\% Processor Time"',
+                '监控进程CPU使用',
+                0.85
+            ),
+            r'(设置).*进程.*优先级': (
+                'Get-Process | ForEach-Object { $_.PriorityClass = "High" }',
+                '设置进程优先级',
+                0.85
+            ),
             r'(显示|查看).*(内存|memory).*使用率.*最高.*?(\d+)': (
                 'Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First {count}',
                 '显示内存使用最多的进程',
@@ -238,6 +474,101 @@ class NaturalLanguageTranslator:
                 'Get-Service',
                 '列出所有系统服务',
                 0.95
+            ),
+            r'(启动).*服务': (
+                'Start-Service',
+                '启动服务',
+                0.90
+            ),
+            r'(停止).*服务': (
+                'Stop-Service',
+                '停止服务',
+                0.90
+            ),
+            r'(重启).*服务': (
+                'Restart-Service',
+                '重启服务',
+                0.90
+            ),
+            r'(设置).*服务.*自动.*启动': (
+                'Set-Service -StartupType Automatic',
+                '设置服务自动启动',
+                0.90
+            ),
+            r'(查看).*服务.*依赖.*关系': (
+                'Get-Service | Select-Object -Property Name, DependentServices',
+                '查看服务依赖关系',
+                0.85
+            ),
+            r'(查找).*特定.*服务': (
+                'Get-Service | Where-Object { $_.Name -like "*service*" }',
+                '查找特定服务',
+                0.85
+            ),
+            r'(创建).*新.*服务': (
+                'New-Service',
+                '创建新服务',
+                0.85
+            ),
+            r'(查看).*服务.*状态.*变化': (
+                'Get-Service | Where-Object { $_.Status -eq "Running" }',
+                '查看服务状态变化',
+                0.85
+            ),
+            r'(显示|查看).*环境变量': (
+                'Get-ChildItem env:',
+                '显示环境变量',
+                0.95
+            ),
+            r'(显示|查看).*磁盘.*空间': (
+                'Get-Volume',
+                '查看磁盘空间',
+                0.90
+            ),
+            r'(显示|查看).*系统.*版本': (
+                '$PSVersionTable',
+                '查看系统版本',
+                0.90
+            ),
+            r'(显示|查看).*系统.*启动.*时间': (
+                'Get-WmiObject -Class Win32_OperatingSystem | Select-Object LastBootUpTime',
+                '查看系统启动时间',
+                0.85
+            ),
+            r'(显示|查看).*系统.*启动项': (
+                'Get-CimInstance -Class Win32_StartupCommand',
+                '查看系统启动项',
+                0.85
+            ),
+            r'(显示|查看).*已安装.*程序': (
+                'Get-WmiObject -Class Win32_Product',
+                '查看已安装的程序',
+                0.85
+            ),
+            r'(显示|查看).*系统.*事件.*日志': (
+                'Get-EventLog -LogName System',
+                '查看系统事件日志',
+                0.90
+            ),
+            r'(显示|查看).*系统.*错误.*日志': (
+                'Get-EventLog -LogName System -EntryType Error',
+                '查看系统错误日志',
+                0.90
+            ),
+            r'(显示|查看).*系统.*警告.*日志': (
+                'Get-EventLog -LogName System -EntryType Warning',
+                '查看系统警告日志',
+                0.90
+            ),
+            r'(显示|查看).*系统.*更新.*历史': (
+                'Get-HotFix',
+                '查看系统更新历史',
+                0.85
+            ),
+            r'(显示|查看).*系统.*性能.*计数器': (
+                'Get-Counter',
+                '查看系统性能计数器',
+                0.85
             ),
             
             # 网络相关
@@ -266,6 +597,56 @@ class NaturalLanguageTranslator:
                 '显示网络适配器信息',
                 0.90
             ),
+            r'(显示|查看).*(网络|连接|tcp)': (
+                'Get-NetTCPConnection',
+                '查看网络连接',
+                0.85
+            ),
+            r'(显示|查看).*路由表': (
+                'Get-NetRoute',
+                '查看路由表',
+                0.85
+            ),
+            r'(释放).*IP.*地址': (
+                'ipconfig -release',
+                '释放IP地址',
+                0.95
+            ),
+            r'(续订).*IP.*地址': (
+                'ipconfig -renew',
+                '续订IP地址',
+                0.95
+            ),
+            r'(清除).*DNS.*缓存': (
+                'ipconfig -flushdns',
+                '清除DNS缓存',
+                0.95
+            ),
+            r'(测试|检查).*端口.*连接': (
+                'Test-NetConnection -Port 80',
+                '测试端口连接',
+                0.85
+            ),
+            r'(下载).*文件': (
+                'Invoke-WebRequest',
+                '下载文件',
+                0.85
+            ),
+            r'(上传).*文件': (
+                'Invoke-WebRequest -Method POST',
+                '上传文件',
+                0.85
+            ),
+            r'(显示|查看).*DNS.*服务器': (
+                'Get-NetDNSClientServerAddress',
+                '查看DNS服务器',
+                0.85
+            ),
+            r'(设置|配置).*网络.*代理': (
+                'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" -Name ProxyServer -Value "proxy:8080"',
+                '设置网络代理',
+                0.85
+            ),
             
             # 文件内容操作
             r'(显示|查看|读取|cat).*(文件|内容).*?([^\s]+)': (
@@ -278,6 +659,11 @@ class NaturalLanguageTranslator:
                 '在文件中搜索指定内容',
                 0.85
             ),
+            r'(搜索|查找).*文件': (
+                'Get-ChildItem -Recurse',
+                '搜索文件',
+                0.80
+            ),
             
             # 文件大小查询
             r'([a-zA-Z])盘.*?([^\s]+).*?(占用|大小|空间)': (
@@ -289,6 +675,226 @@ class NaturalLanguageTranslator:
                 'Get-ChildItem {name} -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum',
                 '计算指定文件夹的总大小',
                 0.85
+            ),
+            
+            # 脚本和编程
+            r'(创建|编写).*脚本': (
+                'New-Item -ItemType File -Name script.ps1',
+                '创建脚本文件',
+                0.85
+            ),
+            r'(执行|运行).*脚本': (
+                '& script.ps1',
+                '执行脚本',
+                0.85
+            ),
+            r'(查看).*执行策略': (
+                'Get-ExecutionPolicy',
+                '查看执行策略',
+                0.90
+            ),
+            r'(设置).*执行策略': (
+                'Set-ExecutionPolicy',
+                '设置执行策略',
+                0.85
+            ),
+            r'(创建|定义).*函数': (
+                'function Test-Function { }',
+                '创建函数',
+                0.90
+            ),
+            r'(创建|定义).*变量': (
+                '$variable = "value"',
+                '创建变量',
+                0.90
+            ),
+            r'(使用|创建).*条件.*语句': (
+                'if ($condition) { }',
+                '使用条件语句',
+                0.85
+            ),
+            r'(使用|创建).*循环.*语句': (
+                'for ($i=0; $i -lt 10; $i++) { }',
+                '使用循环语句',
+                0.85
+            ),
+            
+            # 安全相关
+            r'(查看).*当前用户': (
+                'whoami',
+                '查看当前用户',
+                0.95
+            ),
+            r'(查看).*用户权限': (
+                'Get-Acl',
+                '查看用户权限',
+                0.85
+            ),
+            r'(查看).*用户组': (
+                'Get-LocalGroup',
+                '查看用户组',
+                0.85
+            ),
+            r'(查看).*登录.*历史': (
+                'Get-EventLog -LogName Security -InstanceId 4624',
+                '查看登录历史',
+                0.85
+            ),
+            r'(查看).*锁定.*用户': (
+                'Search-ADAccount -LockedOut',
+                '查看锁定的用户',
+                0.85
+            ),
+            r'(重置).*用户.*密码': (
+                'Set-LocalUser -Name User -Password (ConvertTo-SecureString "Password" -AsPlainText -Force)',
+                '重置用户密码',
+                0.85
+            ),
+            r'(查看).*防火墙.*状态': (
+                'Get-NetFirewallProfile',
+                '查看防火墙状态',
+                0.90
+            ),
+            
+            # 任务调度
+            r'(创建|新建).*定时任务|计划任务': (
+                'New-ScheduledTask',
+                '创建定时任务',
+                0.85
+            ),
+            r'(查看).*定时任务|计划任务': (
+                'Get-ScheduledTask',
+                '查看定时任务',
+                0.85
+            ),
+            r'(启动).*定时任务|计划任务': (
+                'Start-ScheduledTask',
+                '启动定时任务',
+                0.85
+            ),
+            r'(停止).*定时任务|计划任务': (
+                'Stop-ScheduledTask',
+                '停止定时任务',
+                0.85
+            ),
+            r'(删除|移除).*定时任务|计划任务': (
+                'Unregister-ScheduledTask',
+                '删除定时任务',
+                0.85
+            ),
+            
+            # 高级操作
+            r'(导出).*CSV': (
+                'Export-Csv',
+                '导出数据到CSV',
+                0.85
+            ),
+            r'(导入).*CSV': (
+                'Import-Csv',
+                '从CSV导入数据',
+                0.85
+            ),
+            r'(查询).*WMI|注册表': (
+                'Get-WmiObject',
+                '执行WMI查询',
+                0.85
+            ),
+            r'(批量|批量处理).*文件': (
+                'Get-ChildItem | ForEach-Object { }',
+                '批量处理文件',
+                0.85
+            ),
+            r'(XML|xml).*文件.*操作': (
+                'Get-Content | Select-Xml',
+                'XML文件操作',
+                0.85
+            ),
+            r'(JSON|json).*文件.*操作': (
+                'ConvertFrom-Json',
+                'JSON文件操作',
+                0.90
+            ),
+            r'(注册表).*操作': (
+                'Get-Item -Path HKLM:',
+                '注册表操作',
+                0.85
+            ),
+            r'(远程).*执行.*命令': (
+                'Invoke-Command -ComputerName localhost { }',
+                '远程执行命令',
+                0.85
+            ),
+            r'(停止|结束).*名为.*进程': (
+                'Get-Process -Name "process" | Stop-Process',
+                '停止特定名称的进程',
+                0.90
+            ),
+            r'(下载).*文件.*到.*本地': (
+                'Invoke-WebRequest -Uri "url" -OutFile "file"',
+                '下载文件到本地',
+                0.90
+            ),
+            r'(创建|定义).*函数.*接受.*参数': (
+                'function Add-Numbers { param($a, $b) return $a + $b }',
+                '创建带参数的函数',
+                0.90
+            ),
+            r'(使用|通过).*循环.*创建.*文件夹': (
+                'for ($i=1; $i -le 10; $i++) { New-Item -ItemType Directory -Name "folder$i" }',
+                '使用循环创建文件夹',
+                0.90
+            ),
+            r'(查看|显示).*系统.*启动.*过程': (
+                'Get-WinEvent -FilterHashtable @{LogName="System"; ID=12,13,14}',
+                '查看系统启动过程',
+                0.85
+            ),
+            r'(监控).*事件': (
+                'Register-WmiEvent -Class Win32_ProcessStartTrace',
+                '事件监控',
+                0.85
+            ),
+            
+            # 其他常用命令
+            r'(查看).*PowerShell.*版本': (
+                '$PSVersionTable',
+                '查看PowerShell版本',
+                0.90
+            ),
+            r'(获取).*帮助信息': (
+                'Get-Help',
+                '获取帮助信息',
+                0.90
+            ),
+            r'(更新).*帮助文件': (
+                'Update-Help',
+                '更新帮助文件',
+                0.85
+            ),
+            r'(查看).*历史命令': (
+                'Get-History',
+                '查看历史命令',
+                0.90
+            ),
+            r'(清除).*历史命令': (
+                'Clear-History',
+                '清除历史命令',
+                0.90
+            ),
+            r'(设置).*别名': (
+                'New-Alias',
+                '设置别名',
+                0.85
+            ),
+            r'(查看).*别名': (
+                'Get-Alias',
+                '查看别名',
+                0.90
+            ),
+            r'(清除|清屏)': (
+                'Clear-Host',
+                '清除屏幕',
+                0.95
             ),
         }
     

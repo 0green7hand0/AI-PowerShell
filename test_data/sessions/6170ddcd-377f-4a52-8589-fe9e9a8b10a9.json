@@ -1,0 +1,39 @@
+{
+  "session_id": "6170ddcd-377f-4a52-8589-fe9e9a8b10a9",
+  "user_id": null,
+  "status": "terminated",
+  "start_time": "2026-02-20T13:41:06.065465",
+  "last_activity": "2026-02-20T13:41:06.758792",
+  "end_time": "2026-02-20T13:41:06.768146",
+  "working_directory": ".",
+  "environment_vars": {},
+  "command_history": [
+    {
+      "command_id": "fba4f6eb-8d71-4f6d-9488-6fcc03cf0662",
+      "user_input": "显示当前时间",
+      "translated_command": "Get-Date",
+      "status": "completed",
+      "output": "\n2026年2月20日 13:41:06\n\n\n",
+      "error": "",
+      "return_code": 0,
+      "execution_time": 0.27021145820617676,
+      "confidence_score": 0.95,
+      "timestamp": "2026-02-20T13:41:06.428102",
+      "metadata": {}
+    },
+    {
+      "command_id": "8ff6b550-0d75-4d0c-91bd-2a64065c547e",
+      "user_input": "显示当前目录",
+      "translated_command": "Get-Location",
+      "status": "completed",
+      "output": "\nPath               \n----               \nD:\\MCP_PowerShell_T\n\n\n",
+      "error": "",
+      "return_code": 0,
+      "execution_time": 0.239640474319458,
+      "confidence_score": 0.95,
+      "timestamp": "2026-02-20T13:41:06.758792",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

@@ -60,6 +60,10 @@ class CommandWhitelist:
         (r"Invoke-WebRequest.*\|\s*Invoke-Expression", "下载并执行代码", RiskLevel.CRITICAL),
         (r"wget.*\|\s*iex", "下载并执行代码（简写）", RiskLevel.CRITICAL),
         (r"curl.*\|\s*iex", "下载并执行代码（简写）", RiskLevel.CRITICAL),
+        (r"Invoke-WebRequest.*-OutFile", "下载文件", RiskLevel.MEDIUM),
+        (r"Start-Process.*powershell.*-ArgumentList.*-e", "执行编码命令", RiskLevel.HIGH),
+        (r"powershell.*-ExecutionPolicy.*Bypass", "绕过执行策略", RiskLevel.HIGH),
+        (r"powershell.*-ep.*bypass", "绕过执行策略", RiskLevel.HIGH),
     ]
     
     # 安全命令前缀（只读操作）
@@ -87,13 +91,19 @@ class CommandWhitelist:
                 - whitelist_mode: "strict" 或 "permissive"
                 - custom_dangerous_patterns: 自定义危险模式列表
                 - custom_safe_commands: 自定义安全命令列表
+                - safe_prefixes: 自定义安全前缀列表
         """
         self.config = config or {}
         self.whitelist_mode = self.config.get('whitelist_mode', 'strict')
         
         # 加载自定义规则
         self.custom_dangerous_patterns = self.config.get('custom_dangerous_patterns', [])
+        # 兼容测试配置中的dangerous_patterns键
+        if 'dangerous_patterns' in self.config:
+            self.custom_dangerous_patterns.extend(self.config['dangerous_patterns'])
         self.custom_safe_commands = set(self.config.get('custom_safe_commands', []))
+        # 加载自定义安全前缀
+        self.custom_safe_prefixes = self.config.get('safe_prefixes', [])
         
         # 编译正则表达式以提高性能
         self._compiled_patterns = [
@@ -104,9 +114,16 @@ class CommandWhitelist:
         # 添加自定义危险模式
         for pattern in self.custom_dangerous_patterns:
             if isinstance(pattern, str):
-                self._compiled_patterns.append(
-                    (re.compile(pattern, re.IGNORECASE), "自定义危险模式", RiskLevel.HIGH)
-                )
+                try:
+                    # 处理转义序列问题
+                    compiled_pattern = re.compile(pattern, re.IGNORECASE)
+                    self._compiled_patterns.append(
+                        (compiled_pattern, "自定义危险模式", RiskLevel.HIGH)
+                    )
+                except re.error as e:
+                    # 如果正则表达式编译失败，跳过该模式
+                    import logging
+                    logging.warning(f"自定义危险模式编译失败: {pattern}, 错误: {e}")
     
     def validate(self, command: str) -> ValidationResult:
         """验证命令是否安全
@@ -237,7 +254,13 @@ class CommandWhitelist:
         Returns:
             bool: 是否以安全前缀开头
         """
-        return any(command.startswith(prefix) for prefix in self.SAFE_PREFIXES)
+        # 检查硬编码的安全前缀
+        if any(command.startswith(prefix) for prefix in self.SAFE_PREFIXES):
+            return True
+        # 检查配置文件中定义的安全前缀
+        if any(command.startswith(prefix) for prefix in self.custom_safe_prefixes):
+            return True
+        return False
     
     def _starts_with_confirmation_prefix(self, command: str) -> bool:
         """检查命令是否以需要确认的前缀开头

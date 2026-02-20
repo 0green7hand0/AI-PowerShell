@@ -1,0 +1,26 @@
+{
+  "session_id": "10c70f5e-8848-4575-9ccf-ab5614d20367",
+  "user_id": null,
+  "status": "active",
+  "start_time": "2026-02-20T13:41:05.567036",
+  "last_activity": "2026-02-20T13:41:05.567036",
+  "end_time": null,
+  "working_directory": ".",
+  "environment_vars": {},
+  "command_history": [
+    {
+      "command_id": "1a25e9af-494d-4471-83f3-ad0d93d2265f",
+      "user_input": "显示当前时间",
+      "translated_command": "Get-Date",
+      "status": "completed",
+      "output": "\n2026年2月20日 13:41:05\n\n\n",
+      "error": "",
+      "return_code": 0,
+      "execution_time": 0.2725076675415039,
+      "confidence_score": 0.95,
+      "timestamp": "2026-02-20T13:41:05.567036",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "user_input": "显示当前时间",
+    "command": "Get-Date",
+    "confidence": 0.95,
+    "success": true,
+    "output": "\n2026年2月20日 13:41:05\n\n\n",
+    "error": "",
+    "execution_time": 0.2725076675415039,
+    "timestamp": "2026-02-20T13:41:05.551584"
+  },
+  {
+    "user_input": "显示当前时间",
+    "command": "Get-Date",
+    "confidence": 0.95,
+    "success": true,
+    "output": "\n2026年2月20日 13:41:06\n\n\n",
+    "error": "",
+    "execution_time": 0.27021145820617676,
+    "timestamp": "2026-02-20T13:41:06.404249"
+  },
+  {
+    "user_input": "显示当前目录",
+    "command": "Get-Location",
+    "confidence": 0.95,
+    "success": true,
+    "output": "\nPath               \n----               \nD:\\MCP_PowerShell_T\n\n\n",
+    "error": "",
+    "execution_time": 0.239640474319458,
+    "timestamp": "2026-02-20T13:41:06.735184"
+  },
+  {
+    "user_input": "删除所有文件",
+    "command": "Remove-Item",
+    "confidence": 0.9,
+    "success": false,
+    "output": "",
+    "error": "Remove-Item : 无法处理命令，因为一个或多个强制参数丢失:  Path。\n所在位置 行:1 字符: 1\n+ Remove-Item\n+ ~~~~~~~~~~~\n    + CategoryInfo          : InvalidArgument: (:) [Remove-Item] \n   ，ParameterBindingException\n    + FullyQualifiedErrorId : MissingMandatoryParameter,Microsof \n   t.PowerShell.Commands.RemoveItemCommand\n \n",
+    "execution_time": 0.4069404602050781,
+    "timestamp": "2026-02-20T13:41:07.743129"
+  }
+]
