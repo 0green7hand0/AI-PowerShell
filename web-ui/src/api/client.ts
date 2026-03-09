@@ -22,9 +22,9 @@ import { ElMessage } from 'element-plus'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 /**
- * Default request timeout (30 seconds)
+ * Default request timeout (60 seconds)
  */
-const DEFAULT_TIMEOUT = 30000
+const DEFAULT_TIMEOUT = 60000
 
 /**
  * Create axios instance with default configuration
