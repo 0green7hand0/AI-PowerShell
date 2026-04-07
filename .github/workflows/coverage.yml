@@ -13,7 +13,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -28,7 +28,7 @@ jobs:
         sudo apt-get install -y powershell
     
     - name: Cache pip packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -56,7 +56,7 @@ jobs:
         coverage report --fail-under=80
     
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
@@ -64,14 +64,14 @@ jobs:
         fail_ci_if_error: false
     
     - name: Upload coverage HTML report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: coverage-html-report
         path: htmlcov/
     
     - name: Upload coverage JSON report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: coverage-json-report
@@ -79,7 +79,7 @@ jobs:
     
     - name: Comment coverage on PR
       if: github.event_name == 'pull_request'
-      uses: py-cov-action/python-coverage-comment-action@v3
+      uses: py-cov-action/python-coverage-comment-action@v4
       with:
         GITHUB_TOKEN: ${{ github.token }}
         MINIMUM_GREEN: 80
@@ -121,7 +121,7 @@ jobs:
         diff-cover coverage.xml --compare-branch=origin/${{ github.base_ref }} --fail-under=80
     
     - name: Upload diff coverage report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: coverage-diff-report
@@ -133,7 +133,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
