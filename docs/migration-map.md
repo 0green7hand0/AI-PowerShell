@@ -106,7 +106,7 @@
 
 | 旧文档 | 状态 | 新位置 | 说明 |
 |--------|------|--------|------|
-| `docker-deployment.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#docker-部署) | Docker部署章节 |
+
 
 | `cicd-and-license-guide.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#许可证说明) | 许可证说明章节 |
 | `release-process.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#发布流程) | 发布流程章节 |
@@ -177,7 +177,7 @@
 
 **旧文档** → **新文档**
 
-- Docker部署 → [deployment-guide.md](deployment-guide.md#docker-部署)
+
 
 - 发布流程 → [deployment-guide.md](deployment-guide.md#发布流程)
 - 部署检查清单 → [deployment-guide.md](deployment-guide.md#部署检查清单)

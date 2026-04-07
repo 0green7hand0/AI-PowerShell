@@ -268,7 +268,7 @@ def __init__(self, config_path: Optional[str] = None):
 - `engine.py`: 安全引擎主类，协调三层验证
 - `whitelist.py`: 命令白名单验证
 - `permissions.py`: 权限检查和确认
-- `sandbox.py`: Docker 沙箱执行
+- `sandbox.py`: 安全沙箱执行
 
 **三层安全架构**:
 
@@ -286,7 +286,7 @@ def __init__(self, config_path: Optional[str] = None):
          │
          ▼
 第三层：沙箱执行（可选）
-  ├─ Docker 容器隔离
+  ├─ 安全隔离执行
   ├─ 资源限制
   └─ 网络隔离
 ```
@@ -644,7 +644,7 @@ class Session:
 ┌─────────────────────┐
 │  第三层：沙箱执行    │
 │  （可选）            │
-│  - Docker 容器隔离   │
+│  - 安全隔离执行   │
 │  - 资源限制          │
 └─────────────────────┘
    │
@@ -1099,8 +1099,7 @@ class CustomOutputFormatter(OutputFormatter):
 
 | 技术 | 版本 | 用途 |
 |------|------|------|
-| Docker | 20.10+ | 沙箱执行环境 |
-| docker-py | 6.1.0+ | Docker Python SDK |
+
 
 ### 开发和测试
 
@@ -1119,7 +1118,7 @@ class CustomOutputFormatter(OutputFormatter):
 pyyaml>=6.0.1
 pydantic>=2.0.0
 structlog>=23.1.0
-docker>=6.1.0
+
 llama-cpp-python>=0.2.0  # 可选
 
 # requirements-dev.txt
@@ -1486,60 +1485,7 @@ python -m src.main
 └─────────────────────────────┘
 ```
 
-### 2. Docker 部署
 
-**适用场景**: 容器化环境、隔离部署
-
-**Dockerfile**:
-```dockerfile
-FROM python:3.10-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-CMD ["python", "-m", "src.main"]
-```
-
-**docker-compose.yml**:
-```yaml
-version: '3.8'
-
-services:
-  ai-powershell:
-    build: .
-    volumes:
-      - ./config:/app/config
-      - ~/.ai-powershell:/root/.ai-powershell
-    environment:
-      - AI_PROVIDER=ollama
-      - OLLAMA_HOST=http://ollama:11434
-    depends_on:
-      - ollama
-  
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama-data:/root/.ollama
-
-volumes:
-  ollama-data:
-```
-
-**部署命令**:
-```bash
-docker-compose up -d
-```
-
-**特点**:
-- 环境隔离
-- 易于管理
-- 可移植性强
 
 ### 3. Kubernetes 部署
 
@@ -1744,7 +1690,7 @@ graph TB
         OllamaService[🦙 Ollama服务<br/>Local AI Models]
         APIService[🌐 API服务<br/>OpenAI Compatible]
         PowerShellEngine[⚙️ PowerShell引擎<br/>pwsh/powershell]
-        DockerEngine[🐳 Docker引擎<br/>Sandbox Environment]
+
     end
     
     %% 连接关系
@@ -1764,7 +1710,7 @@ graph TB
     AIEngine --> OllamaService
     AIEngine --> APIService
     ExecutionEngine --> PowerShellEngine
-    ExecutionEngine --> DockerEngine
+
     
     ConfigManager --> ConfigStorage
     LogEngine --> LogStorage
@@ -1782,7 +1728,7 @@ graph TB
     class MainController controller
     class AIEngine,SecurityEngine,ExecutionEngine,ConfigManager,LogEngine,StorageEngine,ContextManager,UISystem business
     class FileStorage,CacheStorage,LogStorage,ConfigStorage data
-    class OllamaService,APIService,PowerShellEngine,DockerEngine external
+    class OllamaService,APIService,PowerShellEngine external
 ```
 
 ### 类图
@@ -1936,7 +1882,7 @@ classDiagram
         +__init__(config: Dict)
         +execute(command: str, env: ExecutionEnvironment) RawResult
         +execute_local(command: str) RawResult
-        +execute_in_docker(command: str) RawResult
+
         +kill_process(process_id: int) bool
     }
     

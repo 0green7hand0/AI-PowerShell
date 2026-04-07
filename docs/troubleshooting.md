@@ -588,56 +588,8 @@ RuntimeError: AI engine not available
 
 ### 问题 12: 沙箱执行失败
 
-**症状**:
-```
-Error: Docker not available
-Error: Sandbox execution failed
-```
 
-**原因**:
-- Docker 未安装或未运行
-- Docker 权限不足
-- 网络配置问题
 
-**解决步骤**:
-
-1. **检查 Docker 状态**:
-   ```bash
-   docker --version
-   docker ps
-   ```
-
-2. **启动 Docker 服务**:
-   ```bash
-   # Linux
-   sudo systemctl start docker
-   
-   # macOS/Windows
-   # 启动 Docker Desktop
-   ```
-
-3. **检查 Docker 权限**:
-   ```bash
-   # Linux: 将用户添加到 docker 组
-   sudo usermod -aG docker $USER
-   newgrp docker
-   ```
-
-4. **测试 Docker**:
-   ```bash
-   docker run hello-world
-   ```
-
-5. **禁用沙箱（临时方案）**:
-   ```yaml
-   security:
-     sandbox_enabled: false
-   ```
-
-**预防措施**:
-- 确保 Docker 服务自动启动
-- 配置正确的用户权限
-- 定期更新 Docker
 
 ---
 

@@ -16,7 +16,7 @@
 - Python 3.8 或更高版本
 - PowerShell Core 7.0+ 或 Windows PowerShell 5.1+
 - Git
-- Docker（可选，用于沙箱执行）
+
 
 ### 环境配置
 
@@ -882,7 +882,7 @@ history_manager.export_history("history.json", format="json")
 **三层验证机制**:
 1. **白名单验证**: 检测危险命令模式（30+ 种模式）
 2. **权限检查**: 检测命令所需的管理员权限
-3. **沙箱执行**: Docker 容器隔离执行（可选）
+3. **沙箱执行**: 安全隔离执行
 
 **使用示例**:
 ```python
@@ -1456,12 +1456,12 @@ logging:
 
 ### Q: 如何测试沙箱执行？
 
-A: 确保 Docker 已安装并运行，然后在配置中启用沙箱：
+A: 在配置中启用沙箱：
 
 ```yaml
 security:
-  sandbox_enabled: true
-  docker_image: mcr.microsoft.com/powershell:latest
+  sandbox:
+    enabled: true
 ```
 
 ### Q: 如何添加新的命令行参数？
