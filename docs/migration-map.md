@@ -107,7 +107,7 @@
 | 旧文档 | 状态 | 新位置 | 说明 |
 |--------|------|--------|------|
 | `docker-deployment.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#docker-部署) | Docker部署章节 |
-| `ci-cd-setup.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#cicd-配置) | CI/CD配置章节 |
+
 | `cicd-and-license-guide.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#许可证说明) | 许可证说明章节 |
 | `release-process.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#发布流程) | 发布流程章节 |
 | `deployment-checklist.md` | ✅ 已整合 | [deployment-guide.md](deployment-guide.md#部署检查清单) | 部署检查清单章节 |
@@ -178,7 +178,7 @@
 **旧文档** → **新文档**
 
 - Docker部署 → [deployment-guide.md](deployment-guide.md#docker-部署)
-- CI/CD配置 → [deployment-guide.md](deployment-guide.md#cicd-配置)
+
 - 发布流程 → [deployment-guide.md](deployment-guide.md#发布流程)
 - 部署检查清单 → [deployment-guide.md](deployment-guide.md#部署检查清单)
 - AI模型配置 → [deployment-guide.md](deployment-guide.md#ai-模型配置)

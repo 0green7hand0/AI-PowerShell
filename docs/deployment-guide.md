@@ -388,26 +388,6 @@ deploy:
 
 ---
 
-## CI/CD 配置
 
-### 概述
 
-本项目实施了完整的持续集成和持续部署（CI/CD）流程，确保代码质量、测试覆盖率和安全性。
 
-### GitHub Actions 工作流
-
-#### 主 CI 工作流
-
-**文件**: `.github/workflows/ci.yml`
-
-**功能**:
-- 多平台测试（Ubuntu、Windows、macOS）
-- 多 Python 版本测试（3.8、3.9、3.10、3.11）
-- 自动安装 PowerShell Core
-- 运行完整测试套件
-- 生成覆盖率报告
-- 上传到 Codecov
-
-**触发条件**:
-- 推送到 `main` 或 `develop` 分支
-- 针对 `main` 或 `develop` 的 Pull Request

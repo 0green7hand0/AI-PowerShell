@@ -1718,30 +1718,7 @@ def my_function(param):
     return result
 ```
 
-## 持续集成
 
-项目使用 GitHub Actions 进行持续集成。
-
-**工作流程**:
-1. 代码推送到 GitHub
-2. 自动运行测试
-3. 检查代码覆盖率
-4. 运行代码检查工具
-5. 构建文档
-
-**本地验证**:
-```bash
-# 运行所有检查
-make test
-make lint
-make type-check
-
-# 或手动运行
-pytest tests/
-flake8 src/ tests/
-mypy src/
-black --check src/ tests/
-```
 
 ## 版本发布
 

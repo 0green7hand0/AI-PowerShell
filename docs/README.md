@@ -76,7 +76,7 @@
 
 | 文档 | 描述 | 适用对象 |
 |------|------|----------|
-| [部署运维指南](deployment-guide.md) | 完整的部署运维指南，包括安装、Docker 部署、CI/CD 配置、发布流程和 AI 模型配置 | 运维人员、系统管理员 |
+| [部署运维指南](deployment-guide.md) | 完整的部署运维指南，包括安装、Docker 部署、发布流程和 AI 模型配置 | 运维人员、系统管理员 |
 
 ### 📋 参考层 - API 和配置参考
 
@@ -110,7 +110,7 @@
 - **安全机制** → [用户指南 - 安全机制章节](user-guide.md#安全机制)
 - **进度管理** → [用户指南 - 进度管理章节](user-guide.md#进度管理)
 - **Docker 部署** → [部署运维指南 - Docker 部署章节](deployment-guide.md#docker-部署)
-- **CI/CD 配置** → [部署运维指南 - CICD 配置章节](deployment-guide.md#cicd-配置)
+
 
 **按问题类型搜索：**
 - **安装问题** → [故障排除指南 - 安装问题](troubleshooting.md#安装问题)
