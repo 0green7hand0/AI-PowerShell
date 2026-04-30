@@ -649,6 +649,65 @@ def generate_script(template_id):
         # Get assistant instance
         assistant = get_assistant()
         
+        # Try to use template_engine if available
+        if hasattr(assistant, 'template_engine') and assistant.template_engine:
+            try:
+                # Get template from template_manager
+                template = assistant.template_engine.template_manager.get_template(template_id)
+                
+                if not template:
+                    return jsonify({
+                        'success': False,
+                        'error': {
+                            'message': f'Template not found: {template_id}',
+                            'code': 404
+                        }
+                    }), 404
+                
+                # Load template content
+                template_content = template.load_content()
+                
+                # Build parameter values
+                param_values = {}
+                for param_name, param_def in template.parameters.items():
+                    if param_name in generate_req.parameters:
+                        param_values[param_name] = generate_req.parameters[param_name]
+                    else:
+                        param_values[param_name] = param_def.default
+                
+                # Generate script by replacing parameters with proper formatting
+                script_content = template_content
+                
+                for param_name, param_value in param_values.items():
+                    placeholder = f"{{{{{param_name}}}}}"
+                    
+                    # Format value based on parameter type
+                    if isinstance(param_value, bool):
+                        formatted_value = "true" if param_value else "false"
+                    elif isinstance(param_value, str):
+                        formatted_value = param_value
+                    else:
+                        formatted_value = str(param_value)
+                    
+                    script_content = script_content.replace(placeholder, formatted_value)
+                
+                response = {
+                    'success': True,
+                    'data': {
+                        'script': script_content,
+                        'template_name': template.name,
+                        'parameters': generate_req.parameters,
+                        'message': 'Script generated successfully'
+                    }
+                }
+                
+                current_app.logger.info(f"Generated script from template using template_engine: {template_id}")
+                return jsonify(response), 200
+                
+            except Exception as e:
+                current_app.logger.warning(f"Failed to use template_engine: {str(e)}, falling back to simple replacement")
+        
+        # Fallback: Use custom_template_manager if template_engine not available
         if not assistant.custom_template_manager:
             return jsonify({
                 'success': False,
@@ -659,7 +718,6 @@ def generate_script(template_id):
             }), 503
         
         # Get template
-        # Try to find template in all categories if no category provided
         categories = assistant.custom_template_manager.list_categories(include_system=True)
         template = None
         
@@ -684,7 +742,6 @@ def generate_script(template_id):
         script_content = template.script_content
         
         for param_name, param_value in generate_req.parameters.items():
-            # Replace {{param_name}} with actual value
             placeholder = f"{{{{{param_name}}}}}"
             script_content = script_content.replace(placeholder, str(param_value))
         
@@ -698,7 +755,7 @@ def generate_script(template_id):
             }
         }
         
-        current_app.logger.info(f"Generated script from template: {template_id}")
+        current_app.logger.info(f"Generated script from template using fallback: {template_id}")
         return jsonify(response), 200
         
     except ValidationError as e:

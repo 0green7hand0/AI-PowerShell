@@ -11,84 +11,84 @@
    Light Theme (VS Code Light)
    ============================================ */
 :root {
-  /* Base colors */
-  --hljs-bg: #ffffff;
-  --hljs-fg: #24292e;
+  /* Base colors - Improved contrast */
+  --hljs-bg: #fafafa;
+  --hljs-fg: #383a42;
 
-  /* Syntax colors */
-  --hljs-comment: #6a737d;
-  --hljs-keyword: #d73a49;
-  --hljs-string: #032f62;
-  --hljs-number: #005cc5;
-  --hljs-function: #6f42c1;
-  --hljs-variable: #e36209;
-  --hljs-class: #22863a;
-  --hljs-operator: #d73a49;
-  --hljs-punctuation: #24292e;
-  --hljs-attribute: #005cc5;
-  --hljs-tag: #22863a;
-  --hljs-property: #005cc5;
-  --hljs-constant: #005cc5;
-  --hljs-type: #6f42c1;
-  --hljs-builtin: #005cc5;
-  --hljs-regexp: #032f62;
-  --hljs-symbol: #e36209;
-  --hljs-meta: #6a737d;
-  --hljs-deletion: #b31d28;
-  --hljs-addition: #22863a;
-  --hljs-emphasis: #24292e;
-  --hljs-strong: #24292e;
-  --hljs-link: #005cc5;
+  /* Syntax colors - Enhanced visibility */
+  --hljs-comment: #a0a1a7;
+  --hljs-keyword: #e45649;
+  --hljs-string: #50a14f;
+  --hljs-number: #986801;
+  --hljs-function: #4078f2;
+  --hljs-variable: #e45649;
+  --hljs-class: #c18401;
+  --hljs-operator: #383a42;
+  --hljs-punctuation: #383a42;
+  --hljs-attribute: #986801;
+  --hljs-tag: #e45649;
+  --hljs-property: #4078f2;
+  --hljs-constant: #986801;
+  --hljs-type: #c18401;
+  --hljs-builtin: #c18401;
+  --hljs-regexp: #50a14f;
+  --hljs-symbol: #4078f2;
+  --hljs-meta: #a0a1a7;
+  --hljs-deletion: #e45649;
+  --hljs-addition: #50a14f;
+  --hljs-emphasis: #383a42;
+  --hljs-strong: #383a42;
+  --hljs-link: #4078f2;
 
   /* UI colors */
-  --hljs-line-number-bg: #f6f8fa;
-  --hljs-line-number-fg: #6a737d;
-  --hljs-header-bg: #f6f8fa;
-  --hljs-header-border: #e1e4e8;
-  --hljs-scrollbar-bg: #f6f8fa;
-  --hljs-scrollbar-thumb: #d1d5da;
+  --hljs-line-number-bg: #f0f0f0;
+  --hljs-line-number-fg: #9d9d9f;
+  --hljs-header-bg: #f0f0f0;
+  --hljs-header-border: #e1e1e1;
+  --hljs-scrollbar-bg: #f0f0f0;
+  --hljs-scrollbar-thumb: #c1c1c1;
 }
 
 /* ============================================
    Dark Theme (VS Code Dark)
    ============================================ */
 [data-theme='dark'] {
-  /* Base colors */
-  --hljs-bg: #1e1e1e;
-  --hljs-fg: #d4d4d4;
+  /* Base colors - Improved contrast */
+  --hljs-bg: #282c34;
+  --hljs-fg: #abb2bf;
 
-  /* Syntax colors */
-  --hljs-comment: #6a9955;
-  --hljs-keyword: #569cd6;
-  --hljs-string: #ce9178;
-  --hljs-number: #b5cea8;
-  --hljs-function: #dcdcaa;
-  --hljs-variable: #9cdcfe;
-  --hljs-class: #4ec9b0;
-  --hljs-operator: #d4d4d4;
-  --hljs-punctuation: #d4d4d4;
-  --hljs-attribute: #9cdcfe;
-  --hljs-tag: #569cd6;
-  --hljs-property: #9cdcfe;
-  --hljs-constant: #4fc1ff;
-  --hljs-type: #4ec9b0;
-  --hljs-builtin: #4ec9b0;
-  --hljs-regexp: #d16969;
-  --hljs-symbol: #dcdcaa;
-  --hljs-meta: #569cd6;
-  --hljs-deletion: #f48771;
-  --hljs-addition: #b5cea8;
-  --hljs-emphasis: #d4d4d4;
-  --hljs-strong: #d4d4d4;
-  --hljs-link: #3794ff;
+  /* Syntax colors - Enhanced brightness */
+  --hljs-comment: #5c6370;
+  --hljs-keyword: #61afef;
+  --hljs-string: #e5c07b;
+  --hljs-number: #d19a66;
+  --hljs-function: #61afef;
+  --hljs-variable: #e06c75;
+  --hljs-class: #e5c07b;
+  --hljs-operator: #56b6c2;
+  --hljs-punctuation: #abb2bf;
+  --hljs-attribute: #e06c75;
+  --hljs-tag: #e06c75;
+  --hljs-property: #61afef;
+  --hljs-constant: #d19a66;
+  --hljs-type: #e5c07b;
+  --hljs-builtin: #e5c07b;
+  --hljs-regexp: #e5c07b;
+  --hljs-symbol: #61afef;
+  --hljs-meta: #61afef;
+  --hljs-deletion: #e06c75;
+  --hljs-addition: #98c379;
+  --hljs-emphasis: #abb2bf;
+  --hljs-strong: #abb2bf;
+  --hljs-link: #61afef;
 
   /* UI colors */
-  --hljs-line-number-bg: #252526;
-  --hljs-line-number-fg: #858585;
-  --hljs-header-bg: #252526;
-  --hljs-header-border: #3e3e42;
-  --hljs-scrollbar-bg: #1e1e1e;
-  --hljs-scrollbar-thumb: #424242;
+  --hljs-line-number-bg: #21252b;
+  --hljs-line-number-fg: #636d83;
+  --hljs-header-bg: #21252b;
+  --hljs-header-border: #3e4451;
+  --hljs-scrollbar-bg: #282c34;
+  --hljs-scrollbar-thumb: #4e5666;
 }
 
 /* ============================================

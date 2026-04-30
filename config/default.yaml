@@ -8,7 +8,7 @@ ai:
   cache_enabled: true
   cache_size: 100
 security:
-  sandbox_enabled: false
+  sandbox_enabled: true
   require_confirmation: true
   whitelist_mode: strict
   dangerous_patterns:

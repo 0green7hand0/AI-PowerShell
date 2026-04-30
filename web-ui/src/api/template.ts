@@ -18,7 +18,7 @@ import apiClient from './client'
  */
 export interface TemplateParameter {
   name: string
-  type: 'string' | 'number' | 'boolean' | 'select'
+  type: 'string' | 'number' | 'integer' | 'boolean' | 'select'
   required: boolean
   default?: any
   options?: string[]

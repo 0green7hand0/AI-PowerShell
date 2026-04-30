@@ -24,6 +24,7 @@ export interface Message {
     error: string | null
     executionTime: number
     success: boolean
+    sandbox?: boolean
   }
 }
 
@@ -175,11 +176,21 @@ export const useChatStore = defineStore('chat', () => {
     })
 
     try {
+      // Get risk level from the message if available
+      let riskLevel: string | undefined
+      if (messageId) {
+        const message = messages.value.find((m) => m.id === messageId)
+        if (message?.command?.security?.level) {
+          riskLevel = message.command.security.level
+        }
+      }
+
       // Call execute API
       const response = await commandApi.execute({
         command,
         sessionId: sessionId.value,
-        timeout: 30
+        timeout: 30,
+        risk_level: riskLevel
       })
 
       // Remove the "executing" message
@@ -196,7 +207,8 @@ export const useChatStore = defineStore('chat', () => {
               output: response.data.output || '',
               error: response.data.error,
               executionTime: response.data.executionTime,
-              success
+              success,
+              sandbox: response.data.sandbox || false
             }
           }
         } else {
@@ -208,7 +220,8 @@ export const useChatStore = defineStore('chat', () => {
               output: response.data.output || '',
               error: response.data.error,
               executionTime: response.data.executionTime,
-              success
+              success,
+              sandbox: response.data.sandbox || false
             }
           })
         }

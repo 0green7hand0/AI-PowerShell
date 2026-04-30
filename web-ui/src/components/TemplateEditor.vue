@@ -186,9 +186,11 @@
                         placeholder="默认值（可选）"
                       />
                       <el-input-number
-                        v-else-if="param.type === 'number'"
+                        v-else-if="param.type === 'number' || param.type === 'integer'"
                         v-model="param.default"
                         style="width: 100%"
+                        :min="param.type === 'integer' ? 0 : undefined"
+                        :precision="param.type === 'integer' ? 0 : undefined"
                       />
                       <el-switch v-else-if="param.type === 'boolean'" v-model="param.default" />
                       <el-select

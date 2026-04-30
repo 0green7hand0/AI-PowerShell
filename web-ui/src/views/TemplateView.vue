@@ -119,9 +119,7 @@
       v-model:visible="showUseDialog"
       :template="selectedTemplate"
       :is-generating="isGenerating"
-      :is-executing="isExecuting"
       @generate="handleGenerate"
-      @execute="handleExecute"
       @cancel="handleUseCancel"
     />
 
@@ -150,8 +148,6 @@ import { ref, onMounted } from 'vue'
 import { Document, Refresh, Plus, Search, FolderOpened, Filter } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useTemplateStore } from '../stores/template'
-import { useChatStore } from '../stores/chat'
-import { useRouter } from 'vue-router'
 import type { Template, CreateTemplateRequest } from '../api/template'
 import TemplateList from '../components/TemplateList.vue'
 import TemplateUseDialog from '../components/TemplateUseDialog.vue'
@@ -163,8 +159,6 @@ import TemplateDeleteDialog from '../components/TemplateDeleteDialog.vue'
 // ============================================================================
 
 const templateStore = useTemplateStore()
-const chatStore = useChatStore()
-const router = useRouter()
 
 // ============================================================================
 // State
@@ -177,7 +171,6 @@ const selectedTemplate = ref<Template | null>(null)
 const editingTemplate = ref<Template | null>(null)
 const deletingTemplate = ref<Template | null>(null)
 const isGenerating = ref(false)
-const isExecuting = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 const useDialogRef = ref<InstanceType<typeof TemplateUseDialog>>()
@@ -284,27 +277,6 @@ const handleGenerate = async (params: Record<string, any>) => {
     }
   } finally {
     isGenerating.value = false
-  }
-}
-
-/**
- * Handle execute generated script
- */
-const handleExecute = async (script: string) => {
-  isExecuting.value = true
-  try {
-    // Add script to chat and navigate to chat view
-    await chatStore.sendMessage(`执行以下脚本：\n${script}`)
-
-    // Close dialog and navigate to chat
-    showUseDialog.value = false
-    router.push('/chat')
-
-    ElMessage.success('脚本已发送到聊天界面执行')
-  } catch (error) {
-    console.error('Failed to execute script:', error)
-  } finally {
-    isExecuting.value = false
   }
 }
 

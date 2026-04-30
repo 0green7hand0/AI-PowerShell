@@ -48,10 +48,12 @@
 
             <!-- Number Input -->
             <el-input-number
-              v-else-if="param.type === 'number'"
+              v-else-if="param.type === 'number' || param.type === 'integer'"
               v-model="formData[param.name]"
               :placeholder="param.description || `请输入${param.name}`"
               style="width: 100%"
+              :min="param.type === 'integer' ? 0 : undefined"
+              :precision="param.type === 'integer' ? 0 : undefined"
             />
 
             <!-- Boolean Switch -->
@@ -107,21 +109,14 @@
           <i v-if="!isGenerating" class="el-icon-document" />
           {{ isGenerating ? '生成中...' : '生成脚本' }}
         </el-button>
-        <template v-else>
-          <el-button :disabled="isExecuting" @click="handleReset">
-            <i class="el-icon-refresh" />
-            重新配置
-          </el-button>
-          <el-button
-            type="success"
-            :loading="isExecuting"
-            :disabled="isExecuting"
-            @click="handleExecute"
-          >
-            <i v-if="!isExecuting" class="el-icon-video-play" />
-            {{ isExecuting ? '执行中...' : '执行脚本' }}
-          </el-button>
-        </template>
+        <el-button
+          v-else
+          type="primary"
+          @click="handleReset"
+        >
+          <i class="el-icon-refresh" />
+          重新配置
+        </el-button>
       </div>
     </template>
   </el-dialog>
@@ -154,19 +149,16 @@ interface Props {
   visible: boolean
   template: Template | null
   isGenerating?: boolean
-  isExecuting?: boolean
 }
 
 interface Emits {
   (e: 'update:visible', value: boolean): void
   (e: 'generate', params: Record<string, any>): void
-  (e: 'execute', script: string): void
   (e: 'cancel'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isGenerating: false,
-  isExecuting: false
+  isGenerating: false
 })
 
 const emit = defineEmits<Emits>()
@@ -247,10 +239,12 @@ const initializeFormData = (): void => {
 
   // Set default values
   props.template.parameters.forEach((param) => {
-    if (param.default !== undefined) {
+    if (param.default !== undefined && param.default !== null) {
       formData[param.name] = param.default
     } else if (param.type === 'boolean') {
       formData[param.name] = false
+    } else if (param.type === 'number' || param.type === 'integer') {
+      formData[param.name] = 0
     } else {
       formData[param.name] = ''
     }
@@ -296,15 +290,6 @@ const handleGenerate = async (): Promise<void> => {
 }
 
 /**
- * Handle execute button click
- */
-const handleExecute = (): void => {
-  if (generatedScript.value) {
-    emit('execute', generatedScript.value)
-  }
-}
-
-/**
  * Handle reset button click
  */
 const handleReset = (): void => {
@@ -324,7 +309,7 @@ const handleCancel = (): void => {
  * Handle dialog close
  */
 const handleClose = (): void => {
-  if (!props.isGenerating && !props.isExecuting) {
+  if (!props.isGenerating) {
     handleCancel()
   }
 }

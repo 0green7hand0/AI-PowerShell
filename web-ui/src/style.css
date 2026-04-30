@@ -119,6 +119,16 @@
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+
+  /* Code Block / Syntax Highlighting Colors - Light Theme */
+  --hljs-bg: #fafafa;
+  --hljs-fg: #383a42;
+  --hljs-header-bg: #f0f0f0;
+  --hljs-header-border: #e1e1e1;
+  --hljs-line-number-bg: #f0f0f0;
+  --hljs-line-number-fg: #9d9d9f;
+  --hljs-scrollbar-bg: #f0f0f0;
+  --hljs-scrollbar-thumb: #c1c1c1;
 }
 
 /* ============================================
@@ -173,6 +183,16 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+
+  /* Code Block / Syntax Highlighting Colors - Dark Theme */
+  --hljs-bg: #282c34;
+  --hljs-fg: #abb2bf;
+  --hljs-header-bg: #21252b;
+  --hljs-header-border: #3e4451;
+  --hljs-line-number-bg: #21252b;
+  --hljs-line-number-fg: #636d83;
+  --hljs-scrollbar-bg: #282c34;
+  --hljs-scrollbar-thumb: #4e5666;
 }
 
 /* ============================================
