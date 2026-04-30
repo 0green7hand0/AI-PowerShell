@@ -59,9 +59,11 @@ def get_config():
                     'maxTokens': config.ai.max_tokens  # Convert to camelCase
                 },
                 'security': {
-                    'whitelistMode': config.security.whitelist_mode == 'strict',  # Convert to camelCase
-                    'requireConfirmation': config.security.require_confirmation,  # Convert to camelCase
-                    'dangerousPatterns': []  # Convert to camelCase
+                    'sandboxEnabled': config.security.sandbox_enabled,
+                    'sandboxForHighRiskOnly': config.security.sandbox_for_high_risk_only,
+                    'whitelistMode': config.security.whitelist_mode == 'strict',
+                    'requireConfirmation': config.security.require_confirmation,
+                    'dangerousPatterns': []
                 },
                 'execution': {
                     'timeout': config.execution.timeout,
@@ -150,12 +152,18 @@ def update_config():
         
         if 'security' in data:
             sec_config = data['security']
-            # Support both camelCase and snake_case for whitelist mode
+            if 'sandbox_enabled' in sec_config:
+                updates['security.sandbox_enabled'] = sec_config['sandbox_enabled']
+            elif 'sandboxEnabled' in sec_config:
+                updates['security.sandbox_enabled'] = sec_config['sandboxEnabled']
+            if 'sandbox_for_high_risk_only' in sec_config:
+                updates['security.sandbox_for_high_risk_only'] = sec_config['sandbox_for_high_risk_only']
+            elif 'sandboxForHighRiskOnly' in sec_config:
+                updates['security.sandbox_for_high_risk_only'] = sec_config['sandboxForHighRiskOnly']
             if 'whitelist_mode' in sec_config:
                 updates['security.whitelist_mode'] = 'strict' if sec_config['whitelist_mode'] else 'permissive'
             elif 'whitelistMode' in sec_config:
                 updates['security.whitelist_mode'] = 'strict' if sec_config['whitelistMode'] else 'permissive'
-            # Support both camelCase and snake_case for require confirmation
             if 'require_confirmation' in sec_config:
                 updates['security.require_confirmation'] = sec_config['require_confirmation']
             elif 'requireConfirmation' in sec_config:
@@ -219,6 +227,16 @@ def update_config():
         # Reload config
         assistant.config = assistant.config_manager.load_config()
         
+        # Re-initialize executor if sandbox settings changed
+        if 'security.sandbox_enabled' in updates or 'security.sandbox_for_high_risk_only' in updates:
+            current_app.logger.info("Sandbox settings changed, re-initializing executor...")
+            from src.execution import CommandExecutor
+            executor_config = assistant.config.execution.model_dump()
+            executor_config['sandbox_enabled'] = assistant.config.security.sandbox_enabled
+            executor_config['sandbox_for_high_risk_only'] = assistant.config.security.sandbox_for_high_risk_only
+            assistant.executor = CommandExecutor(executor_config)
+            current_app.logger.info(f"Executor re-initialized with sandbox_enabled={assistant.config.security.sandbox_enabled}, sandbox_for_high_risk_only={assistant.config.security.sandbox_for_high_risk_only}")
+        
         response = {
             'success': True,
             'data': data,
@@ -268,6 +286,13 @@ def reset_config():
         # Reload config
         assistant.config = assistant.config_manager.load_config()
         
+        # Re-initialize executor with reset sandbox settings
+        from src.execution import CommandExecutor
+        executor_config = assistant.config.execution.model_dump()
+        executor_config['sandbox_enabled'] = assistant.config.security.sandbox_enabled
+        executor_config['sandbox_for_high_risk_only'] = assistant.config.security.sandbox_for_high_risk_only
+        assistant.executor = CommandExecutor(executor_config)
+        
         # Format response (convert snake_case to camelCase for frontend)
         response = {
             'success': True,
@@ -279,9 +304,11 @@ def reset_config():
                     'maxTokens': assistant.config.ai.max_tokens  # Convert to camelCase
                 },
                 'security': {
-                    'whitelistMode': assistant.config.security.whitelist_mode == 'strict',  # Convert to camelCase
-                    'requireConfirmation': assistant.config.security.require_confirmation,  # Convert to camelCase
-                    'dangerousPatterns': []  # Convert to camelCase
+                    'sandboxEnabled': assistant.config.security.sandbox_enabled,
+                    'sandboxForHighRiskOnly': assistant.config.security.sandbox_for_high_risk_only,
+                    'whitelistMode': assistant.config.security.whitelist_mode == 'strict',
+                    'requireConfirmation': assistant.config.security.require_confirmation,
+                    'dangerousPatterns': []
                 },
                 'execution': {
                     'timeout': assistant.config.execution.timeout,

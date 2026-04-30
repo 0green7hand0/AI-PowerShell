@@ -54,6 +54,10 @@
             <span class="result-title">
               {{ props.message.result?.success ? '执行成功' : '执行失败' }}
             </span>
+            <el-tag v-if="props.message.result?.sandbox" type="info" size="small" class="sandbox-tag">
+              <el-icon><Lock /></el-icon>
+              沙箱执行
+            </el-tag>
             <span class="result-time">{{ props.message.result?.executionTime.toFixed(3) }}s</span>
           </div>
 
@@ -92,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { User, Cpu, Warning, InfoFilled, DocumentCopy } from '@element-plus/icons-vue'
+import { User, Cpu, Warning, InfoFilled, DocumentCopy, Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { Message } from '../stores/chat'
 import { useChatStore } from '../stores/chat'
@@ -333,6 +337,18 @@ const handleRegenerate = () => {
   margin-bottom: var(--space-3);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
+}
+
+.sandbox-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  margin-right: var(--space-2);
+}
+
+.sandbox-tag .el-icon {
+  font-size: 12px;
 }
 
 .success-icon {

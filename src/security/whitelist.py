@@ -75,6 +75,22 @@ class CommandWhitelist:
         "Write-Host", "Write-Output", "echo",
     ]
     
+    # 管道后的危险命令（即使前面是安全命令，管道后出现这些也是危险的）
+    PIPELINE_DANGEROUS_COMMANDS = [
+        "Stop-Process",
+        "Remove-Item",
+        "Stop-Service",
+        "Restart-Service",
+        "Stop-Computer",
+        "Restart-Computer",
+        "Disable-NetAdapter",
+        "Clear-",
+        "Format-Volume",
+        "Set-ExecutionPolicy",
+        "Invoke-Expression",
+        "Invoke-Command",
+    ]
+    
     # 需要确认的命令前缀（修改操作）
     CONFIRMATION_PREFIXES = [
         "Set-", "New-", "Remove-", "Clear-", "Reset-",
@@ -153,6 +169,20 @@ class CommandWhitelist:
                     blocked_reasons=[f"检测到危险命令: {description}"],
                     requires_confirmation=False
                 )
+        
+        # 检查管道中是否有危险命令
+        if '|' in command:
+            parts = command.split('|')
+            for part in parts:
+                part = part.strip()
+                for dangerous_cmd in self.PIPELINE_DANGEROUS_COMMANDS:
+                    if part.startswith(dangerous_cmd):
+                        return ValidationResult(
+                            is_valid=True,
+                            risk_level=RiskLevel.HIGH,
+                            requires_confirmation=True,
+                            warnings=[f"管道中包含危险命令: {dangerous_cmd}"]
+                        )
         
         # 检查安全前缀
         if self._starts_with_safe_prefix(command):
@@ -254,6 +284,17 @@ class CommandWhitelist:
         Returns:
             bool: 是否以安全前缀开头
         """
+        # 首先检查管道后是否有危险命令
+        if '|' in command:
+            # 分割管道，检查每个部分
+            parts = command.split('|')
+            for part in parts:
+                part = part.strip()
+                # 检查管道后的命令是否是危险的
+                for dangerous_cmd in self.PIPELINE_DANGEROUS_COMMANDS:
+                    if part.startswith(dangerous_cmd):
+                        return False  # 管道后有危险命令，不是安全的
+        
         # 检查硬编码的安全前缀
         if any(command.startswith(prefix) for prefix in self.SAFE_PREFIXES):
             return True

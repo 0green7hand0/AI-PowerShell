@@ -177,6 +177,16 @@ class NaturalLanguageTranslator:
                 '切换到指定目录',
                 0.90
             ),
+            r'在(.+?)(新建|创建)([一二三四五六七八九十两\d]+)个(文件夹|目录)': (
+                'SPECIAL:create_folders_at_location',
+                '在指定位置创建多个文件夹',
+                0.95
+            ),
+            r'在(.+?)(新建|创建)(文件夹|目录)': (
+                'SPECIAL:create_folders_at_location',
+                '在指定位置创建文件夹',
+                0.92
+            ),
             r'(创建|新建).*(文件夹|目录).*?(\w+)': (
                 'New-Item -ItemType Directory -Name {name}',
                 '创建新目录',
@@ -197,15 +207,30 @@ class NaturalLanguageTranslator:
                 '创建新文件',
                 0.85
             ),
+            r'删除(桌面|文档|下载|图片|音乐|视频)(文件夹|目录)(\S+)': (
+                'SPECIAL:delete_folder_at_location_v2',
+                '删除指定位置的文件夹',
+                0.95
+            ),
+            r'删除(桌面|文档|下载|图片|音乐|视频)(\S+)(文件夹|目录)': (
+                'SPECIAL:delete_folder_at_location',
+                '删除指定位置的文件夹',
+                0.95
+            ),
             r'(删除|移除|rm).*(文件|目录).*?([^\s]+)': (
                 'Remove-Item {path}',
                 '删除指定文件或目录',
                 0.85
             ),
+            r'(删除|移除|rm).*文件夹': (
+                'Remove-Item',
+                '删除文件夹',
+                0.80
+            ),
             r'(删除|移除|rm).*文件': (
                 'Remove-Item',
                 '删除文件',
-                0.90
+                0.80
             ),
             r'(批量|批量处理).*重命名.*文件': (
                 'Rename-Item $_.FullName -NewName "new_$($_.Name)" | ForEach-Object',
@@ -947,6 +972,16 @@ class NaturalLanguageTranslator:
         Returns:
             str: 填充后的命令
         """
+        # 处理特殊规则
+        if template.startswith('SPECIAL:'):
+            special_type = template.replace('SPECIAL:', '')
+            if special_type == 'create_folders_at_location':
+                return self._handle_create_folders_at_location(text, match)
+            elif special_type == 'delete_folder_at_location':
+                return self._handle_delete_folder_at_location(text, match)
+            elif special_type == 'delete_folder_at_location_v2':
+                return self._handle_delete_folder_at_location_v2(text, match)
+        
         command = template
         
         # 提取盘符参数
@@ -1062,6 +1097,175 @@ class NaturalLanguageTranslator:
             return file_match.group()
         
         return '*.*'
+    
+    def _handle_create_folders_at_location(self, text: str, match: re.Match) -> str:
+        """处理在指定位置创建文件夹的请求
+        
+        Args:
+            text: 用户输入文本，如"在桌面新建两个文件夹"
+            match: 正则匹配对象
+            
+        Returns:
+            str: PowerShell命令
+        """
+        import os
+        
+        print(f"[调试] 处理创建文件夹请求: {text}")
+        print(f"[调试] 匹配组: {match.groups()}")
+        
+        # 提取位置（第一个捕获组）
+        location = match.group(1).strip() if len(match.groups()) >= 1 else ''
+        print(f"[调试] 提取的位置: {location}")
+        
+        # 提取数量
+        count = 1
+        # 先尝试从匹配组中提取（如果是"在XX新建N个文件夹"的模式）
+        if len(match.groups()) >= 3:
+            count_str = match.group(3).strip()
+            if count_str:
+                print(f"[调试] 从匹配组提取的数量字符串: {count_str}")
+                # 转换中文数字
+                chinese_nums = {'一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, 
+                              '六': 6, '七': 7, '八': 8, '九': 9, '十': 10}
+                count = chinese_nums.get(count_str, int(count_str) if count_str.isdigit() else 1)
+                print(f"[调试] 转换后的数量: {count}")
+        
+        # 如果没有从匹配组提取到，再尝试从整个文本中搜索
+        if count == 1:
+            count_match = re.search(r'([一二三四五六七八九十两\d]+)个', text)
+            if count_match:
+                count_str = count_match.group(1)
+                print(f"[调试] 从文本搜索提取的数量字符串: {count_str}")
+                chinese_nums = {'一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, 
+                              '六': 6, '七': 7, '八': 8, '九': 9, '十': 10}
+                count = chinese_nums.get(count_str, int(count_str) if count_str.isdigit() else 1)
+                print(f"[调试] 转换后的数量: {count}")
+            else:
+                print(f"[调试] 未找到数量，默认为1")
+        
+        # 转换位置为路径
+        path_map = {
+            '桌面': os.path.join(os.path.expanduser('~'), 'Desktop'),
+            '文档': os.path.join(os.path.expanduser('~'), 'Documents'),
+            '下载': os.path.join(os.path.expanduser('~'), 'Downloads'),
+            '图片': os.path.join(os.path.expanduser('~'), 'Pictures'),
+            '音乐': os.path.join(os.path.expanduser('~'), 'Music'),
+            '视频': os.path.join(os.path.expanduser('~'), 'Videos'),
+        }
+        
+        base_path = path_map.get(location, os.getcwd())
+        print(f"[调试] 基础路径: {base_path}")
+        
+        # 生成命令
+        if count == 1:
+            command = f'New-Item -ItemType Directory -Path "{base_path}\\NewFolder"'
+        else:
+            # 创建多个文件夹
+            commands = []
+            for i in range(1, count + 1):
+                commands.append(f'New-Item -ItemType Directory -Path "{base_path}\\NewFolder{i}"')
+            command = '; '.join(commands)
+        
+        print(f"[调试] 生成的命令: {command}")
+        return command
+    
+    def _handle_delete_folder_at_location(self, text: str, match: re.Match) -> str:
+        """处理删除指定位置文件夹的请求
+        
+        Args:
+            text: 用户输入文本，如"删除桌面NewFolder文件夹"
+            match: 正则匹配对象
+            
+        Returns:
+            str: PowerShell命令
+        """
+        import os
+        
+        print(f"[调试] 处理删除文件夹请求: {text}")
+        print(f"[调试] 匹配组: {match.groups()}")
+        
+        # 提取位置（第一个捕获组）
+        location = match.group(1).strip() if len(match.groups()) >= 1 else ''
+        print(f"[调试] 提取的位置: {location}")
+        
+        # 提取文件夹名称（第二个捕获组）
+        folder_name = match.group(2).strip() if len(match.groups()) >= 2 else ''
+        print(f"[调试] 提取的文件夹名称: {folder_name}")
+        
+        # 转换位置为路径
+        path_map = {
+            '桌面': os.path.join(os.path.expanduser('~'), 'Desktop'),
+            '文档': os.path.join(os.path.expanduser('~'), 'Documents'),
+            '下载': os.path.join(os.path.expanduser('~'), 'Downloads'),
+            '图片': os.path.join(os.path.expanduser('~'), 'Pictures'),
+            '音乐': os.path.join(os.path.expanduser('~'), 'Music'),
+            '视频': os.path.join(os.path.expanduser('~'), 'Videos'),
+        }
+        
+        # 如果位置在映射中，使用映射的路径
+        if location in path_map:
+            base_path = path_map[location]
+            full_path = os.path.join(base_path, folder_name)
+        else:
+            # 否则，假设folder_name包含完整路径或相对路径
+            full_path = folder_name
+        
+        print(f"[调试] 完整路径: {full_path}")
+        
+        # 生成命令（添加-Recurse以删除非空文件夹）
+        command = f'Remove-Item -Path "{full_path}" -Recurse -Force'
+        
+        print(f"[调试] 生成的命令: {command}")
+        return command
+    
+    def _handle_delete_folder_at_location_v2(self, text: str, match: re.Match) -> str:
+        """处理删除指定位置文件夹的请求（格式：删除桌面文件夹NewFolder）
+        
+        Args:
+            text: 用户输入文本，如"删除桌面文件夹NewFolder"
+            match: 正则匹配对象
+            
+        Returns:
+            str: PowerShell命令
+        """
+        import os
+        
+        print(f"[调试] 处理删除文件夹请求v2: {text}")
+        print(f"[调试] 匹配组: {match.groups()}")
+        
+        # 提取位置（第一个捕获组）
+        location = match.group(1).strip() if len(match.groups()) >= 1 else ''
+        print(f"[调试] 提取的位置: {location}")
+        
+        # 提取文件夹名称（第三个捕获组）
+        folder_name = match.group(3).strip() if len(match.groups()) >= 3 else ''
+        print(f"[调试] 提取的文件夹名称: {folder_name}")
+        
+        # 转换位置为路径
+        path_map = {
+            '桌面': os.path.join(os.path.expanduser('~'), 'Desktop'),
+            '文档': os.path.join(os.path.expanduser('~'), 'Documents'),
+            '下载': os.path.join(os.path.expanduser('~'), 'Downloads'),
+            '图片': os.path.join(os.path.expanduser('~'), 'Pictures'),
+            '音乐': os.path.join(os.path.expanduser('~'), 'Music'),
+            '视频': os.path.join(os.path.expanduser('~'), 'Videos'),
+        }
+        
+        # 如果位置在映射中，使用映射的路径
+        if location in path_map:
+            base_path = path_map[location]
+            full_path = os.path.join(base_path, folder_name)
+        else:
+            # 否则，假设folder_name包含完整路径或相对路径
+            full_path = folder_name
+        
+        print(f"[调试] 完整路径: {full_path}")
+        
+        # 生成命令（添加-Recurse以删除非空文件夹）
+        command = f'Remove-Item -Path "{full_path}" -Recurse -Force'
+        
+        print(f"[调试] 生成的命令: {command}")
+        return command
     
     def _generate_alternatives(self, text: str, primary_command: str) -> List[str]:
         """生成备选命令

@@ -78,6 +78,7 @@ export interface ExecuteRequest {
   command: string
   sessionId: string
   timeout?: number
+  risk_level?: string
 }
 
 /**
@@ -90,6 +91,7 @@ export interface ExecuteResponse {
     error: string | null
     executionTime: number
     returnCode: number
+    sandbox?: boolean
   }
 }
 

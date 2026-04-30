@@ -66,6 +66,10 @@ class SecurityConfig(BaseModel):
         default=False,
         description="是否启用沙箱执行"
     )
+    sandbox_for_high_risk_only: bool = Field(
+        default=True,
+        description="是否仅对高危命令使用沙箱（True=仅高危命令，False=所有命令）"
+    )
     require_confirmation: bool = Field(
         default=True,
         description="是否需要用户确认"

@@ -28,6 +28,8 @@ export interface AIConfig {
  * Security Engine Configuration
  */
 export interface SecurityConfig {
+  sandboxEnabled: boolean
+  sandboxForHighRiskOnly: boolean
   whitelistMode: boolean
   requireConfirmation: boolean
   dangerousPatterns: string[]

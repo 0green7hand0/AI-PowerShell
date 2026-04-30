@@ -78,7 +78,11 @@ class PowerShellAssistant:
         self.security_engine = SecurityEngine(self.config.security.model_dump())  # 转换为字典
         
         # 7. 初始化执行引擎
-        self.executor = CommandExecutor(self.config.execution.model_dump())  # 转换为字典
+        # 合并 execution 配置和沙箱相关配置
+        executor_config = self.config.execution.model_dump()
+        executor_config['sandbox_enabled'] = self.config.security.sandbox_enabled
+        executor_config['sandbox_for_high_risk_only'] = self.config.security.sandbox_for_high_risk_only
+        self.executor = CommandExecutor(executor_config)
         
         # 8. 初始化模板引擎
         try:

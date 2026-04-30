@@ -230,13 +230,30 @@ def execute_command():
         # Get assistant instance
         assistant = get_assistant()
         
-        # Execute command with timeout
+        # 获取命令的风险等级（如果有的话）
+        risk_level = None
+        if hasattr(execute_req, 'risk_level') and execute_req.risk_level:
+            # 将字符串风险等级转换为枚举
+            from src.interfaces.base import RiskLevel
+            risk_level_map = {
+                'safe': RiskLevel.SAFE,
+                'low': RiskLevel.LOW,
+                'medium': RiskLevel.MEDIUM,
+                'high': RiskLevel.HIGH,
+                'critical': RiskLevel.CRITICAL
+            }
+            risk_level = risk_level_map.get(execute_req.risk_level.lower())
+        
+        # Execute command with timeout and risk level
         current_app.logger.info(f"⚡ 开始执行命令: {execute_req.command}")
+        if risk_level:
+            current_app.logger.info(f"🔍 风险等级: {risk_level.value}")
         start_time = time.time()
         
         result = assistant.executor.execute(
             execute_req.command,
-            timeout=execute_req.timeout
+            timeout=execute_req.timeout,
+            risk_level=risk_level
         )
         
         execution_time = time.time() - start_time
@@ -244,6 +261,8 @@ def execute_command():
         # Log execution result
         if result.success:
             current_app.logger.info(f"✅ 命令执行成功 (耗时: {execution_time:.2f}秒)")
+            if result.metadata and result.metadata.get('executed_in_sandbox'):
+                current_app.logger.info(f"🔒 命令在沙箱中执行")
             if result.output:
                 output_preview = result.output[:100] + '...' if len(result.output) > 100 else result.output
                 current_app.logger.info(f"📤 输出: {output_preview}")
@@ -261,7 +280,8 @@ def execute_command():
             'output': result.output or '',
             'error': result.error or '',
             'execution_time': execution_time,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'sandbox': result.metadata.get('executed_in_sandbox', False) if result.metadata else False
         }
         
         try:
@@ -277,7 +297,8 @@ def execute_command():
                 'output': result.output,
                 'error': result.error,
                 'executionTime': execution_time,
-                'returnCode': result.return_code
+                'returnCode': result.return_code,
+                'sandbox': result.metadata.get('executed_in_sandbox', False) if result.metadata else False
             }
         }
         

@@ -5,6 +5,7 @@
 """
 
 import logging
+import platform
 import time
 from typing import Optional, Dict, Any
 from src.interfaces.base import ExecutionResult, ExecutionStatus
@@ -37,11 +38,14 @@ class SandboxExecutor:
         self.cpu_limit = self.config.get('cpu_limit', 0.5)
         self.timeout = self.config.get('timeout', 30)
         self.network_disabled = self.config.get('network_disabled', True)
-        self.read_only = self.config.get('read_only', True)
+        self.read_only = self.config.get('read_only', False)  # 默认改为 False 以支持文件操作
         
         # Docker 客户端（延迟初始化）
         self._docker_client = None
         self._docker_available = None
+        
+        # 检测是否是 Windows 系统
+        self.is_windows = platform.system() == 'Windows'
     
     @property
     def docker_client(self):
@@ -94,7 +98,15 @@ class SandboxExecutor:
         timeout = timeout or self.timeout
         start_time = time.time()
         
+        # 保存原始命令
+        original_command = command
+        
         try:
+            # Windows 系统：转换路径
+            if self.is_windows:
+                command = self._convert_windows_path_to_container(command)
+                self.logger.info(f"路径转换: {original_command} -> {command}")
+            
             # 构建 Docker 运行参数
             container_config = self._build_container_config(command)
             
@@ -117,10 +129,31 @@ class SandboxExecutor:
                 execution_time = time.time() - start_time
                 return_code = result.get('StatusCode', -1)
                 
+                # 构建详细的输出信息
+                detailed_output = output
+                if not output and not error:
+                    # 如果没有输出，添加沙箱执行说明
+                    if return_code == 0:
+                        detailed_output = f"[沙箱执行成功]\n" \
+                            f"容器ID: {container.id[:12]}\n" \
+                            f"镜像: {self.docker_image}\n" \
+                            f"执行时间: {execution_time:.3f}s\n" \
+                            f"注意: 命令在隔离容器中执行，不会影响宿主机文件系统。"
+                    else:
+                        detailed_output = f"[沙箱执行完成，返回码: {return_code}]"
+                elif return_code != 0 and error:
+                    # 如果有错误，添加错误说明
+                    error_lower = error.lower()
+                    if "permission denied" in error_lower or "access" in error_lower and "denied" in error_lower:
+                        error = f"[沙箱保护] 操作被拒绝 - 文件系统为只读模式\n" \
+                            f"原始错误: {error}\n" \
+                            f"说明: 沙箱模式保护了您的系统，文件未被修改。\n" \
+                            f"如果确实需要执行此操作，请关闭沙箱模式后重试。"
+                
                 return ExecutionResult(
                     success=(return_code == 0),
-                    command=command,
-                    output=output,
+                    command=original_command,  # 返回原始命令
+                    output=detailed_output,
                     error=error,
                     return_code=return_code,
                     execution_time=execution_time,
@@ -128,7 +161,8 @@ class SandboxExecutor:
                     metadata={
                         'sandbox': True,
                         'container_id': container.id[:12],
-                        'image': self.docker_image
+                        'image': self.docker_image,
+                        'converted_command': command if command != original_command else None
                     }
                 )
             
@@ -141,10 +175,10 @@ class SandboxExecutor:
         
         except Exception as e:
             if "timeout" in str(e).lower():
-                self.logger.error(f"沙箱执行超时: {command}")
+                self.logger.error(f"沙箱执行超时: {original_command}")
                 return ExecutionResult(
                     success=False,
-                    command=command,
+                    command=original_command,
                     error=f"执行超时（{timeout}秒）",
                     execution_time=time.time() - start_time,
                     status=ExecutionStatus.TIMEOUT
@@ -153,7 +187,7 @@ class SandboxExecutor:
                 self.logger.error(f"沙箱执行失败: {e}")
                 return ExecutionResult(
                     success=False,
-                    command=command,
+                    command=original_command,
                     error=f"沙箱执行失败: {str(e)}",
                     execution_time=time.time() - start_time,
                     status=ExecutionStatus.FAILED
@@ -176,12 +210,29 @@ class SandboxExecutor:
             'nano_cpus': int(self.cpu_limit * 1e9),  # 转换为纳秒
         }
         
+        # Windows 系统：挂载文件系统（只读模式，保护宿主机）
+        if self.is_windows:
+            import os
+            # 挂载用户目录到容器（只读）
+            user_home = os.path.expanduser('~')
+            config['volumes'] = {
+                user_home: {
+                    'bind': '/mnt/host/home',
+                    'mode': 'ro'  # 只读模式，保护宿主机
+                },
+                'C:\\': {
+                    'bind': '/mnt/host/c',
+                    'mode': 'ro'  # 只读模式，保护宿主机
+                }
+            }
+            self.logger.info(f"Windows 挂载（只读）: {user_home} -> /mnt/host/home, C:\\ -> /mnt/host/c")
+        
         # 网络隔离
         if self.network_disabled:
             config['network_mode'] = 'none'
         
-        # 只读文件系统
-        if self.read_only:
+        # 只读文件系统（仅在非 Windows 或不需要文件操作时启用）
+        if self.read_only and not self.is_windows:
             config['read_only'] = True
             # 添加临时目录挂载点
             config['tmpfs'] = {'/tmp': 'rw,noexec,nosuid,size=100m'}
@@ -193,6 +244,33 @@ class SandboxExecutor:
         config['pids_limit'] = 100  # 限制进程数
         
         return config
+    
+    def _convert_windows_path_to_container(self, command: str) -> str:
+        """将 Windows 路径转换为容器内的路径
+        
+        Args:
+            command: 包含 Windows 路径的命令
+            
+        Returns:
+            str: 转换后的命令
+        """
+        if not self.is_windows:
+            return command
+        
+        import re
+        
+        # 转换 C:\Users\xxx -> /mnt/host/c/Users/xxx
+        command = re.sub(
+            r'([A-Za-z]):\\',
+            lambda m: f'/mnt/host/{m.group(1).lower()}/',
+            command
+        )
+        
+        # 转换反斜杠为正斜杠（在路径中）
+        # 但要小心不要转换转义字符
+        # 这里简单处理：转换路径中的反斜杠
+        
+        return command
     
     def pull_image(self) -> bool:
         """拉取 Docker 镜像
@@ -241,7 +319,8 @@ class SandboxExecutor:
             'cpu_limit': self.cpu_limit,
             'timeout': self.timeout,
             'network_disabled': self.network_disabled,
-            'read_only': self.read_only
+            'read_only': self.read_only,
+            'is_windows': self.is_windows
         }
     
     def cleanup_containers(self) -> int:

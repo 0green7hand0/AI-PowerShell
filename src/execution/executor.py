@@ -46,6 +46,54 @@ class CommandExecutor(ExecutorInterface):
         # Windows 平台自动使用 gbk 编码
         if self.platform_name == "Windows" and self.encoding == "utf-8":
             self.encoding = "gbk"
+        
+        # 沙箱执行器（如果启用）
+        self.sandbox_enabled = config.get('sandbox_enabled', False)
+        self.sandbox_for_high_risk_only = config.get('sandbox_for_high_risk_only', True)
+        self._sandbox = None
+        
+        if self.sandbox_enabled:
+            from ..security.sandbox import SandboxExecutor
+            self._sandbox = SandboxExecutor(config)
+    
+    @property
+    def sandbox(self):
+        """获取沙箱执行器"""
+        return self._sandbox
+    
+    def should_use_sandbox(self, command: str, risk_level=None) -> bool:
+        """判断是否应该使用沙箱执行命令
+        
+        Args:
+            command: PowerShell 命令
+            risk_level: 风险等级（RiskLevel枚举），如果为None则自动判断
+            
+        Returns:
+            bool: 是否应该使用沙箱
+        """
+        # 如果沙箱未启用，直接返回False
+        if not self.sandbox_enabled or not self._sandbox or not self._sandbox.is_available():
+            return False
+        
+        # 如果配置为只对高危命令使用沙箱
+        if self.sandbox_for_high_risk_only:
+            # 如果提供了风险等级，使用它
+            if risk_level is not None:
+                from ..interfaces.base import RiskLevel
+                return risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL]
+            
+            # 否则，简单判断命令是否包含危险关键词
+            dangerous_keywords = [
+                'Remove-Item', 'Delete', 'Format-', 'Clear-', 
+                'Stop-Computer', 'Restart-Computer', 'Stop-Process',
+                'Set-ExecutionPolicy', 'Invoke-Expression', 'iex',
+                'Remove-', 'rd', 'del', 'rmdir', '-Recurse', '-Force'
+            ]
+            command_lower = command.lower()
+            return any(keyword.lower() in command_lower for keyword in dangerous_keywords)
+        
+        # 如果配置为所有命令都使用沙箱
+        return True
     
     def _detect_powershell(self) -> Optional[str]:
         """检测可用的 PowerShell 版本
@@ -96,7 +144,8 @@ class CommandExecutor(ExecutorInterface):
         self, 
         command: str, 
         timeout: Optional[int] = None,
-        progress_callback=None
+        progress_callback=None,
+        risk_level=None
     ) -> ExecutionResult:
         """执行 PowerShell 命令（同步）
         
@@ -104,6 +153,7 @@ class CommandExecutor(ExecutorInterface):
             command: 要执行的 PowerShell 命令
             timeout: 超时时间（秒），如果为 None 则使用默认超时时间
             progress_callback: 进度回调函数，接收 (description) 参数
+            risk_level: 命令的风险等级，用于决定是否使用沙箱
             
         Returns:
             ExecutionResult: 包含执行结果的对象
@@ -124,6 +174,21 @@ class CommandExecutor(ExecutorInterface):
         if timeout is None:
             timeout = self.default_timeout
         
+        # 判断是否使用沙箱执行
+        use_sandbox = self.should_use_sandbox(command, risk_level)
+        
+        if use_sandbox:
+            if progress_callback:
+                progress_callback("🔒 使用沙箱执行高危命令...")
+            print(f"[沙箱执行] 命令: {command}")
+            result = self._sandbox.execute(command, timeout)
+            # 添加沙箱标记到元数据
+            if result.metadata is None:
+                result.metadata = {}
+            result.metadata['executed_in_sandbox'] = True
+            return result
+        
+        # 正常执行（非沙箱）
         start_time = time.time()
         
         try:
@@ -163,7 +228,8 @@ class CommandExecutor(ExecutorInterface):
                 metadata={
                     'powershell_version': self.powershell_cmd,
                     'platform': self.platform_name,
-                    'encoding': self.encoding
+                    'encoding': self.encoding,
+                    'executed_in_sandbox': False
                 }
             )
             
