@@ -26,6 +26,18 @@ class TemplateManager:
         self.config_path = config_path
         self.templates: Dict[str, Template] = {}
         self.config = {}
+        
+        # 确定项目根目录
+        # 如果配置路径是相对路径，则基于当前文件位置推断项目根目录
+        config_path_obj = Path(config_path)
+        if config_path_obj.is_absolute():
+            self.project_root = config_path_obj.parent.parent
+        else:
+            # 从当前文件位置推断项目根目录
+            # 当前文件位于 src/template_engine/template_manager.py
+            # 项目根目录是 src 的父目录
+            self.project_root = Path(__file__).parent.parent.parent
+        
         self._load_config()
         self._load_templates()
     
@@ -143,11 +155,16 @@ class TemplateManager:
             from datetime import datetime
             updated_at = datetime.now()
         
+        # 将相对路径转换为绝对路径
+        file_path = config.get('file', '')
+        if file_path and not Path(file_path).is_absolute():
+            file_path = str(self.project_root / file_path)
+        
         return CustomTemplate(
             id=template_id,
             name=config.get('name', template_id),
             category=category,
-            file_path=config.get('file', ''),
+            file_path=file_path,
             description=config.get('description', ''),
             keywords=config.get('keywords', []),
             parameters=parameters,
@@ -179,11 +196,16 @@ class TemplateManager:
                 required=param_config.get('required', False)
             )
         
+        # 将相对路径转换为绝对路径
+        file_path = config.get('file', '')
+        if file_path and not Path(file_path).is_absolute():
+            file_path = str(self.project_root / file_path)
+        
         return Template(
             id=template_id,
             name=config.get('name', template_id),
             category=category,
-            file_path=config.get('file', ''),
+            file_path=file_path,
             description=config.get('description', ''),
             keywords=config.get('keywords', []),
             parameters=parameters,

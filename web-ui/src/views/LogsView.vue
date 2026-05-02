@@ -14,6 +14,15 @@
         >
           {{ showAnalytics ? '隐藏分析' : '显示分析' }}
         </el-button>
+        <el-tooltip :content="autoRefresh ? '自动刷新已开启 (每30秒)' : '自动刷新已关闭'" placement="top">
+          <el-button 
+            :type="autoRefresh ? 'success' : 'default'" 
+            :icon="autoRefresh ? 'VideoPause' : 'VideoPlay'"
+            @click="toggleAutoRefresh"
+          >
+            {{ autoRefresh ? '自动刷新' : '手动刷新' }}
+          </el-button>
+        </el-tooltip>
       </div>
     </div>
 
@@ -61,6 +70,8 @@ import LoadingSpinner from '../components/LoadingSpinner.vue'
 
 const logsStore = useLogsStore()
 const showAnalytics = ref(true)
+const autoRefresh = ref(true)
+const refreshInterval = ref(30)
 
 /**
  * Handle refresh logs
@@ -94,6 +105,30 @@ const handleToggleAnalytics = () => {
 }
 
 /**
+ * Toggle auto-refresh
+ */
+const toggleAutoRefresh = () => {
+  autoRefresh.value = !autoRefresh.value
+  
+  if (autoRefresh.value) {
+    // Start auto-refresh
+    const logsRefreshInterval = setInterval(() => {
+      if (autoRefresh.value) {
+        logsStore.fetchLogs({ limit: 1000 })
+      }
+    }, refreshInterval.value * 1000)
+    
+    ;(window as any).__logsRefreshInterval = logsRefreshInterval
+  } else {
+    // Stop auto-refresh
+    if ((window as any).__logsRefreshInterval) {
+      clearInterval((window as any).__logsRefreshInterval)
+      delete (window as any).__logsRefreshInterval
+    }
+  }
+}
+
+/**
  * Initialize on mount
  */
 onMounted(async () => {
@@ -110,6 +145,18 @@ onMounted(async () => {
 
   // Store interval ID for cleanup
   ;(window as any).__logsStatusCheckInterval = statusCheckInterval
+  
+  // Setup auto-refresh for logs (every 30 seconds by default)
+  if (autoRefresh.value) {
+    const logsRefreshInterval = setInterval(() => {
+      if (autoRefresh.value) {
+        logsStore.fetchLogs({ limit: 1000 })
+      }
+    }, refreshInterval.value * 1000)
+    
+    // Store interval ID for cleanup
+    ;(window as any).__logsRefreshInterval = logsRefreshInterval
+  }
 })
 
 /**
@@ -120,6 +167,12 @@ onUnmounted(() => {
   if ((window as any).__logsStatusCheckInterval) {
     clearInterval((window as any).__logsStatusCheckInterval)
     delete (window as any).__logsStatusCheckInterval
+  }
+  
+  // Clear logs refresh interval
+  if ((window as any).__logsRefreshInterval) {
+    clearInterval((window as any).__logsRefreshInterval)
+    delete (window as any).__logsRefreshInterval
   }
 })
 </script>
